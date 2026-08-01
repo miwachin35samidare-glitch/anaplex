@@ -3,6 +3,7 @@
 
 **Author:** miwa
 **ORCID:** [0009-0008-5074-3175](https://orcid.org/0009-0008-5074-3175)
+**DOI:** [10.5281/zenodo.21742797](https://doi.org/10.5281/zenodo.21742797)
 **Date:** 2026-08-01
 **Version:** 1.0
 **License:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
@@ -523,10 +524,8 @@ d = 128   （ミニカラム 80〜120細胞と一致）
 
 ```
 miwa (2026). AnaPlex: An Architecture for Real-Time Learning.
-https://orcid.org/0009-0008-5074-3175
+Zenodo. https://doi.org/10.5281/zenodo.21742797
 ```
-
-DOI取得後はDOIを併記のこと。
 
 ---
 

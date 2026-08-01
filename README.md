@@ -1,5 +1,7 @@
 # AnaPlex: An Architecture for Real-Time Learning
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21742797.svg)](https://doi.org/10.5281/zenodo.21742797)
+
 **凍結素子と可塑配線による、Transformer後継アーキテクチャの設計**
 
 Transformerはリアルタイム学習ができない。推論中に重みが変わらないからである。
@@ -59,10 +61,8 @@ AnaPlexは、**素子を凍結し、配線だけを可塑にする**という解
 
 ```
 miwa (2026). AnaPlex: An Architecture for Real-Time Learning.
-https://orcid.org/0009-0008-5074-3175
+Zenodo. https://doi.org/10.5281/zenodo.21742797
 ```
-
-DOI取得後はDOIを併記のこと。
 
 ---
 
