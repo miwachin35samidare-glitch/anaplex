@@ -1,0 +1,97 @@
+# ============================================
+# 実験データ（Gitに入れない）
+# ============================================
+# 配線グラフのスナップショット。数十MB×大量になる
+snapshots/
+*.snapshot
+checkpoints/
+
+# 実行ログ。生ログは巨大。要約だけをlogs/summary/に手動で置く
+logs/*
+!logs/summary/
+!logs/.gitkeep
+*.log
+*.jsonl
+
+# 素子の重み。型を焼いた結果
+units/
+*.safetensors
+*.gguf
+*.pt
+*.pth
+*.bin
+*.npy
+*.npz
+
+# 音声。VOICEVOX出力や録音
+audio/
+*.wav
+*.ogg
+*.mp3
+*.flac
+
+# 映像フレーム
+frames/
+*.png
+*.jpg
+*.jpeg
+*.mp4
+
+# ============================================
+# 秘密情報
+# ============================================
+.env
+.env.*
+*.key
+*.pem
+secrets/
+config.local.*
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ============================================
+# Node.js（Mineflayer等を使う場合）
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# ============================================
+# DB
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ============================================
+# OS / エディタ
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
