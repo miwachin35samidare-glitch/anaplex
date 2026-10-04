@@ -484,9 +484,14 @@ class Group2:
         self._e_cache = None                      # 送り手が変わったので作り直す
 
         if advance:
-            self.tb = self.tb * self.decay + torch.cat(
-                [rep[self.x_index[self.is_err]], rep[self.x_index[self.is_rep]], inh_spk]
-            ).unsqueeze(1) * (1 - self.decay)
+            # 版50：行（領野ごとに 誤差・表現・抑制）と同じ並びで足す
+            #   ⟲ 版49 まで cat([全領野の rep, 全領野の rep, 全領野の inh])（種類ごとの並び）。
+            #      先頭の領野の誤差の行のほかは、別の体の発火を履歴にしていた【測】chk_tb（10-04）
+            now = torch.zeros(self.n_recv_all, device=self.dev)
+            now[self.is_err] = rep[self.x_index[self.is_err]]
+            now[self.is_rep] = rep[self.x_index[self.is_rep]]
+            now[self.is_inh_r] = inh_spk
+            self.tb = self.tb * self.decay + now.unsqueeze(1) * (1 - self.decay)
             src = torch.empty(self.n_src_all, device=self.dev)
             eo = io = 0
             for i, a in enumerate(self.areas):        # 入口の並べ直しだけは領野の形に依る
