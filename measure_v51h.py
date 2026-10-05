@@ -7,7 +7,8 @@
      比べる人の値（1歩 10.67ms）：新皮質 錐体 3.5%（Verma 2024 覚醒 3.30Hz）・抑制 5.0%（4.70Hz）／
        海馬・嗅内 錐体 3.3%・抑制 5.4%（Le Van Quyen 2008）／ 視床の中継 約5〜30%（運動視床など。聴覚の視床は無い）
   2 聴覚の誤差（音のある歩 1歩あたりの体数）：自分 ／ 録音 ／ 返し手。supp ＝ 録音 ÷ 自分、返し手 ÷ 自分
-読み方：表現と抑制の体は最後の周の値（tb に足す発火を tau 1 の欄から戻す。版50 の並び cat([rep, rep, inh])）
+読み方：表現と抑制の体は最後の周の値（tb に足す発火を tau 1 の欄から戻す。版50 からは tb の行の並び＝領野ごとに 誤差・表現・抑制）
+⟲ 10-05 初版は版49 の並び（cat の順）で読んでいた。表現・抑制・40%超の列が別の体だった
 """
 import sys, torch, numpy as np
 import babble as B, brainstem as BS, torch_area as T
@@ -22,7 +23,6 @@ b = Brain(prior, n_partner=9100, hippo_scale=20.0, n_ear=B.N_EAR, dev=B.DEV)
 b.bs.set_state(BS.WAKE)
 _, say, rp = B.voices(b, False)
 g = b.g
-NC = int(g.off_ch[-1]); off_inh = np.cumsum([0] + [a.n_inh for a in g.areas])
 idx = {nm: NAMES.index(nm) for nm in NAMES}
 d0 = g.decay[:, 0].clone()
 st = {"tag": "他"}
@@ -36,10 +36,10 @@ def step(self, ear, cmd, eye=None, learn=True):
     out = orig_step(self, ear, cmd, eye, learn)
     v = (g.tb[:, 0] - tb0 * d0) / (1 - d0)
     for nm, i in idx.items():
-        a = g.areas[i]; c = int(g.off_ch[i]); h = 2 * NC + int(off_inh[i])
-        rep = float((v[NC + c:NC + c + a.n_ch] > 0.5).float().mean())
+        a = g.areas[i]; lo = int(g.off_recv[i])
+        rep = float((v[lo + a.n_ch:lo + 2 * a.n_ch] > 0.5).float().mean())
         err = float((self.up[nm] > 0).float().mean()) if nm != "視床" else float("nan")
-        inh = float((v[h:h + a.n_inh] > 0.5).float().mean())
+        inh = float((v[lo + 2 * a.n_ch:lo + 2 * a.n_ch + a.n_inh] > 0.5).float().mean())
         s = acc.setdefault(nm, [0.0, 0.0, 0.0, 0.0, 0])
         s[0] += rep; s[1] += 0.0 if err != err else err; s[2] += inh; s[3] += rep > 0.4; s[4] += 1
     if st["tag"] in aud and float(torch.as_tensor(ear).float().sum()) > aud_floor["v"]:
