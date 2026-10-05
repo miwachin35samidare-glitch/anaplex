@@ -203,7 +203,7 @@ class Area:
                  inh_frac=0.16, stp_path=None, tau_scale=1.0, gate=True,
                  spont_hz=0.3, complete=False, motor=False, dev="cuda", seed=0,
                  w_int8=False, fire_th=1.0, x_gain=1.0, tgt_by_fire=False, contacts_exc=3.3,
-                 inh_n_exc=None):
+                 inh_n_exc=None, relay_exc=None):
         g = torch.Generator(device=dev); g.manual_seed(seed)
         self.dev, self.gen, self.prior = dev, g, prior
         self.n_ch, self.n_ext, self.eta, self.homeo_tau = n_ch, n_ext, eta, homeo_tau
@@ -234,6 +234,10 @@ class Area:
         self.n_send = self.ch.n_cells + self.n_src * self.D
         self.n_recv = n_ch * 2 + self.n_inh
         n_partner = min(n_partner, self.n_send)
+        # 版51：視床の中継の細胞が自分の領野の中から受ける興奮の本数（relay_exc。ノブ【C】）。抑制性の相手の数は変えない
+        self.n_inh_partner_rows = int(round(n_partner * inh_frac))
+        if relay_exc is not None:
+            n_partner = self.n_inh_partner_rows + relay_exc
         self.n_partner = n_partner
         # 版47：抑制の体の相手は 興奮性 INH_N_EXC ＋ 抑制性（inh_frac を保つ）
         n_ie = INH_N_EXC if inh_n_exc is None else inh_n_exc
@@ -252,8 +256,8 @@ class Area:
         #      外からの入力が多い領野ほど薄まっていた（聴覚 2.8% ／ 高次 4.4% ／ CA3 2.4%）
         inh_pool = torch.nonzero(is_inh_send).squeeze(1)
         exc_pool = torch.nonzero(~is_inh_send).squeeze(1)
-        def pick(n_rows, k_all):
-            k_inh = int(round(k_all * inh_frac))
+        def pick(n_rows, k_all, k_inh=None):
+            k_inh = int(round(k_all * inh_frac)) if k_inh is None else k_inh
             s = torch.empty((n_rows, k_all), dtype=torch.long, device=dev)
             s[:, :k_inh] = inh_pool[torch.randint(0, len(inh_pool), (n_rows, k_inh),
                                                   device=dev, generator=g)]
@@ -261,7 +265,8 @@ class Area:
                                                   device=dev, generator=g)]
             return s.reshape(-1)
         # 表現・誤差は n_partner、抑制の体は n_pi（版47）
-        src = torch.cat([pick(n_ch * 2, n_partner), pick(self.n_inh, n_pi)])
+        src = torch.cat([pick(n_ch * 2, n_partner, self.n_inh_partner_rows if relay_exc is not None else None),
+                         pick(self.n_inh, n_pi)])
         recv = torch.cat([torch.arange(n_ch * 2, device=dev).repeat_interleave(n_partner),
                           (torch.arange(self.n_inh, device=dev) + n_ch * 2).repeat_interleave(n_pi)])
         o = torch.argsort(src)
