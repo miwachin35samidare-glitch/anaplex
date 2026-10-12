@@ -7,7 +7,7 @@
   言えた（選んだとおりに言えた ／ 声を出そうとした）
 ⚠️ 網は学びながら回るので、K ごとの差には学びの違いも入る（同じ種・同じ声の順）
 """
-import sys, torch, numpy as np
+import sys, gc, torch, numpy as np
 import babble as B, brainstem as BS, torch_area as T
 import torch_brain as TB
 from torch_brain import Brain
@@ -65,7 +65,8 @@ for K in KS:
     r = {k: v[0] / max(v[1], 1) for k, v in acc.items()}
     print(f"  {K:4d}   {r['on']:6.1%} {hz(r['on']):6.1f}Hz   {r['offw']:6.1%} {hz(r['offw']):6.1f}Hz   "
           f"{r['quiet']:6.1%} {hz(r['quiet']):6.1f}Hz   {ok:2d}/{tried:<3d}", flush=True)
-    del b
+    del b, say, rp, ostep, step        # 網を指している参照を全部切る（say・step が b を握っていて、前の K の網が残った）
+    gc.collect()
     if not TEST:
         torch.cuda.empty_cache()
 print("読み：指令の体の率が 37% 前後になる K が「定義どおりの K_PM」。指令の無い体は CL（K_CL）と運動前野の 3.3Hz の送り手で決まる")
