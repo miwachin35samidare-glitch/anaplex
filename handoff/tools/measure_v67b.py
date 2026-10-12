@@ -14,8 +14,8 @@ from torch_brain import Brain
 
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-if B.VERSION not in (67, 68, 69, 70):
-    sys.exit(f"⚠️ babble.py が版67〜70 ではない（版 {B.VERSION}）")
+if B.VERSION not in (67, 68, 69, 70, 71):
+    sys.exit(f"⚠️ babble.py が版67〜71 ではない（版 {B.VERSION}）")
 N = int(args[0]) if args else 10
 KS = [int(k) for k in args[1].split(",")] if len(args) > 1 else [115, 80, 60, 40, 30, 20, 10, 0]
 if len(args) > 2:                    # K_CL も上書きする（measure_v67d で定義どおりの K_CL が 40 と出たあと、K_PM をそれに合わせて探す）
@@ -36,6 +36,8 @@ print(f"K_CL {TB.K_CL}   的：指令の体 {ON_P:.1%}/歩（35Hz）・指令の
 print("  K_PM   指令の体          窓の指令の無い体   指令の無い歩       言えた")
 for K in KS:
     TB.K_PM = K
+    if hasattr(TB, "K_PM_SYN"):        # 版71：シナプスのときの本数
+        TB.K_PM_SYN = K
     torch.manual_seed(0)
     b = Brain(prior, n_partner=200 if TEST else 9100, hippo_scale=4.0 if TEST else 20.0, n_ear=B.N_EAR, dev=B.DEV)
     b.bs.set_state(BS.WAKE)

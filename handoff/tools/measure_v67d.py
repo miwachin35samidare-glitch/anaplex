@@ -16,8 +16,8 @@ from torch_brain import Brain, NAMES
 
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-if B.VERSION not in (67, 68, 69, 70):
-    sys.exit(f"⚠️ babble.py が版67〜70 ではない（版 {B.VERSION}）")
+if B.VERSION not in (67, 68, 69, 70, 71):
+    sys.exit(f"⚠️ babble.py が版67〜71 ではない（版 {B.VERSION}）")
 N = int(args[0]) if args else 10
 KS = [int(k) for k in args[1].split(",")] if len(args) > 1 else [78, 60, 50, 40, 30]
 TB.K_PM = int(args[2]) if len(args) > 2 else (20 if B.VERSION == 67 else TB.K_PM)   # 版68 は torch_brain の値（27）
