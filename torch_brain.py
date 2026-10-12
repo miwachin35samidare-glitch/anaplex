@@ -26,6 +26,32 @@ import torch
 from torch_area import Prior, Area, steps, THETA
 from torch_area import INH_N_EXC, INH_N_EXC_HIPPO   # 版47
 from torch_group2 import Group2
+import os
+
+# 版55：焼いた網を型ごとに（【み】10-10「型ごとに分けるでいいよ」「いいよ」）。bake_prior.py で焼いたもの
+PRIOR_TYPE = {"聴覚": "皮質", "運動": "皮質", "視覚": "皮質", "連合": "皮質", "高次": "皮質", "前頭前野": "皮質",
+              "視床": "視床", "背内側視床": "視床",
+              "歯状回": "海馬", "CA3": "海馬", "CA1": "海馬", "嗅内浅": "海馬", "嗅内深": "海馬",
+              "側坐核": "側坐核", "上丘": "上丘"}
+
+
+def type_priors(prior, dev):
+    """型 → 焼いた網。ANAPLEX_PRIOR=v1 なら全部 prior（比べる用）"""
+    if os.environ.get("ANAPLEX_PRIOR") == "v1":
+        return {}
+    out = {}
+    old = {s for s in os.environ.get("ANAPLEX_PRIOR_V1", "").split(",") if s}   # 比べる用：この型は前の網
+    bad = old - set(PRIOR_TYPE.values())
+    if bad:
+        raise SystemExit(f"⚠️ ANAPLEX_PRIOR_V1 に無い型：{sorted(bad)}（皮質・視床・海馬・側坐核・上丘）")
+    if old:
+        print(f"焼いた網：{'・'.join(sorted(old))} は前の網（prior_v1）、ほかは焼き直した網", flush=True)
+    for t in sorted(set(PRIOR_TYPE.values()) - old):
+        f = f"prior_v2_{t}.npz"
+        if not os.path.exists(f):
+            raise SystemExit(f"⚠️ {f} が無い。bake_prior.py で焼いてから（ANAPLEX_PRIOR=v1 で前の網）")
+        out[t] = Prior.load(f, dev=dev)
+    return out
 import brainstem as BS
 
 # 段ごとの時間の比（各細胞の「見込み」の元になる、入力の履歴の痕跡の時定数に掛かる）
@@ -52,6 +78,9 @@ NAMES = ("視床", "聴覚", "運動", "視覚", "連合", "高次", "歯状回"
 #     側坐核【ヒト】Wegiel 2014：729万 ⇒ 146 ／ 背内側視床【ヒト】Abitz 2007：643万 ⇒ 129
 #   人の両半球 100万体あたり 0.728 体（比で縮める側。12GB に収める係数【C】。組んだら measure_size で直す）
 #     連合 Te2 3.30億 ⇒ 240 ／ 高次 Te3 3.62億 ⇒ 263 ／ 前頭前野【ヒト】Gabi 2016 約13億 ⇒ 946
+HIPPO_TC = ("歯状回", "CA3", "CA1", "嗅内浅", "嗅内深")   # 版56：時間細胞を調整する側にする領野
+# 版62：上丘も時間細胞を調整する側に（時間細胞は【ヒト】海馬・嗅内の撃ち方。上丘に置く根拠なし）【み】10-11「c」
+TC_MOD = HIPPO_TC + ("上丘",)
 EC_II = 20              # 嗅内浅 の頭 20 体が層 II（→ 歯状回・CA3）。残り 121 体が層 III（→ CA1）
 N_NEW = {"前頭前野": 946, "背内側視床": 129, "嗅内浅": 141, "嗅内深": 116, "側坐核": 146}
 # 版43b（設計案_脳幹.md §12-26〜§12-43）
@@ -101,6 +130,20 @@ TGT_BY_FIRE = ("聴覚", "運動", "視覚", "連合", "高次", "CA3",
 # 受け手1体の相手の数。既定は人の皮質（30,000シナプス ÷ 接触3.3 ＝ 9,100）
 #   【ヒト】CA3 は CA3 から約 16,100入力（棘 ≒ 送り手、接触ほぼ1つ。Watson 2025）
 N_PARTNER = {"CA3": 16100}
+# 版51：視床の中継の細胞が自分の領野の中から受ける興奮の本数 ⚠️ ノブ【C】【み選】10-05 B「疎にして残す」
+#   【ヒト】分からない ／【マカク】核の中に出る側枝は記録した中で1本（Wilson 1989）／
+#   【ネコ】側枝のシナプスの約2割が中継の細胞へ、層と層の間だけ（Bickford 2008）⇒ あるが少ない
+#   ⟲ 版50 まで 約6,400本（遅れの送り手 3,200 ＋ 傾きの細胞 3,200）。視床が中で自分を押し上げ、一斉発火の大元になっていた【測】v50k
+#   64：sim_thal（コンテナ）で 40% を越える歩が消えた本数
+# ⟲ 版61：64 → 0【み】10-11「いいよ」。【マカク】Wilson 1989：外側膝状体の中継細胞 9体のうち核の中に側枝を出したのは1本
+#   【マカク】Carandini 2007：中継の発火は網膜の駆動の足し合わせで決まる ⇒ 中継どうしの興奮はほぼ無い
+#   【測】measure_v59d（版59）：64本が学びで育ち、1本で閾値を越えて入力なしで撃ち合っていた（無音で視床 22%）
+RELAY_EXC = 0
+# 版64：抑制の相手を切片の見方で（抑制の体そのものを1回ずつ、繋がる割合 × 体の数）にする領野【み】10-11「Aで様子を見よう」
+#   【ヒト】Jiang 2012：速い発火の細胞 → 錐体 の繋がる割合 79/343（23%）・減りの時定数 8.5ms（てんかんの組織）
+#   ⚠️ 視床は入れない（介在ニューロン → 中継 の割合の人の値なし）
+INH_SLICE = ("運動", "聴覚")   # 版65：聴覚も【み】10-11「まぁいいよ、やってみて」
+P_INH_CONN = 0.23
 # 1つの繋がりの興奮性の接触の数。既定は【ヒト】皮質 3.3
 #   【ヒト】CA3 は棘 ≒ 送り手で、接触ほぼ1つ（Watson 2025。CA3→CA1 の結合解析でも棘1つに入力1つ）
 #   ⚠️ 抑制の 4.0 は人の皮質の値のまま（CA3 の抑制の接触数は見つけていない）
@@ -156,8 +199,9 @@ class Brain:
                              ("運動", nn["運動"] + nn["高次"], nn["前頭前野"]),  # 前頭前野から（版43a）
                              ("連合", nn["連合"], nn["高次"]),                  # 高次から
                              ("高次", nn["高次"] + nn["運動"], nn["前頭前野"]))  # 前頭前野から（版43a）
+        tp = type_priors(prior, dev)       # 版55
         mk = lambda nm, i: Area(
-            n_ch=self.n[nm], prior=prior, n_ext=self.n_ext[nm], eta=eta,
+            n_ch=self.n[nm], prior=tp.get(PRIOR_TYPE.get(nm), prior), n_ext=self.n_ext[nm], eta=eta,
             n_partner=N_PARTNER.get(nm, n_partner), n_cell=n_cell, stp_path=stp_path, dev=dev, seed=seed + i,
             # 版43a：前頭前野・嗅内・側坐核は高次の時定数（⚠️ ノブ【C】。人の値は未取得）
             tau_scale=(TAU["連合"] if nm == "連合"
@@ -178,6 +222,9 @@ class Brain:
             tgt_by_fire=(nm in TGT_BY_FIRE), contacts_exc=CONTACTS_EXC.get(nm, 3.3),
             # 版47：抑制の体の興奮性の相手 180（【ヒト】覚醒の率から【C】）。海馬・嗅内は【ヒト】の率（錐体 3.1Hz・抑制 5.1Hz）から 194
             inh_n_exc=(INH_N_EXC_HIPPO if nm in ("歯状回", "CA3", "CA1", "嗅内浅", "嗅内深") else INH_N_EXC),
+            relay_exc=(RELAY_EXC if nm == "視床" else None),   # 版51
+            inh_exc_from_rep=(nm in TC_MOD),                 # 版57：抑制の体の興奮の相手は錐体（遅れの列）から。版62 で上丘も
+            inh_slice=(P_INH_CONN if nm in INH_SLICE else None),   # 版64
             # ⚠️ 視床の自発は【ヒト】の値が無い。人の視床に電極を入れるのは DBS 手術のときだけで、
             #    通すのは運動視床（Vim 19.8Hz）と視床下核。聴覚の視床（MGB）は通り道ではない。
             #    人の MGB で分かっているのは fMRI の活動の増減だけで、発火率は出ていない
@@ -293,12 +340,30 @@ class Brain:
         #   【ヒト】話すと上側頭回に来る入力が減る（Chan 2014）⇒ 指令の写しも調整する側
         #   ⚠️ ほかの経路（海馬・CA3 の再帰・運動の誤差→高次・皮質→歯状回・CA1 の戻り）は未決のまま撃たせる側
         n = self.n
+        import os as _os_copy
         for area, first, cnt in (("聴覚", n["聴覚"], n["運動"]),) + self.topdown_rows + (
                 ("嗅内浅", n["嗅内浅"], n["嗅内深"]),          # 深い層 → 浅い層（版43a）
                 ("背内側視床", n["背内側視床"], n["前頭前野"]),  # 前頭前野 → 背内側視床（版43a）
                 ("側坐核", n["側坐核"], n["前頭前野"])):        # 前頭前野 → 側坐核（予測。版43a）
             # ⚠️ 海馬の戻り（嗅内深 → 連合・前頭前野）は前と同じく撃たせる側のまま（未決）
             self.g.mod_send[self._send_rows(area, first, cnt)] = True
+        # 版66：指令の写し（運動 → 聴覚）は聴覚の抑制の体を撃たせる（表現・誤差には調整する側のまま）
+        #   【マーモセット】Eliades & Wang 2003：自分の発声の数百 ms 前から聴覚野が抑えられる【み】10-12「まぁアでいいよ」
+        #   ⚠️ 人ではなく霊長類。抑えが抑制の細胞を通るかは霊長類でも未確認
+        if _os_copy.environ.get("ANAPLEX_COPY_INH", "1") != "0":
+            self.g.mod_drive_inh[self._send_rows("聴覚", n["聴覚"], n["運動"])] = True
+        # 版56：海馬の時間細胞は調整する側（予測には入り、撃たせない）【み】10-10「いいよ」
+        #   【ヒト】時間細胞は細胞そのものの撃ち方（Umbach 2020）。自分の過去が自分を撃たせる入力の根拠は無い
+        #   【測】v55b：版55 まで海馬の表現の 70〜99% を自分の時間細胞が撃たせ、CA1 に CA3 はほぼ届いていなかった
+        #   ANAPLEX_HIPPO_TC=drive で版55 と同じ（比べる用）
+        import os as _os
+        if _os.environ.get("ANAPLEX_HIPPO_TC") != "drive":
+            for nm in TC_MOD:                               # 版62：上丘も
+                a, i = self.areas[nm], NAMES.index(nm)
+                per = a.ch.n_cell + a.ch.n_ramp
+                if per:
+                    lo = int(self.g.off_send[i])
+                    self.g.mod_send[lo:lo + (a.n_ch + a.n_ext) * per] = True   # 興奮の行（自分・ext）だけ。抑制の行はそのまま
         # 恒常性の目標を受け手の種類ごとに（版39b）【み】09-27「普段の率を目標とみなす」「Bで様子見」
         #   皮質  表現・誤差 0.45%（【ヒト】Peyrache 2012 RS 0.5Hz 未満。誤差は表現と同じ【C 当てはめ】）／ 抑制 2Hz（FS）
         #   視床  表現 18.8Hz（【ヒト】運動視床 Vim。MGB は人・霊長類とも数値なし）。誤差・抑制は値なし ⇒ 下げない
@@ -315,11 +380,18 @@ class Brain:
                 gg.scale_skip[ih] = True
             elif nm == "運動":
                 gg.scale_skip[lo:hi] = True
-            elif nm in ("聴覚", "視覚", "連合", "高次", "前頭前野", "嗅内浅", "嗅内深"):
-                gg.target_recv[ih] = hz(2.0)
+            elif nm in ("聴覚", "視覚", "連合", "高次", "前頭前野"):
+                gg.target_recv[ih] = hz(4.70)   # 版53：【ヒト】Verma 2024 覚醒の抑制（⟲ 2Hz は Peyrache 2012 の夜通しの値）
+            elif nm in ("嗅内浅", "嗅内深", "CA3", "CA1"):
+                # 版53：【ヒト】Le Van Quyen 2008 海馬 錐体 3.1Hz・抑制 5.1Hz（嗅内も同じ当てはめ。健診 13 と同じ【C】）
+                gg.target_recv[lo:lo + 2 * nc] = hz(3.1)
+                gg.target_recv[ih] = hz(5.1)
+            elif nm == "歯状回":                # 版53：人の率の値が無い（項目に応じるのは 2.5% 未満、は率の目標ではない）
+                gg.scale_skip[lo:hi] = True
             elif nm in ("背内側視床", "側坐核", "上丘"):      # 版43a・43b：人の値なし ⇒ 下げない
                 gg.scale_skip[lo:hi] = True
         gg.rate_ema = gg.target_recv.clone()     # 0から組むときは目標から始める（state.pt を読めば上書きされる）
+        gg.rate_long = gg.target_recv.clone()    # 版53
 
     def _send_rows(self, area, first, n):
         """その領野の送り元の行 first〜first+n が持つ送り手の番号（時間細胞・傾きの細胞の分と、短い遅れの分）"""
@@ -478,7 +550,7 @@ class Brain:
         rank = drive + 0.5 * torch.rand(len(drive), device=self.dev, generator=self.gen)
         top = torch.topk(rank, k).indices
         dg = torch.zeros_like(drive)
-        dg[top] = 1.0
+        dg.index_fill_(0, top, 1.0)     # 版54b
         dg = dg * (drive > 0).float()
 
         # ── 細胞体に入るもの（駆動する入力。撃たせる）──番号表の順に繋いで1回で作る

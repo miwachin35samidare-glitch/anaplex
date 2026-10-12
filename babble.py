@@ -26,7 +26,8 @@ import brainstem as BS
 from torch_brain import Brain, NAMES
 
 STATE = "state.pt"
-VERSION = 49          # コードの版。網の作りを変えたら上げる
+VERSION = 66          # コードの版。網の作りを変えたら上げる
+SAME_NET = (65,)   # 版57 で海馬の抑制の体の配線を引き直した ⇒ 版56 までの state.pt は読めない（版58 は自発の確率だけ）
 #   1  最初の torch 版
 #   2  周回のあいだも発火が伝わるように直した
 #   3  歯状回の閾値が、入力ゼロのとき全部通っていたのを直した
@@ -136,6 +137,30 @@ VERSION = 49          # コードの版。網の作りを変えたら上げる
 #      （【ヒト】Wilbers 2023・Lee・Dalley 2023。版46 の撃ち方。【み】10-02・10-03）
 #  49  語の指令を運動前野の送り手 115本（ノブ）の発火の数で入れる（1本 ＝ 人の繋がり1本。指令 35Hz・ふだん 3.3Hz【ヒト】）／
 #      口は発火を筋の形（【ヒト】Ito 2004 6.1Hz・ζ 0.69・15ms）でならした力 ≥ 0.20【C】で読む【み】10-03
+#  50  Group2 の履歴 tb を行と同じ並びで足す。版49 まで先頭の領野の誤差の行のほかは別の体の発火を履歴にしていた
+#      （Group2 にまとめたときのずれ【C】。1領野の Area は合っていた。【測】chk_tb 10-04）
+#  51  視床の中継の細胞が自分の領野の中から受ける興奮を 約6,400本 → 64本（ノブ【C】）【み選】10-05 B「疎にして残す」
+#      （【マカク】核の中の側枝は記録した中で1本 Wilson 1989 ／【ネコ】側枝の約2割が中継の細胞へ Bickford 2008）
+#  52  網の作りは変えない（版51 の state.pt を読める）。1歩を縮める（Group2 の待ち合わせ A・B、撃った辺の一覧 C）【み】10-07 ／
+#      脳の中の乱数を走らせるたびに OS の乱れから引き直す（種はログ。--seed N で再生）【み】10-07「脳ってそうだったか？」
+#  53  刈り方を細胞の撃ち具合で（ふだん 弱い興奮→興奮 ／ 静か 抑制→興奮 ／ 撃ちすぎ 弱い興奮→抑制）。辺の寿命 14日【ヒト神経】／
+#      恒常性の目標を人の起きているときの率に（皮質 3.30・抑制 4.70Hz、海馬・嗅内 3.1・5.1Hz）／ 起きているあいだは上げるだけ【ラット】・眠りは下げるだけ
+#      【測】measure_v52a・v52b（刈り込みの片道が下がりの大元）【み】10-08・10-09
+#  54  意味を変えずに1歩を縮める：周回の使い回し ／ 学びを触ったときにまとめる ／ 焼いた網を1歩1回（【み】10-10）
+#  54b 意味を変えずに CPU の待ちを減らす（印で選ぶ → 番号で選ぶ ほか。measure_sync 10-10）
+#  55  焼いた網を型ごとに焼き直したもの（皮質・視床・海馬・側坐核・上丘）に。床 0.121 → 0.003〜0.010【み】10-10
+#  56  海馬の時間細胞を調整する側に（予測に入り、撃たせない）。v55b で海馬の表現の 70〜99% を自分の時間細胞が撃たせていた【み】10-10
+#  57  海馬の抑制の体の興奮の相手 194 を錐体（遅れの列）から引く（194 の前提どおり）。版56 で抑制の体が止まった【み】10-10
+#  58  自発のくじを周ごとのまま1周ぶんの確率に（1周 ＝ 人のシナプス1本の遅れ）。前は届く自発が約10倍【み】10-10
+#  59  不応期 3周（【ヒト】Ison 2011：3ms 以内 0.10%）。履歴・時間細胞・返す発火・恒常性は「この歩のどこかで撃ったか」【み】10-10
+#  60  表現の体に f-I（撃ったあと 1/f(r) 待つ。【ヒト】Barzó・Szöts 2024 0.15Hz/pA・230pA）。自発は不応期だけ【み】10-11
+#  ⟲ 10-11 版60 の f-I を外して版59 に戻した（切片に電流を流した値の当てはめで、人の自然な反応の根拠が無い【み】）
+#  61  視床の中継細胞どうしの興奮を外す（RELAY_EXC 64 → 0、刈り込みでも生やさない）【マカク】Wilson 1989・Carandini 2007【み】10-11
+#  62  上丘の時間細胞を調整する側へ・抑制の体の相手を錐体から（海馬の版56・57 と同じ）。v59d で上丘の横の 98% が時間細胞【み】10-11
+#  63  周回の中で撃った抑制の体の発火も次の周で届ける（配線は版62 のまま）【ヒト】Szegedi 2017。v62b で運動の抑制が10周とも同じ【み】10-11
+#  64  運動の表現・誤差の抑制の相手を、抑制の体そのもの（1歩前の列）から 体の数 × 23% を1回ずつ【ヒト】Jiang 2012【み】10-11「Aで様子を見よう」
+#  65  聴覚も版64 と同じ抑制の相手に（INH_SLICE に聴覚）【み】10-11「まぁいいよ、やってみて」
+#  66  指令の写しが聴覚の抑制の体を撃たせる（配線は版65 のまま）【マーモセット】Eliades & Wang 2003【み】10-12「まぁアでいいよ」「人じゃなくて霊長類」
 N_MEL, N_SYL, LATENCY = 40, 8, 5
 DEV = "cuda"
 N_EAR = 40 * 10        # 【ヒト】ERB 40個 × 1チャネル10本の聴神経
@@ -201,9 +226,10 @@ def encode(mel):
 # ── 保存と再開 ──
 def save(b, done, path=STATE, log=None):
     g = b.g
+    g.flush_all()                          # 版54：学びの分を全部の辺へ足してから書く
     d = {"done": done, "version": VERSION, "log": log or [],
          "w": g.w, "e_recv": g.e_recv, "e_src": g.e_src, "e_inh": g.e_inh, "start": g.start,
-         "scale": g.scale, "drive": g.drive, "recv_ema": g.recv_ema, "rate_ema": g.rate_ema, "tb": g.tb,
+         "scale": g.scale, "drive": g.drive, "recv_ema": g.recv_ema, "rate_ema": g.rate_ema, "rate_long": g.rate_long, "scale_up": g.scale_up, "tb": g.tb,
          "bufs": g.bufs, "age": g.ch.age, "t": g.t,
          "up": b.up, "pred": b.pred, "ca3_prev": b.ca3_prev, "bs": b.bs.state_dict()}
     if g.stp is not None:
@@ -213,13 +239,54 @@ def save(b, done, path=STATE, log=None):
     os.replace(tmp, path)          # 書きかけで壊さない
 
 
+# 版52：脳の中の乱数を引き直す
+#   【み】10-07「とても致命的に見える　君たちでさえ毎回回答が変わるのに」
+#   配線は組み立てのときの seed=0 のまま（保存した重みと合わせる）。走らせるたびに、脳の中の雑音の並びを変える
+#   ⟲ 版51 まで、走らせ直すたびに脳の中の雑音が毎回同じ並びで始まっていた
+_OURS = ("torch_brain", "torch_group2", "torch_area", "midbrain", "brainstem", "sleep")
+
+
+def _generators(b):
+    """脳が持っている torch の乱数（重なりなし。見つけた順は毎回同じ）"""
+    gens, seen, todo = [], set(), [b]
+    while todo:
+        o = todo.pop(0)
+        if id(o) in seen:
+            continue
+        seen.add(id(o))
+        if isinstance(o, torch.Generator):
+            gens.append(o)
+        elif isinstance(o, (list, tuple)):
+            todo += list(o)
+        elif isinstance(o, dict):
+            todo += list(o.values())
+        elif type(o).__module__ in _OURS:
+            todo += list(vars(o).values())
+    return gens
+
+
+def reseed(b, argv=None):
+    """--seed N があればその種（同じ1日の再生。GPU の足し算の順も決める）。無ければ OS の乱れから。返り値は種"""
+    argv = sys.argv if argv is None else argv
+    if "--seed" in argv:
+        seed = int(argv[argv.index("--seed") + 1])
+        torch.use_deterministic_algorithms(True, warn_only=True)
+    else:
+        seed = int.from_bytes(os.urandom(4), "little")
+    gens = _generators(b)
+    for k, g in enumerate(gens):
+        g.manual_seed(seed + 7919 * k)
+    print(f"脳の中の乱数の種 {seed}（乱数 {len(gens)} 個）{'  再生：足し算の順を決めた' if '--seed' in argv else ''}", flush=True)
+    return seed
+
+
 def load(b, path=STATE):
     """返り値: (これまでの回数, 履歴)。版が違う state は読まない"""
     if not os.path.exists(path):
         return 0, []
     d = torch.load(path, map_location=DEV, weights_only=False)
     v = int(d.get("version", 0))
-    if v != VERSION:
+    if v != VERSION and v not in SAME_NET:
         raise SystemExit(
             f"⚠️ {path} は版 {v} で育てたもの。いまのコードは版 {VERSION}。\n"
             f"   網の作りが変わっているので、そのまま続けると歪んだ重みが残る。\n"
@@ -235,7 +302,10 @@ def load(b, path=STATE):
         setattr(g, k, d[k])
     if "rate_ema" in d:                    # 版20 から（それより前の state には無い）
         g.rate_ema = d["rate_ema"]
+    if "rate_long" in d:                   # 版53 から（それより前は目標から始める）
+        g.rate_long, g.scale_up = d["rate_long"], d["scale_up"]
     g.bufs, g.ch.age, g.t = d["bufs"], d["age"], d["t"]
+    g._prior_l, g._amp_buf, g._amp_prev = None, None, None   # 版54：読み込んだ tb・辺で作り直す
     b.up, b.pred, b.ca3_prev = d["up"], d["pred"], d["ca3_prev"]
     if "bs" in d:                          # 版38 から
         b.bs.load_state_dict(d["bs"])
@@ -345,6 +415,7 @@ def main():
     prior = T.Prior.load("prior_v1.npz", dev=DEV)
     b = Brain(prior, n_partner=9100, hippo_scale=20.0, n_ear=N_EAR, dev=DEV)
     done, log = (0, []) if fresh else load(b)
+    seed = reseed(b)                            # 版52
     print(f"体 {b.n_cells:,}  辺 {len(b.g.w):,}  これまで喃語 {done} 回（版 {VERSION}）", flush=True)
     for e in log[-5:]:
         print(f"  これまで: {e}", flush=True)
@@ -375,7 +446,7 @@ def main():
     print(f"VRAM  使った山 {torch.cuda.max_memory_allocated()/GB:.2f} GB"
           f" ／ 確保 {torch.cuda.memory_reserved()/GB:.2f} GB", flush=True)
     if n_add:
-        log.append(f"{datetime.now():%m-%d %H:%M} 喃語 {done}回（+{n_add}）"
+        log.append(f"{datetime.now():%m-%d %H:%M} 喃語 {done}回（+{n_add}）種 {seed}"
                    f" 相手{b.g.areas[0].n_partner} 周回{b.g.recur}"
                    f" 声={'作り物' if fake else 'VOICEVOX'}  supp {s:.2f}")
         save(b, done, log=log)

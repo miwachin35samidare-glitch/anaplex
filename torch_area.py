@@ -52,8 +52,11 @@ SYN_DELAY_MS = 1.102
 RECUR = max(1, int(round(DT_MS / SYN_DELAY_MS)))      # 1歩の中の周回（整理券）≒10
 TAUS = torch.tensor([1, 2, 4, 8, 16, 32, 64, 128], dtype=torch.float32)
 THETA = 0.5
-HUMAN_INPUT_PER_STEP = 135.0   # 【ヒト】毎歩 受けている入力の本数（30,000シナプス × 0.45%/歩）
-RATE_HUMAN = 0.0045             # 【ヒト】皮質の細胞が 1歩（10.67ms）に撃つ確率 0.45%（約 0.4Hz）
+# 【ヒト】起きている皮質の錐体 3.30 ± 2.52Hz（Verma 2024、覚醒・リップルの外、Utah II/III層、3人・437体）⇒ 1歩に 3.52%
+#   ⟲ 版52 までは 0.45%/歩。前の作りの 1.5Hz（【ラット・サル】）× 1歩 3ms が、1歩 10.67ms になっても残った数（約 0.42Hz）
+#     版45b（10-02【み】「間違ってるなら直して」）の直しが arkhe に入らないまま版が進んでいた（10-08 grep）。版53 で入れた
+RATE_HUMAN = 3.30 * DT_MS / 1000.0
+HUMAN_INPUT_PER_STEP = 30000 * RATE_HUMAN   # 毎歩 受けている入力の本数（30,000シナプス × RATE_HUMAN）。どこからも使っていない
 #   シナプススケーリングの目標。【ヒト】iPS 由来の皮質細胞で、活動電位を止めると興奮性シナプス全体が
 #   強まって活動が戻る（Cordella 2022）⇒ 感じているのは細胞自身の活動、動かすのはシナプスの強さ全体
 # ✗ G_FIRE 0.855 は使わない。コンダクタンスで動く素子の値（前の作り）で、このラインの素子
@@ -119,6 +122,23 @@ class STP:
         self.fac = torch.zeros(n_edge, device=dev)
         self.last = torch.zeros(n_edge, dtype=torch.int32, device=dev)
         self.gen = gen
+        self.grp_off = [off[k] for k in keys]          # 版53：生やした辺の行を引き直すため
+        self.grp_len = [len(d["行"][k]) for k in keys]
+
+    @torch.no_grad()
+    def redraw(self, idx, send_inh, recv_inh):
+        """版53：生やした辺の行を、新しい種類の組から引き直して状態を初めに戻す"""
+        grp = send_inh.long() * 2 + recv_inh.long()
+        for gi in range(4):
+            m = grp == gi
+            n = int(m.sum())
+            if n:
+                self.row[idx[m]] = (self.grp_off[gi] + torch.randint(0, self.grp_len[gi], (n,), device=idx.device,
+                                                                     generator=self.gen)).to(self.row.dtype)
+        dep = self.tbl[self.row[idx].long(), 1] < 0
+        self.deplete[idx] = dep
+        self.state[idx] = dep.float()
+        self.fac[idx] = 0.0
 
     @torch.no_grad()
     def release_at(self, e, t):
@@ -128,7 +148,7 @@ class STP:
         dep = self.deplete[e]
         self.state[e] = self.state[e] * torch.where(dep, torch.ones_like(n), self.dec_d[r] ** n)
         self.fac[e] = self.fac[e] * self.dec_f[r] ** n
-        self.last[e] = t
+        self.last.index_fill_(0, e, t)     # 版54b
         Pr0 = self.tbl[r, 0]
         P = (Pr0 + (1 - Pr0) * self.fac[e]).clamp(0, 1)
         N = self.N[r]
@@ -203,7 +223,7 @@ class Area:
                  inh_frac=0.16, stp_path=None, tau_scale=1.0, gate=True,
                  spont_hz=0.3, complete=False, motor=False, dev="cuda", seed=0,
                  w_int8=False, fire_th=1.0, x_gain=1.0, tgt_by_fire=False, contacts_exc=3.3,
-                 inh_n_exc=None):
+                 inh_n_exc=None, relay_exc=None, inh_exc_from_rep=False, inh_slice=None):
         g = torch.Generator(device=dev); g.manual_seed(seed)
         self.dev, self.gen, self.prior = dev, g, prior
         self.n_ch, self.n_ext, self.eta, self.homeo_tau = n_ch, n_ext, eta, homeo_tau
@@ -234,6 +254,18 @@ class Area:
         self.n_send = self.ch.n_cells + self.n_src * self.D
         self.n_recv = n_ch * 2 + self.n_inh
         n_partner = min(n_partner, self.n_send)
+        # 版51：視床の中継の細胞が自分の領野の中から受ける興奮の本数（relay_exc。ノブ【C】）。抑制性の相手の数は変えない
+        self.n_inh_partner_rows = int(round(n_partner * inh_frac))
+        if relay_exc is not None:
+            n_partner = self.n_inh_partner_rows + relay_exc
+        self.no_lat_exc = relay_exc == 0     # 版61：中継の表現・誤差の行は自分の領野の中から興奮を受けない
+        # 版64：表現・誤差の行の抑制の相手を、抑制の体の1歩前の列から重なりなしで（切片の見方）
+        self.inh_slice = inh_slice is not None
+        k_rep_inh = self.n_inh_partner_rows
+        if self.inh_slice:
+            k_rep_inh = max(1, int(round(self.n_inh * inh_slice)))
+            n_partner = k_rep_inh + (n_partner - self.n_inh_partner_rows)
+            self.n_inh_partner_rows = k_rep_inh
         self.n_partner = n_partner
         # 版47：抑制の体の相手は 興奮性 INH_N_EXC ＋ 抑制性（inh_frac を保つ）
         n_ie = INH_N_EXC if inh_n_exc is None else inh_n_exc
@@ -252,16 +284,28 @@ class Area:
         #      外からの入力が多い領野ほど薄まっていた（聴覚 2.8% ／ 高次 4.4% ／ CA3 2.4%）
         inh_pool = torch.nonzero(is_inh_send).squeeze(1)
         exc_pool = torch.nonzero(~is_inh_send).squeeze(1)
-        def pick(n_rows, k_all):
-            k_inh = int(round(k_all * inh_frac))
+        # 版57：海馬の抑制の体は 194 の前提（相手は錐体）どおり、遅れの列の興奮の行（時間細胞ではない）から引く
+        self.inh_exc_from_rep = inh_exc_from_rep
+        exc_pool_rep = exc_pool[exc_pool >= self.ch.n_cells]
+        def pick(n_rows, k_all, k_inh=None, pool=None):
+            pool = exc_pool if pool is None else pool
+            k_inh = int(round(k_all * inh_frac)) if k_inh is None else k_inh
             s = torch.empty((n_rows, k_all), dtype=torch.long, device=dev)
             s[:, :k_inh] = inh_pool[torch.randint(0, len(inh_pool), (n_rows, k_inh),
                                                   device=dev, generator=g)]
-            s[:, k_inh:] = exc_pool[torch.randint(0, len(exc_pool), (n_rows, k_all - k_inh),
+            s[:, k_inh:] = pool[torch.randint(0, len(pool), (n_rows, k_all - k_inh),
                                                   device=dev, generator=g)]
             return s.reshape(-1)
         # 表現・誤差は n_partner、抑制の体は n_pi（版47）
-        src = torch.cat([pick(n_ch * 2, n_partner), pick(self.n_inh, n_pi)])
+        src_rep = pick(n_ch * 2, n_partner, self.n_inh_partner_rows if (relay_exc is not None or self.inh_slice) else None)
+        if self.inh_slice:                         # 版64：抑制の分を、抑制の体の1歩前の列から重なりなしで引き直す
+            col0 = self.ch.n_cells + (n_ch + n_ext + torch.arange(self.n_inh, device=dev)) * self.D
+            sel = torch.rand((n_ch * 2, self.n_inh), device=dev, generator=g).argsort(1)[:, :k_rep_inh]
+            src_rep = src_rep.view(n_ch * 2, n_partner)
+            src_rep[:, :k_rep_inh] = col0[sel]
+            src_rep = src_rep.reshape(-1)
+        src = torch.cat([src_rep,
+                         pick(self.n_inh, n_pi, pool=(exc_pool_rep if inh_exc_from_rep else None))])
         recv = torch.cat([torch.arange(n_ch * 2, device=dev).repeat_interleave(n_partner),
                           (torch.arange(self.n_inh, device=dev) + n_ch * 2).repeat_interleave(n_pi)])
         o = torch.argsort(src)
