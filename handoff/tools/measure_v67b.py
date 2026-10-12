@@ -14,8 +14,8 @@ from torch_brain import Brain
 
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-if B.VERSION not in (67, 68, 69, 70, 71, 72):
-    sys.exit(f"⚠️ babble.py が版67〜72 ではない（版 {B.VERSION}）")
+if B.VERSION not in (67, 68, 69, 70, 71, 72, 73):
+    sys.exit(f"⚠️ babble.py が版67〜73 ではない（版 {B.VERSION}）")
 N = int(args[0]) if args else 10
 KS = [int(k) for k in args[1].split(",")] if len(args) > 1 else [115, 80, 60, 40, 30, 20, 10, 0]
 if len(args) > 2:                    # K_CL も上書きする（measure_v67d で定義どおりの K_CL が 40 と出たあと、K_PM をそれに合わせて探す）
