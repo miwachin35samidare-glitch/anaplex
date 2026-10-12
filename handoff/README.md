@@ -70,8 +70,9 @@ arkhe の版   66（版64 運動の抑制の相手を人の形に ／ 65 聴覚�
 ## 4 コードと道具
 
 ```
-⚠️ このリポジトリ直下の .py は版49（古い）。本物は arkhe の ~/anaplex（版66）。直下のコードを今の形として読まない
-  直下を版66 にしたいなら、みわが arkhe から上げる（上げるかは みわが決める）
+⚠️ 本物は arkhe の ~/anaplex（版66）
+  リポジトリ直下：babble・day・torch_area・torch_brain・torch_group2・prior_v2_*.npz は 10-12 14:29 に みわが arkhe から上げた（版66）
+  ほかの .py（brainstem・midbrain・mouth・sleep・voice・ear・config ほか）は 10-05 に上げたもの。食い違えば arkhe が正しい
 arkhe のファイルを直すときは tools/apply_vNN.py の形で渡す
   印（置き換える元の文字列）が1つでも 1個でなければ何も書かずに止まる ／ ast.parse してから write_text
   babble.py の VERSION を上げ、履歴の行に理由と出どころ（【み】の言葉・【ヒト】…）を書く
@@ -99,9 +100,11 @@ docs/設計案_自発.md              自発の発火を人の形に（上行の
 docs/設計案_脳幹.md              版38〜53 の設計の経緯
 docs/01_現在地_MMDDまで.md        前の現在地（経緯と測りの全文、【み】の言葉のまま）
 docs/デフォルメ版_*.md            09-11〜26 の記録・生物台帳・環境（経緯を見るときだけ）
-tools/                         apply_v52〜v67・測る道具（版52 から。版51 までの道具は claude.ai のプロジェクトにだけある）
+tools/                         apply_v52〜v67・測る道具（版52 から）
+archive/                       プロジェクトにだけあった古いもの（版51 までの道具・版45 のコードの写し・numpy の原本・12_追記_1004から.md）
+                               経緯を見るときだけ。中身は archive/README.md
 ```
 
-写していないもの（claude.ai のプロジェクトにだけある）：版51 までの道具（claude/道具_0926/ の古い分・measure/ の古い measure_*.py）、
-`claude/01_現在地_追記_1004.md` など移し終えた追記、09-22 以前の numpy の原本（根拠にしないもの）、prior_v1.npz（直下にある）。
+10-12 にプロジェクトの資料を整理した：handoff/ と同じもの・archive/ へ移したものはプロジェクトから消した。
+プロジェクトに残したのは claude/01_現在地.md・公開運用手順書.md・VOICEVOX話者_機械学習可否_20260802.md・claude-legacy-project-memory-AnaPlex.md・prior_v1.npz。
 過去スレッド（conversation_search で引いていたもの）は Claude Code からは引けない。要るときはみわに聞く。
