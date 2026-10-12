@@ -19,10 +19,10 @@ from torch_brain import Brain, NAMES
 
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-if B.VERSION not in (67,):
-    sys.exit(f"⚠️ babble.py が版67 ではない（版 {B.VERSION}）")
+if B.VERSION not in (67, 68):
+    sys.exit(f"⚠️ babble.py が版67・68 ではない（版 {B.VERSION}）")
 N = int(args[0]) if args else 20
-TB.K_PM = int(args[1]) if len(args) > 1 else 20
+TB.K_PM = int(args[1]) if len(args) > 1 else (20 if B.VERSION == 67 else TB.K_PM)   # 版68 は torch_brain の値（27）
 if TEST:
     B.DEV = "cpu"
 torch.manual_seed(0)
