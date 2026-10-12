@@ -1,5 +1,5 @@
 """版67：K_PM（運動前野の送り手の本数）を振って、運動の表現の体の率を測る（arkhe の ~/anaplex で。0から・学びながら・返し手あり・保存しない・網は書き換えない）
-  python3 measure_v67b.py [喃語の回数=10] [K_PM の並び=115,80,60,40,30,20,10,0]      （コンテナ：python3 measure_v67b.py 2 40,0 --test）
+  python3 measure_v67b.py [喃語の回数=10] [K_PM の並び=115,80,60,40,30,20,10,0] [K_CL=torch_brain の値]      （コンテナ：python3 measure_v67b.py 2 40,0 --test）
 【み】10-12「a」：的はそのまま（指令の体 35Hz・指令の無い体 3.3Hz）、K_PM を今の抑制（ihn 約0.12）と CL を入れた形で決め直す
   K_PM の定義（torch_brain の注）：指令の体が【ヒト】話すあいだの 35Hz で撃つ本数 ⇒ 指令の体の率が 1歩 37%（35 × 10.67ms）になる K を探す
 並べるもの（K ごとに同じ種から網を作り直す。1歩に1回でも撃てば撃った ＝ b.motor_rep）
@@ -18,6 +18,8 @@ if B.VERSION not in (67,):
     sys.exit(f"⚠️ babble.py が版67 ではない（版 {B.VERSION}）")
 N = int(args[0]) if args else 10
 KS = [int(k) for k in args[1].split(",")] if len(args) > 1 else [115, 80, 60, 40, 30, 20, 10, 0]
+if len(args) > 2:                    # K_CL も上書きする（measure_v67d で定義どおりの K_CL が 40 と出たあと、K_PM をそれに合わせて探す）
+    TB.K_CL = int(args[2])
 if TEST:
     B.DEV = "cpu"
 STEP_MS = 10.67
@@ -30,7 +32,7 @@ def hz(p):
     return p / STEP_MS * 1000.0      # 模型の換算（35Hz × 10.67ms ＝ 37%/歩）に合わせる
 
 
-print(f"的：指令の体 {ON_P:.1%}/歩（35Hz）・指令の無い体 {OFF_P:.1%}/歩（3.3Hz）")
+print(f"K_CL {TB.K_CL}   的：指令の体 {ON_P:.1%}/歩（35Hz）・指令の無い体 {OFF_P:.1%}/歩（3.3Hz）")
 print("  K_PM   指令の体          窓の指令の無い体   指令の無い歩       言えた")
 for K in KS:
     TB.K_PM = K
