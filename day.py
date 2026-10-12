@@ -12,6 +12,7 @@
   python3 day.py 3 --wake 400   1回の覚醒を400回にする
   python3 day.py 1 --sleep 8000 眠りを8000歩にする
   python3 day.py 0              回さずに測るだけ
+  python3 day.py 1 --seed 123   脳の中の乱数をその種で（同じ state から同じ1日を再生する。版52）
   ⚠️ 途中で止めても state.pt から続けられる
 """
 import sys
@@ -45,6 +46,7 @@ def main():
     prior = T.Prior.load("prior_v1.npz", dev=DEV)
     b = Brain(prior, n_partner=9100, hippo_scale=20.0, n_ear=B.N_EAR, dev=DEV)
     done, log = (0, []) if "--fresh" in sys.argv else B.load(b)
+    seed = B.reseed(b)                        # 版52：脳の中の乱数を走らせるたびに変える
     print(f"体 {b.n_cells:,}  辺 {len(b.g.w):,}  これまで喃語 {done} 回（版 {B.VERSION}）", flush=True)
     for e in log[-3:]:
         print(f"  これまで: {e}", flush=True)
@@ -86,7 +88,7 @@ def main():
         o2, r2, s2, ok2, tr2 = B.measure(b, say)
         print(f"  [{cyc+1}] 起きたあと 自分 {o2:.1%} ／ 録音 {r2:.1%}  supp {s2:.2f}  言えた {ok2}/{tr2}"
               f"  （眠る前 {s:.2f} → {s2:.2f}）", flush=True)
-        log.append(f"{time.strftime('%m-%d %H:%M')} 喃語 {done}回（+{n_wake}）"
+        log.append(f"{time.strftime('%m-%d %H:%M')} 喃語 {done}回（+{n_wake}）種 {seed}"
                    f" 眠り {b.bs.last_slept}/{ns}歩  疲れ {fat:.2f}  supp {s:.2f} → {s2:.2f}"
                    f" 声={'作り物' if fake else 'VOICEVOX'}")
         B.save(b, done, log=log)
