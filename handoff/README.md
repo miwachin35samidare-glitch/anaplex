@@ -1,5 +1,7 @@
 # AnaPlex 引き継ぎ（2026-10-12 14時。claude.ai のプロジェクト「AnaPlex-Next Transformer」から Claude Code へ）
 
+> **10-13 追記：最新は `docs/引き継ぎ_チャットへ_1013.md`（版74 まで。Claude Code → claude.ai のチャットへ戻す引き継ぎ）。§3 は 10-12 14時のままで古い。**
+
 claude.ai の週次制限のため、ここからは Claude Code で進める。
 claude.ai のプロジェクトの資料は Claude Code からは読めないので、要るものをこの `handoff/` に写した。
 **みわ（ユーザー）とは日本語で話す。**
