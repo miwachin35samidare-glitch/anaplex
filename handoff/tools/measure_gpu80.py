@@ -78,6 +78,9 @@ PATCH = [(G, "_run", run),
 orig = [(o, k, getattr(o, k)) for o, k, _ in PATCH]
 for o, k, f in PATCH:
     setattr(o, k, f)
+G2O = dict(G._G2_ORIG)              # 差し替えた関数も「元のまま」と見なさせる（でないと周ごとの形に戻ってしまう）
+for k in G._G2_ORIG:
+    G._G2_ORIG[k] = getattr(G.Group2, k)
 # _run は torch_group2 の中で名前で引くので、モジュールの値を差し替えれば効く（torch_area は呼ぶときに import する）
 with profile(activities=[ProfilerActivity.CPU] + ([ProfilerActivity.CUDA] if gpu else [])) as prof:
     t0 = time.time()
@@ -89,8 +92,11 @@ with profile(activities=[ProfilerActivity.CPU] + ([ProfilerActivity.CUDA] if gpu
     wall = (time.time() - t0) * 1000 / NS
 for o, k, f in orig:
     setattr(o, k, f)
+G._G2_ORIG.update(G2O)
 
-ka = {ev.key: ev for ev in prof.key_averages()}
+def is_k(ev):
+    return str(getattr(ev, "device_type", "")).endswith("CUDA")
+ka = {ev.key: ev for ev in prof.key_averages() if not is_k(ev)}     # 名札は CPU の側（その中で呼んだ核の GPU の時間の合計を持つ）
 def dev_t(ev):
     for nm in ("device_time_total", "cuda_time_total", "self_device_time_total"):
         v = getattr(ev, nm, None)
@@ -99,9 +105,9 @@ def dev_t(ev):
     return 0.0
 names = ["歩（全体）", "網（全体）", "2周目から（全体）", "歩の終わり", "時間細胞", "撃った辺を集める", "放出", "焼いた網",
          "下からの表 drive", "下からの表 learn", "刈り込み"] + sorted(k for k in ka if k.startswith("核 "))
-def is_k(ev):
-    return str(getattr(ev, "device_type", "")).endswith("CUDA")
-gpu_all = sum(ev.self_device_time_total for ev in prof.key_averages() if is_k(ev)) / 1000.0 if gpu else 0
+LAB = set(names)
+kern = [ev for ev in prof.key_averages() if is_k(ev) and ev.key not in LAB and not ev.key.startswith("核 ")]
+gpu_all = sum(ev.self_device_time_total for ev in kern) / 1000.0 if gpu else 0
 print(f"\n（名札を付けた分だけ少し遅い）1歩 {wall:.1f}ms" + (f" ／ GPU の核の合計 {gpu_all / NS:.2f}ms/歩" if gpu else ""), flush=True)
 print("\n1 場所ごと（1歩あたり）      GPU ms    CPU ms   回/歩", flush=True)
 for nm in names:
@@ -109,10 +115,10 @@ for nm in names:
     if ev is None:
         continue
     print(f"  {nm:<28} {dev_t(ev) / NS:8.2f}  {ev.cpu_time_total / 1000.0 / NS:8.2f}  {ev.count / NS:6.1f}", flush=True)
-print("  ⚠️ 2周目から（全体）の GPU は、グラフの中の核が数えられないことがある（下の『名札の外』に入る）", flush=True)
+print("  ⚠️ グラフの中の核は名札に入らないことがある（2周目から（全体）が小さく出る）。GPU の核の合計は全部入る", flush=True)
 if gpu:
     print("\n── 名札の外も含めた GPU の多い順（核の名前・1歩あたり）", flush=True)
-    rows = sorted((ev for ev in prof.key_averages() if is_k(ev) and ev.self_device_time_total > 0),
+    rows = sorted((ev for ev in kern if ev.self_device_time_total > 0),
                   key=lambda ev: -ev.self_device_time_total)[:15]
     for ev in rows:
         print(f"  {ev.self_device_time_total / 1000.0 / NS:7.2f}ms  {ev.count / NS:6.1f}回  {ev.key[:90]}", flush=True)
