@@ -24,6 +24,8 @@ def mem(tag):
         print(f"  {tag}（CPU）", flush=True)
         return
     torch.cuda.synchronize()
+    fr, to = torch.cuda.mem_get_info()
+    print(f"  {tag}：GPU から見た使用（ほかのプロセス・HIP の土台・核のコードも含む）{(to - fr) / GB:6.2f}GB", flush=True)
     print(f"  {tag}：使用 {torch.cuda.memory_allocated() / GB:6.2f}GB ／ 取り置き {torch.cuda.memory_reserved() / GB:6.2f}GB ／ "
           f"山 使用 {torch.cuda.max_memory_allocated() / GB:6.2f}GB・取り置き {torch.cuda.max_memory_reserved() / GB:6.2f}GB", flush=True)
 
