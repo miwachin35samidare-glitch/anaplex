@@ -13,6 +13,7 @@
   B 核を周回ごとに10回（1.1ms 刻み）
   それぞれ：そのまま ／ HIP グラフに撮って再生
   ⇒ 今の網（版92）の1歩と並べて、B の分を足すと実時間 10.67ms に入るか
+  版2：網だけ・＋A・＋B を 50歩ずつ交互にくり返して、差の中央と幅を出す（前の版は順に1回ずつで差を測れていなかった）
 """
 import sys, time, math, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T
@@ -154,10 +155,12 @@ def net(n, extra=None):
 
 
 net(60)
-base = net(NS)
-print(f"\n今の網（版 {B.VERSION}）1歩 {base:.2f}ms（歩ごとに待って測るので、ふだんの測りより少し遅い）", flush=True)
+# 版2（10-16 0時40分【み】「今のモデルの方は測ってないんじゃないのか？」）：
+#   前の版は 網だけ → ＋A → ＋B を1回ずつ順に測った ⇒ 後ほど速く出る（足したのに速い）。揺れ ±0.4ms が差より大きく、差を測れていなかった
+#   ⇒ 網だけ・＋A・＋B を 50歩ずつ交互に R 回まわし、組ごとの差の中央と幅を出す
+graphs = {"網だけ": None}
 if gpu:
-    for name, pp in (("A 1歩ごと", False), ("B 周回ごと", True)):
+    for name, pp in (("＋A 1歩ごと", False), ("＋B 周回ごと", True)):
         st = torch.cuda.Stream(); st.wait_stream(torch.cuda.current_stream())
         with torch.cuda.stream(st):
             run_step(pp)
@@ -165,5 +168,17 @@ if gpu:
         G = torch.cuda.CUDAGraph()
         with torch.cuda.graph(G):
             run_step(pp)
-        t = net(NS, G.replay)
-        print(f"  ＋ 核 {name}（グラフ）：1歩 {t:.2f}ms（+{t - base:.2f}）／ 実時間 10.67ms まで {10.67 - t:+.2f}ms", flush=True)
+        graphs[name] = G.replay
+R = max(1, NS // 50)
+rec = {k: [] for k in graphs}
+for r in range(R):
+    order = list(graphs) if r % 2 == 0 else list(graphs)[::-1]
+    for k in order:
+        rec[k].append(net(50, graphs[k]))
+base = np.array(rec["網だけ"])
+print(f"\n今の網（版 {B.VERSION}）1歩 中央 {np.median(base):.2f}ms（{base.min():.2f}〜{base.max():.2f}、50歩 × {R}回。歩ごとに待つので、ふだんの測りより少し遅い）", flush=True)
+for k in graphs:
+    if k == "網だけ":
+        continue
+    x = np.array(rec[k]); d = x - base
+    print(f"  {k}：1歩 中央 {np.median(x):.2f}ms ／ 網だけとの差 中央 {np.median(d):+.2f}ms（{d.min():+.2f}〜{d.max():+.2f}）／ 実時間まで {10.67 - np.median(x):+.2f}ms", flush=True)
