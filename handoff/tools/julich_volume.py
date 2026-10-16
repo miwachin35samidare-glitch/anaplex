@@ -1,16 +1,17 @@
 """Julich-Brain の最大確率地図で、領域の体積（mm³）を数える（arkhe で。網は使わない。何も書き換えない。地図は EBRAINS から取る）
   pip install siibra        （はじめに1回。入らなければ pip install --user siibra）
-  python3 julich_volume.py                 補足運動野（6mc）・前補足運動野（6ma）と、確かめ用の聴覚 Te1.0・1.1・1.2
+  python3 julich_volume.py                 補足運動野（6mp）・前補足運動野（6ma）と、確かめ用の聴覚 Te1.0・1.1・1.2
   python3 julich_volume.py 6m TE           名前に含む文字で探して数える（大文字小文字は問わない）
 【み】10-16 21:31「いいよ」（補足運動野の体数を、模型の皮質と同じやり方 ＝ Julich-Brain の最大確率地図の体積 × 人の密度 で出す）
 前に使った値（torch_brain.py）：Te1.0 1,822 ＋ Te1.1 2,687 ＋ Te1.2 1,408 ＝ 5,917mm³（左右込み、死後脳10体、1mm等方）
   ⇒ 同じ地図・同じ数え方なら Te1 が 5,917 前後に出る。出なければ版か座標が違う（数字はそのまま比べず、Te1 との比で使う）
+版2（10-16 21:35）：Julich v3.1 で補足運動野は「Area 6mp (SMA, mesial SFG)」（6mc ではなかった）
 ⚠️ Claude はこの道具を動かせていない（コンテナから EBRAINS に繋がらない）。siibra の版で呼び方が違うので、いくつかの呼び方を順に試す
 """
 import sys
 import numpy as np
 
-KEYS = [a for a in sys.argv[1:]] or ["6mc", "6ma", "TE 1.0", "TE 1.1", "TE 1.2"]
+KEYS = [a for a in sys.argv[1:]] or ["6mp", "6ma", "TE 1.0", "TE 1.1", "TE 1.2"]
 try:
     import siibra
 except ImportError:
@@ -82,7 +83,7 @@ for space in ("mni152", "colin27"):
     te1 = sum(v for n, v in tot.items() if "te 1." in n.lower())
     if te1:
         print(f"  ⇒ Te1（1.0＋1.1＋1.2、左右込み）{te1:,.0f}mm³（前に使った値 5,917）", flush=True)
-        for key, lab in (("6mc", "補足運動野 6mc"), ("6ma", "前補足運動野 6ma")):
+        for key, lab in (("6mp", "補足運動野 6mp"), ("6ma", "前補足運動野 6ma")):
             v = sum(x for n, x in tot.items() if key in n.lower())
             if v:
                 print(f"  ⇒ {lab}（左右込み）{v:,.0f}mm³ ／ Te1 の {v / te1:.2f}倍", flush=True)
