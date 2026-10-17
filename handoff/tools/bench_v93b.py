@@ -35,6 +35,8 @@ NIN = len(NUC) * N
 S_STR, S_CX = NIN, NIN + N_STR
 NSRC = NIN + N_STR + N_CX
 DMAX = 2
+import os
+KSUB = int(os.environ.get("KSUB", "0"))   # 調べ用（0 ＝ 線 A：全員から）
 
 
 def proj(frac, gen):
@@ -64,12 +66,16 @@ def build():
                     idx = S_STR + torch.randperm(N_STR, generator=gen)[:100]; d = 2
                 else:
                     idx = off[src] + senders[(src, rc)]; idx = idx[idx != r]; d = 1
+                    if KSUB:   # 調べ用：受け手ごとに別の一部 KSUB 体だけから
+                        idx = idx[torch.randperm(len(idx), generator=gen)[:KSUB]]
                 WI[d, r, idx] += (s / sh) / len(idx)
             # 興奮：視床下核から（外節・内節・網様部）／ 前頭前野から（視床下核）
             if rc == "視床下核":
                 idx = torch.arange(S_CX, S_CX + N_CX); d = 1
             else:
                 idx = off["視床下核"] + senders[("視床下核", rc)]; d = 1
+                if KSUB:
+                    idx = idx[torch.randperm(len(idx), generator=gen)[:KSUB]]
             WE[d, r, idx] += 1.0 / len(idx)
     return WE, WI
 
