@@ -30,9 +30,12 @@ NUC = {
     "視床下核": dict(R=19.3, CV=1.29, glu=1 - 0.16, gaba=1 + 0.26, both=1 + 0.26,
                  lines=[("外節", 54, 69.7, -1, 1.0), ("前頭前野", 946, 3.30, +1, 1.0)]),
 }
-TAUS = [5.0, 10.0, 20.0, 40.0, 80.0]
-GE = np.geomspace(0.02, 50.0, 14)
-GI = np.geomspace(0.02, 50.0, 14)
+import os
+COND = os.environ.get("COND") == "1"
+E_E, E_I = 4.0, -1.0
+TAUS = [float(x) for x in os.environ.get("TAUS", "5,10,20,40,80").split(",")]
+GE = np.geomspace(0.002, 50.0, 16) if COND else np.geomspace(0.02, 50.0, 14)
+GI = np.geomspace(0.002, 50.0, 16) if COND else np.geomspace(0.02, 50.0, 14)
 I0 = np.geomspace(1e-4, 0.6, 28)
 NC = 6                          # 1組あたりの細胞数
 
@@ -61,7 +64,10 @@ def run(lines, tau, ge, gi, i0, nstep=NSTEP):
     # 入力の平均は1周あたり（割合の和 1）× 率 × dt。g は「その平均が閾値の何倍か」の目盛りにしない（そのまま）
     for t in range(nstep):
         e = drive(lines, shape, +1); i = drive(lines, shape, -1)
-        v = v * a + i0 + ge * e - gi * i
+        if COND:   # 版2：入力を開く通り道の量として（逆転電位へ引く）。⚠️ 試しの換算：0 ＝ −60mV・1（閾値）＝ −45mV ⇒ 興奮 0mV ＝ 4・GABA −75mV ＝ −1
+            v = v * a + i0 + ge * e * (E_E - v) + gi * i * (E_I - v)
+        else:
+            v = v * a + i0 + ge * e - gi * i
         v = v.clamp(min=-5.0)
         f = v >= 1.0
         if f.any():
