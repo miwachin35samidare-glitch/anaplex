@@ -17,6 +17,9 @@
 """
 import numpy as np
 from scipy.optimize import least_squares
+import os
+TC_MAX = float(os.environ.get("TC_MAX", "3000"))   # 版2：跳ねの痕跡の上限（Harnett の Ca の像：500ms 前の跳ねは列とほとんど重ならない）
+ORDER = os.environ.get("ORDER") == "1"            # 版2：入力が来ていないときの跳ねだけが c を作る（Harnett「跳ねが入力に先立つと弱まる」）
 
 DT = 1.067
 DATA = [("跳ね 0ms", 0, -3), ("+200ms", 200, 3), ("+500ms", 500, 20), ("+1秒", 1000, 43),
@@ -44,7 +47,8 @@ def trial(p, t_burst):
         a *= ea; b *= eb; c *= ec
         if post[i]:
             dw += Ap * a * b
-            c += 1.0
+            if not ORDER or a < 0.05:
+                c += 1.0
         if pre[i]:
             dw -= Am * c + A0
             a += 1.0; b += 1.0
@@ -60,9 +64,9 @@ def main():
     best = None
     for ta0 in (30, 60, 120):
         for tb0 in (300, 800, 2000):
-            for tc0 in (200, 500):
+            for tc0 in [x for x in (100, 200, 500) if x < TC_MAX]:
                 x0 = [ta0, tb0, tc0, 1e-5, 5e-4, 1e-4]
-                r = least_squares(lambda p: model(p) - y, x0, bounds=([5, 50, 30, 0, 0, 0], [500, 10000, 3000, 1, 1, 1]),
+                r = least_squares(lambda p: model(p) - y, x0, bounds=([5, 50, 30, 0, 0, 0], [500, 10000, TC_MAX, 1, 1, 1]),
                                   x_scale=[50, 500, 300, 1e-5, 5e-4, 1e-4])
                 if best is None or r.cost < best.cost:
                     best = r
