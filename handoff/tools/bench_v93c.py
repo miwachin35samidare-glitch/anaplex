@@ -20,6 +20,9 @@ TAU = 40.0
 Q = 3.3
 TN = {"NR2A": 70.8 / Q, "NR2D": 4408.0 / Q}
 MIX = {"NR2A だけ": {"NR2A": 1.0}, "NR2D だけ": {"NR2D": 1.0}, "半々": {"NR2A": 0.5, "NR2D": 0.5}}
+KGS = float(os.environ.get("KGS", "0"))   # 版2：外節 → 視床下核の割合（0 ＝ 64体のときの数 54）
+if os.environ.get("ONLYHALF"):
+    MIX = {"半々": MIX["半々"]}
 torch.manual_seed(0); np.random.seed(0)
 
 # ---------- 1 開いた輪 ----------
@@ -119,7 +122,10 @@ def build():
                     idx = S_STR + torch.randperm(N_STR, generator=gen)[:100]; key = "I2"
                 else:
                     idx = off[src] + senders[(src, rc)]; idx = idx[idx != r]
-                    idx = idx[torch.randperm(len(idx), generator=gen)[:int(round(64 * P[(src, rc)]))]]; key = "I1"
+                    k = int(round(64 * P[(src, rc)]))
+                    if src == "外節" and rc == "視床下核" and KGS:   # 版2：外節 → 視床下核の割合を変える（A ラット 2% ／ C 振る）
+                        k = max(1, int(round(N * KGS)))
+                    idx = idx[torch.randperm(len(idx), generator=gen)[:k]]; key = "I1"
                 rows[key] += [(r, int(j), (s / sh) / len(idx)) for j in idx]
             if rc == "視床下核":
                 idx = torch.arange(S_CX, S_CX + N_CX)
