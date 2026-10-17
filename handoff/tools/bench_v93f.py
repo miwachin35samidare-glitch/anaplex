@@ -34,8 +34,18 @@ class Pop:
         return f.float()
 
 
-def chain(N, gL, gR, i0L, i0S, nstep, events=(), volley=(), B=1):
-    """B 回を並べて回す。返り値：各核の発火の平均（時刻ごと）"""
+K = 64   # 版2：受け手1体は送り手の別々の 64体から（256体の決めと同じ張り方。全員からだと受け手どうしがそろう）
+
+
+def pick(n_src, n_tgt, k, gen):
+    k = min(k, n_src)
+    return torch.stack([torch.randperm(n_src, generator=gen)[:k] for _ in range(n_tgt)])
+
+
+def chain(N, gL, gR, i0L, i0S, nstep, events=(), volley=(), B=1, seed=1):
+    """B 回を並べて回す。返り値：各核の発火の率（Hz、[B, 時刻]）"""
+    gen = torch.Generator().manual_seed(seed)
+    iL, iR, iS = pick(N, N, K, gen), pick(N, N, K, gen), pick(N, N, K, gen)
     L = Pop(N, i0L, (B,)); R = Pop(N, 0.0, (B,)); S = Pop(N, i0S, (B,))
     out = {"境": [], "外側手綱核": [], "吻内側被蓋核": [], "黒質": []}
     fL = torch.zeros(B, N); fR = torch.zeros(B, N)
@@ -43,46 +53,54 @@ def chain(N, gL, gR, i0L, i0S, nstep, events=(), volley=(), B=1):
     for t in range(nstep):
         boost = any(a <= t < b for a, b in events)
         g = (torch.rand(B, N) < p_g * (1.4 if boost else 1.0)).float()
-        eL = g.mean(1, keepdim=True).expand(B, N)                 # 境の全員から
+        eL = g[:, iL].mean(2)
         nL = L.step(eL, torch.zeros_like(eL), gL, 0.0)
         if t in volley:
             nL = torch.ones_like(nL)
-        eR = fL.mean(1, keepdim=True).expand(B, N)                 # 1周遅れで外側手綱核の全員から
+        eR = fL[:, iR].mean(2)                                   # 1周遅れ
         nR = R.step(eR, torch.zeros_like(eR), gR, 0.0)
         ex = (torch.distributions.Binomial(512, torch.full((B, N), 23.2 * DT / 1000)).sample()
               + torch.distributions.Binomial(64, torch.full((B, N), 19.3 * DT / 1000)).sample()
               + torch.distributions.Binomial(8, torch.full((B, N), 3.30 * DT / 1000)).sample()) / (512 + 64 + 8)
-        iS = fR.mean(1, keepdim=True).expand(B, N)
-        nS = S.step(ex, iS, 0.065, 2.0)
+        inS = fR[:, iS].mean(2)
+        nS = S.step(ex, inS, 0.065, 2.0)
         fL, fR = nL, nR
         for k, v in (("境", g), ("外側手綱核", nL), ("吻内側被蓋核", nR), ("黒質", nS)):
             out[k].append(v.mean(1))
-    return {k: torch.stack(v, 1) / (DT / 1000) for k, v in out.items()}     # [B, t] Hz
+    return {k: torch.stack(v, 1) / (DT / 1000) for k, v in out.items()}
 
 
 def fit_i0(N, gL, gR, i0L, i0S, it=8):
-    for _ in range(it):
-        o = chain(N, gL, gR, i0L, i0S, int(3000 / DT), B=4)
-        rL, rS = float(o["外側手綱核"].mean()), float(o["黒質"].mean())
-        i0L *= float(np.clip((30.0 / max(rL, 0.5)) ** 0.5, 0.6, 1.6))
-        i0S *= float(np.clip((4.56 / max(rS, 0.2)) ** 0.5, 0.6, 1.6))
-    return i0L, i0S, o
+    """外側手綱核 30Hz・黒質 4.56Hz に i0 を合わせる（二分法、1つずつ）"""
+    for which, tgt in (("外側手綱核", 30.0), ("黒質", 4.56)):
+        lo, hi = 0.0, 0.3
+        for _ in range(it):
+            mid = (lo + hi) / 2
+            a, b = (mid, i0S) if which == "外側手綱核" else (i0L, mid)
+            o = chain(N, gL, gR, a, b, int(2500 / DT), B=4)
+            r = float(o[which].mean())
+            lo, hi = (mid, hi) if r < tgt else (lo, mid)
+        if which == "外側手綱核":
+            i0L = (lo + hi) / 2
+        else:
+            i0S = (lo + hi) / 2
+    return i0L, i0S, chain(N, gL, gR, i0L, i0S, int(2500 / DT), B=4)
 
 
 def main():
-    N = 64
-    print("1 強さを合わせる（N 64）", flush=True)
+    N = 256
+    print("1 強さを合わせる（N 256・受け手1体は別々の 64体から）", flush=True)
     best = None
-    for gL in (0.5, 1.0, 2.0, 4.0, 8.0):
+    for gL in (0.25, 0.5, 1.0, 1.5, 2.0):
         i0L, i0S = 0.1, 0.058
         # 吻内側被蓋核の強さ：率 17.8Hz
         lo, hi = 0.1, 50.0
-        for _ in range(12):
+        for _ in range(9):
             gR = math.sqrt(lo * hi)
-            i0L, i0S, o = fit_i0(N, gL, gR, i0L, i0S, it=3)
+            i0L, i0S, o = fit_i0(N, gL, gR, i0L, i0S, it=5)
             rR = float(o["吻内側被蓋核"].mean())
             lo, hi = (gR, hi) if rR < 17.8 else (lo, gR)
-        i0L, i0S, o = fit_i0(N, gL, gR, i0L, i0S, it=6)
+        i0L, i0S, o = fit_i0(N, gL, gR, i0L, i0S, it=9)
         T = int(2000 / DT); ev = (int(1000 / DT), int(1150 / DT))
         o = chain(N, gL, gR, i0L, i0S, T, events=[ev], B=16)
         base = o["外側手綱核"][:, : ev[0]].mean(); up = o["外側手綱核"][:, ev[0]:ev[1]].mean()
