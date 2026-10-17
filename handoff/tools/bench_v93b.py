@@ -151,9 +151,16 @@ def main():
         nb = int(5 / DT)
         b = bins[: (len(bins) // nb) * nb].view(-1, nb).sum(1)
         fano = float(b.var() / b.mean().clamp(min=1e-9))
+        # 版2：隣どうしの相関（10ms ごとの数、ランダムな 300組の相関係数の平均）。核全体のファノは体数で大きくなるので、こちらで比べる
+        nb10 = int(round(10 / DT)); x = pop[:, sl]
+        x = x[: (len(x) // nb10) * nb10].view(-1, nb10, N).sum(1)
+        x = (x - x.mean(0)) / x.std(0).clamp(min=1e-9)
+        gg = torch.Generator().manual_seed(3)
+        i1 = torch.randint(0, N, (300,), generator=gg); i2 = (i1 + 1 + torch.randint(0, N - 1, (300,), generator=gg)) % N
+        rho = float((x[:, i1] * x[:, i2]).mean())
         ct = CVT[nm]
         print(f"  {nm:<6} {float(hz[sl].mean()):5.1f}Hz({R[nm]})  {float(cv[sl].mean()):.2f}({ct if ct else '-'})"
-              f"   {fano:6.2f}                {float(i0[sl].mean()):.4f}", flush=True)
+              f"   {fano:6.2f}  相関 {rho:.3f}       {float(i0[sl].mean()):.4f}", flush=True)
     # 8体だけ止める（局所に薬を入れた形）
     print("\n8体だけ止めたときの比（的：外節 0.43・2.16・1.10 ／ 視床下核 0.84・1.26・≒1.26）", flush=True)
     for nm in ("外節", "視床下核"):
