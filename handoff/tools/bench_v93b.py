@@ -20,7 +20,8 @@ TAU = float(sys.argv[1]) if len(sys.argv) > 1 else 20.0
 SEC = float(sys.argv[2]) if len(sys.argv) > 2 else 10.0
 DT = 1.067
 torch.manual_seed(0); np.random.seed(0)
-N = 64
+import os
+N = int(os.environ.get("NNUC", "64"))   # 版2：核の体数（10-17【み】「まぁやってみて」）
 NUC = ["外節", "視床下核", "内節", "網様部"]
 R = {"外節": 69.7, "視床下核": 19.3, "内節": 82.5, "網様部": 60.5}
 CVT = {"外節": 1.15, "視床下核": 1.29, "内節": 0.89, "網様部": None}
@@ -66,17 +67,20 @@ def build():
                     idx = S_STR + torch.randperm(N_STR, generator=gen)[:100]; d = 2
                 else:
                     idx = off[src] + senders[(src, rc)]; idx = idx[idx != r]; d = 1
-                    if KSUB:   # 調べ用：受け手ごとに別の一部 KSUB 体だけから
-                        idx = idx[torch.randperm(len(idx), generator=gen)[:KSUB]]
+                    k = KSUB or int(round(64 * P[(src, rc)]))   # 版2：別々の送り手の数は 64体のときと同じ（体数だけ増やす）
+                    idx = idx[torch.randperm(len(idx), generator=gen)[:k]]
                 WI[d, r, idx] += (s / sh) / len(idx)
             # 興奮：視床下核から（外節・内節・網様部）／ 前頭前野から（視床下核）
             if rc == "視床下核":
                 idx = torch.arange(S_CX, S_CX + N_CX); d = 1
             else:
                 idx = off["視床下核"] + senders[("視床下核", rc)]; d = 1
-                if KSUB:
-                    idx = idx[torch.randperm(len(idx), generator=gen)[:KSUB]]
+                k = KSUB or int(round(64 * P[("視床下核", rc)]))
+                idx = idx[torch.randperm(len(idx), generator=gen)[:k]]
             WE[d, r, idx] += 1.0 / len(idx)
+    # 版2：疎な行列に（体数を増やすため）
+    WE = [WE[d].to_sparse_csr() for d in range(DMAX + 1)]
+    WI = [WI[d].to_sparse_csr() for d in range(DMAX + 1)]
     return WE, WI
 
 
@@ -96,8 +100,8 @@ def run(WE, WI, ge, gi, i0, nstep, block=None, rec=False):
         if kind in ("gaba", "both"):
             gI[idx] = 0
     for t in range(nstep):
-        E = sum(WE[d] @ ring[d] for d in range(1, DMAX + 1))
-        I = sum(WI[d] @ ring[d] for d in range(1, DMAX + 1))
+        E = sum(torch.mv(WE[d], ring[d]) for d in range(1, DMAX + 1))
+        I = sum(torch.mv(WI[d], ring[d]) for d in range(1, DMAX + 1))
         v = (v * a + i0 + gE * E - gI * I).clamp(min=-5.0)
         f = v >= 1.0
         v = torch.where(f, torch.zeros_like(v), v)
