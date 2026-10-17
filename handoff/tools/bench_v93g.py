@@ -1,4 +1,4 @@
-"""版93 の試し台 その7：黒質の「撃ったあと戻る深さ」v_r を振り、ふだんの撃ち方と抑制1発の応えが両方合う形があるかを見る
+"""版93 の試し台 その7（版2）：黒質の「撃ったあと戻る深さ」v_r を振り、ふだんの撃ち方と抑制1発の応えが両方合う形があるかを見る
   python3 bench_v93g.py
   （網は使わない。何も書き換えない。CPU）
 【み】10-18 1:47「a」（調べる）⇒ 人・霊長類の仕組みの値は無い。霊長類で測れているのは外から見た形だけ：
@@ -8,6 +8,9 @@
   v_r が深いと、行き着く先を閾値より上に置いたまま、撃ったあとの静かな時間を作れる
 入力（bench_v93e と同じ）：興奮 PPN 512・視床下核 64・前頭前野 8（ポアソン）／ 抑制 吻内側被蓋核 64（17.8Hz）
 抑制1発：吻内側被蓋核の 64本が1周にそろって撃つ（受け手に g_i × 1）。外側手綱核の1発で吻内側被蓋核がそろって撃つ形の近似
+版2：版1 は率と CV に合う組がどれも g_i 2〜5（CV を吻内側被蓋核の揺れで作る）⇒ 1発で 60ms 以上全部止まる。そろって撃つ 1発も強すぎる
+  ⇒ g_i を小さく固定し、CV を興奮（PPN など）の揺れで作れるかを見る（g_e を 50 まで）
+  1発は bench_v93f の鎖で測った吻内側被蓋核の応え（外側手綱核の1発のあと 0〜10ms ふだんの 5.24倍・10〜20ms 0.81倍・20〜40ms 0.49倍）を率として入れる
 """
 import math, numpy as np, torch
 
@@ -21,8 +24,16 @@ def ex(sh):
     return sum(torch.distributions.Binomial(n, torch.full(sh, hz * DT / 1000)).sample() for n, hz in EXC) / NE
 
 
-def inh(sh):
-    return torch.distributions.Binomial(64, torch.full(sh, 17.8 * DT / 1000)).sample() / 64
+def inh(sh, k=1.0):
+    return torch.distributions.Binomial(64, torch.full(sh, 17.8 * k * DT / 1000)).sample() / 64
+
+
+def rmtg_gain(t, t0):
+    """bench_v93f の鎖で測った、外側手綱核の1発のあとの吻内側被蓋核の率（ふだんの何倍か）"""
+    if t0 is None or t < t0:
+        return 1.0
+    ms = (t - t0) * DT
+    return 5.24 if ms < 10 else 0.81 if ms < 20 else 0.49 if ms < 40 else 1.0
 
 
 def run(ge, gi, i0, vr, nstep, keep=False, volley=None):
@@ -31,9 +42,7 @@ def run(ge, gi, i0, vr, nstep, keep=False, volley=None):
     cnt = torch.zeros(sh); last = torch.full(sh, -1.0); s1 = torch.zeros(sh); s2 = torch.zeros(sh); ni = torch.zeros(sh)
     rec = []
     for t in range(nstep):
-        e = ex(sh); i = inh(sh)
-        if volley is not None and t in volley:
-            i = torch.ones(sh)
+        e = ex(sh); i = inh(sh, rmtg_gain(t, volley))
         S = S * AN + e * (1 - AN)
         v = (v * A + i0 + ge * (0.5 * e + 0.5 * S) - gi * i).clamp(min=-5.0)
         f = v >= 1.0
@@ -59,13 +68,13 @@ def half_recovery(sp):
 
 
 def main():
-    VR = [0.0, -0.5, -1.0, -2.0, -3.0, -5.0]
-    GE = np.geomspace(0.02, 2.0, 7); GI = np.r_[0.0, np.geomspace(0.05, 5.0, 7)]
+    VR = [0.0, -2.0, -5.0]
+    GE = np.geomspace(0.5, 50.0, 9); GI = np.array([0.02, 0.05, 0.1, 0.2, 0.5])
     print("1 ふだんに合わせる（率 4.56Hz・CV 0.61・半分戻るまで 106ms）", flush=True)
     finals = []
     for vr in VR:
         ge, gi = np.meshgrid(GE, GI, indexing="ij"); ge, gi = ge.ravel(), gi.ravel(); G = len(ge)
-        lo0 = (1 - A) * 0.5; I0 = np.geomspace(lo0, 0.3, 24); NC = 4
+        I0 = np.r_[0.0, np.geomspace(1e-4, 0.3, 27)]; NC = 4
         T3 = lambda x: torch.tensor(x).view(G, 1, 1).expand(G, len(I0), NC).float()
         z = torch.tensor(I0).view(1, -1, 1).expand(G, len(I0), NC).float()
         curve = run(T3(ge), T3(gi), z, torch.tensor(vr), int(4000 / DT))[0].mean(2).numpy()
@@ -73,13 +82,13 @@ def main():
         for k in range(G):
             c = np.maximum.accumulate(curve[k])
             if c[0] <= 4.56 <= c[-1]:
-                i0[k] = np.exp(np.interp(4.56, c, np.log(I0)))
+                i0[k] = np.interp(4.56, c, I0)
         ok = ~np.isnan(i0); g_e, g_i, i_0 = ge[ok], gi[ok], i0[ok]; G2 = len(g_e)
         T2 = lambda x: torch.tensor(x).view(G2, 1).expand(G2, 16).float()
         hz, cv, _ = run(T2(g_e), T2(g_i), T2(i_0), torch.tensor(vr), int(15000 / DT))
         hz, cv = hz.mean(1).numpy(), cv.mean(1).numpy()
         err = np.abs(hz - 4.56) / 4.56 + np.abs(cv - 0.61) / 0.61
-        order = np.argsort(err)[:4]
+        order = [k for k in np.argsort(err) if True][:6]
         for k in order:
             _, _, sp = run(torch.full((32,), g_e[k]), torch.full((32,), g_i[k]), torch.full((32,), i_0[k]), torch.tensor(vr), int(20000 / DT), keep=True)
             h = half_recovery(sp)
@@ -90,9 +99,7 @@ def main():
     print("\n2 抑制1発（吻内側被蓋核 64本がそろって撃つ）⇒ 黒質（Matsumoto 2007：10〜40ms 約0.4倍・50〜60ms で戻る）", flush=True)
     t0 = int(3000 / DT)
     for vr, ge, gi, i0, hz, cv, h, vinf in finals:
-        if gi == 0:
-            continue
-        _, _, sp = run(torch.full((4096,), ge), torch.full((4096,), gi), torch.full((4096,), i0), torch.tensor(vr), t0 + int(300 / DT), keep=True, volley={t0})
+        _, _, sp = run(torch.full((4096,), ge), torch.full((4096,), gi), torch.full((4096,), i0), torch.tensor(vr), t0 + int(300 / DT), keep=True, volley=t0)
         r = sp.float().mean(0); base = float(r[int(1000 / DT): t0].mean())
         w = lambda a, b: float(r[t0 + int(a / DT): t0 + int(b / DT)].mean()) / base
         print(f"  v_r {vr:5.1f}・g_i {gi:.3f}（CV {cv:.2f}・半分 {h:.0f}ms）：0〜10 {w(0, 10):.2f}・10〜40 {w(10, 40):.2f}・40〜50 {w(40, 50):.2f}・50〜60 {w(50, 60):.2f}・60〜100 {w(60, 100):.2f}・100〜200 {w(100, 200):.2f}", flush=True)
