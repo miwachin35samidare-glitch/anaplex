@@ -17,6 +17,8 @@
      g_S：外側手綱核をそろって1発で 10〜40ms 約0.4倍【マカク】Matsumoto 2007
 版2【み】10-18 14:56「合わせ直すなら今合わせる必要無くない？」⇒ 境の視床下核からの強さ ge_gph は仮に「視床下核を止めて 0.95 倍」【マカク】2022 Nat Commun（内節 変わらず）で。版95 で外節と一緒に合わせ直す
   0・1 の結果は1回目のものを使う（ENV FAST=1）
+版3【み】10-18 16:18「撃った周にちゃんと入力が入るのが正しいでしょ」⇒ PPN を核の仕組みへ（周ごとに撃つ。撃った周の次の周に黒質へ）
+  領野（前頭前野・側坐核）は1歩に1回しか計算しないので、周の情報が無い ⇒ 今のまま周の頭（残るそろいを測る）
 確かめ：1発の形 ／「来なかった」を 150ms 撃たせて境 +40% にしたときの外側手綱核・ドーパミン（サル 約5 → 約2Hz）
 """
 import math, sys, numpy as np, torch
@@ -25,7 +27,8 @@ import bench_v93c as C
 
 DT = 1.067; NP = 10; TAU = 40.0; A = math.exp(-DT / TAU)
 N = 256; K = 64
-EXT = {"表現": (946, 3.30), "来なかった": (64, 0.0), "側坐核の表現": (146, 2.1), "側坐核の誤差": (146, 0.0), "PPN": (512, 23.2)}
+EXT = {"表現": (946, 3.30), "来なかった": (64, 0.0), "側坐核の表現": (146, 2.1), "側坐核の誤差": (146, 0.0)}
+PPN_N, PPN_HZ = 512, 23.2   # 版3：周ごと
 # ⚠️ 側坐核の表現の率：線条体の棘細胞 2.1Hz【ヒト】Valsky 2020・Singh 2016 を代わりに（網の側坐核の率は網で決まる）
 TAILS = {"淡蒼球": [(21.0, 0.5), (1340.0, 0.5)], "手綱": [(22.0, 0.65), (137.0, 0.35)], "黒質": [(75.5, 1.0)]}
 torch.manual_seed(0)
@@ -100,13 +103,14 @@ class Mid:
             acc = {k: torch.zeros(B, N) for k in out}
             for p in range(NP):
                 f = self.f
+                ppn = self.ppn if hasattr(self, "ppn") else torch.zeros(B, PPN_N)
                 head = 1.0 if p == 0 else 0.0
                 e_stn = head * pfc[:, self.ix["表現→視"]].mean(2)
                 e_gph = f["視"][:, self.ix["視→境"]].mean(2); i_gph = head * nac[:, self.ix["側→境"]].mean(2)
                 e_lhb = f["境"][:, self.ix["境→手"]].mean(2)
                 e_rm = f["手"][:, self.ix["手→吻"]].mean(2)
                 nE = K + K + 8
-                e_sn = (head * ext["PPN"][:, self.ix["PPN→黒"]].sum(2) + f["視"][:, self.ix["視→黒"]].sum(2)
+                e_sn = (ppn[:, self.ix["PPN→黒"]].sum(2) + f["視"][:, self.ix["視→黒"]].sum(2)
                         + head * ext["表現"][:, self.ix["表現→黒"]].sum(2)) / nE
                 i_sn = f["吻"][:, self.ix["吻→黒"]].mean(2)
                 z = torch.zeros(B, N)
@@ -120,9 +124,12 @@ class Mid:
                 s_rm = self.rmtg.step(e_rm, z, P["g_R"], 0.0)
                 s_sn = self.sn.step(e_sn, i_sn, P["ge_sn"], P["g_S"])
                 self.f = {"視": s_stn, "境": s_gph, "手": s_lhb, "吻": s_rm, "黒": s_sn}
+                self.ppn = (torch.rand(B, PPN_N) < PPN_HZ * DT / 1000).float()   # 版3：この周に撃った PPN は次の周に届く
                 for k in out:
                     acc[k] += self.f[k]
-                if keep:
+                if keep == "all":
+                    sp.append(torch.stack([self.f[k] for k in out]))     # [核, B, N]
+                elif keep:
                     sp.append(s_sn)
             for k in out:
                 out[k].append(acc[k].mean(1))
@@ -161,8 +168,19 @@ def cv_half(sp):
     return (float(np.mean(cvs)) if cvs else float("nan")), half
 
 
+def phase(P):
+    m = Mid(P, 4); m.run(100); o = m.run(200, keep=True)
+    return o["発火"].reshape(4, N, 200, NP).sum((0, 1, 2)).tolist()
+
+
 def main():
     import os
+    if os.environ.get("PHASE"):
+        P = dict(f=0.4, ge_gp=4.056, gi_gp=12.055, ge_gph=0.07608, ge_stn=0.857, i0_stn=0.0337, i0_gph=0.06156, i0_lhb=0.01168,
+                 g_L=1.0, i0_rmtg=0.02699, g_R=0.2544, i0_sn=0.00878, ge_sn=0.9, g_S=0.15)
+        bisect(P, "i0_sn", "黒", 4.56, hi=0.1)
+        print("黒質 周ごとの発火（1歩の 10周の中の位置）:", [int(x) for x in phase(P)], f"i0 {P['i0_sn']:.5f}", flush=True)
+        return
     print("0 外節の g_e・g_i・NMDA の割合 f（試し台その3 の開いた輪、尾は半々）", flush=True)
     if os.environ.get("FAST"):
         ge_gp, gi_gp, f = 4.056, 12.055, 0.4                       # 1回目の結果
