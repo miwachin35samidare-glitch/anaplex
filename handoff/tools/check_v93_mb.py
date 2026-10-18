@@ -3,8 +3,8 @@
 見るもの：ふだんの率（的 視床下核の辺縁 19.3・境 33・外側手綱核 30・吻内側被蓋核 17.8・黒質 4.56Hz）／ 1歩の 10周の中のそろい ／ 門 ／ 重さの動き ／ 1歩の時間
 """
 import sys, time, torch
-sys.path.insert(0, "/tmp/t90"); sys.path.insert(0, ".")
-import midbrain as MB
+sys.path.insert(0, ".")
+import midbrain as MB          # 版93 を当てたあとの ~/anaplex で
 LEARN = "--nolearn" not in sys.argv
 SEC = float(sys.argv[1]) if len(sys.argv) > 1 else 20.0
 dev = "cuda" if torch.cuda.is_available() else "cpu"

@@ -27,8 +27,11 @@
 強さ（bench_v93h 版2・bench_v93f 版6 の値）⚠️ 領野の率は試し台の代わり（前頭前野 3.3Hz・側坐核 2.1Hz）で合わせた
   ⇒ 網の率が違えば核の率がずれる。check_v93.py で測る
 学び（興奮の線だけ。重さは 0〜W_MAX、初め 1）
-  黒質：Harnett 2009【ラット】の痕跡3本・決め B（跳ねの痕跡は入力の速い痕跡が小さいときの跳ねだけで作る）【み】10-17
-        SN_LTD_ORDER ＝ False で A の値・形に戻る（「何かあったときAを辿れるように」）
+  黒質：Harnett 2009【ラット】・決め B（跳ねの痕跡は入力の速い痕跡が小さいときの跳ねだけで作る）【み】10-17
+        版93 の形（bench_v93d2、11 条件）【み】10-18 17:13「A」：強まるのは跳ねの発火だけ（細胞のカルシウムの代わり z が θ を越えた発火）／
+        入力だけの弱まりは溜め u に入り、細胞が撃つと 0 に戻る（1発で弱まりが止まる）
+        ⟲ 10-17 の式（1発ごとに強まる・入力が来るたびに弱まる）は、ふだんの1発ずつの撃ちの中で重さが流れた（設計案 10-18 18:00）
+        SN_LTD_ORDER ＝ False で A の値に戻る（「何かあったときAを辿れるように」）
   ほかの核：決め A（送り手の痕跡があるうちに受け手が撃つと跡 ⇒（門 − 1）で強まる・弱まる）【み】10-16 ⚠️ 量 ETA_A・長さはノブ
 門（三つ目の因子）：黒質の率を 225ms でならして ÷ 4.56Hz（今のまま）【み】10-17 0:42。周の発火を1歩分たしてならす
 """
@@ -70,14 +73,17 @@ LINES = [
 DIV_FIX = {("黒質", +1): 136.0}
 
 SN_LTD_ORDER = True               # 決め B（False で A）
-HARNETT = {True: dict(ta=131.0, tb=10000.0, tc=284.0, Ap=2.99e-5 * 0.605, Am=2.96e-4, A0=9.34e-5),
-           False: dict(ta=161.0, tb=1321.0, tc=300.0, Ap=3.85e-5 * 0.64, Am=5.47e-5, A0=1.42e-4)}
+# 決め B（bench_v93d2、Harnett 11 条件・ずれ 1.4%。溜めの長さ τu は 200〜10,000ms で合いの差が小さく、ふだんの撃ちの中で漏れの少ない 10,000ms）。A₊ は生理的な Mg で 23/43 倍
+HARNETT = {True: dict(ta=127.0, tb=10000.0, tc=111.0, Ap=3.34e-5 * 23 / 43, Am=1.52e-3, A0=1.23e-4, tz=50.0, th=1.2, tu=10000.0),
+           False: dict(ta=161.0, tb=1321.0, tc=300.0, Ap=3.85e-5 * 0.64, Am=5.47e-5, A0=1.42e-4, tz=100.0, th=1.5, tu=500.0)}
+#   ⚠️ A（False）は 10-17 の 9点の値に、版93 の z・u の形を仮の値で付けたもの（辿る用）
 ORDER_A = 0.05
-ETA_A = 1e-3                      # ⚠️ ノブ
+ETA_A = 1e-5                      # ⚠️ ノブ（1e-4 でふだんの揺れだけで1分に ±5% さまよう【測】check_v93_mb、10-18）
 TAU_PRE_A = 20.0                  # ⚠️ ノブ（送り手の痕跡、ms）
 TAU_ELIG_A = 225.0                # ⚠️ ノブ（跡の長さ、ms。門のならしと同じ）
 W_MAX = 4.0
 DA_TAU = int(round(225.0 / DT_MS))   # 門のならし【ヒト】Zaghloul 2009
+I0_FILE = "midbrain_i0.json"     # calib_v93.py が書く（網の本当の入力で合わせ直した i0）。無ければ NUC の値
 
 
 class Midbrain:
@@ -139,18 +145,30 @@ class Midbrain:
             for lst, v in ((i0, c["i0"]), (f, c["f"]), (a1, math.exp(-DT / t1)), (m1, w1), (a2, math.exp(-DT / t2)), (m2, w2)):
                 lst.append(torch.full((n,), float(v), device=dev))
         self.i0, self.f, self.a1, self.m1, self.a2, self.m2 = (torch.cat(x) for x in (i0, f, a1, m1, a2, m2))
+        self.i0_used = {k: NUC[k]["i0"] for k in NAMES_MB}
+        try:                                                           # calib_v93.py が網の入力で合わせ直した i0（あれば）
+            import json, os
+            if os.path.exists(I0_FILE):
+                for k, v in json.load(open(I0_FILE))["i0"].items():
+                    self.i0[self.off[k]:self.off[k] + self.n[k]] = float(v); self.i0_used[k] = float(v)
+                print(f"中脳：{I0_FILE} の i0 を使う " + "・".join(f"{k} {v:.5f}" for k, v in self.i0_used.items()), flush=True)
+        except Exception as ex:
+            print(f"⚠️ {I0_FILE} を読めない（{ex}）。版93 の初めの i0 で", flush=True)
         self.v = torch.rand(self.NC, device=dev, generator=self.gen)
         self.S1 = torch.zeros(self.NC, device=dev); self.S2 = torch.zeros(self.NC, device=dev)
         self.prev = torch.zeros(self.NC, device=dev)
         self.carry = torch.zeros(self.NX - self.NC, device=dev)
         # 学びの痕跡（送り手ごと：X の長さ。線ごと：c・跡）
         h = HARNETT[SN_LTD_ORDER]
-        self.h = dict(h, ea=math.exp(-DT / h["ta"]), eb=math.exp(-DT / h["tb"]), ec=math.exp(-DT / h["tc"]))
+        self.h = dict(h, ea=math.exp(-DT / h["ta"]), eb=math.exp(-DT / h["tb"]), ec=math.exp(-DT / h["tc"]),
+                      ez=math.exp(-DT / h["tz"]), eu=math.exp(-DT / h["tu"]))
+        self.z = torch.zeros(self.NC, device=dev)                                             # 黒質の細胞のカルシウムの代わり
         self.e_pre = math.exp(-DT / TAU_PRE_A)
         self.e_elig = math.exp(-DT_MS / TAU_ELIG_A)
         self.ha = torch.zeros(self.NX, device=dev); self.hb = torch.zeros(self.NX, device=dev)   # 黒質の a・b
         self.pa = torch.zeros(self.NX, device=dev)                                            # 決め A の送り手の痕跡
         self.c = torch.zeros(len(self.iH), device=dev)
+        self.u = torch.zeros(len(self.iH), device=dev)                                        # 入力だけの弱まりの溜め
         self.elig = torch.zeros(len(self.iA), device=dev)
         self.tH, self.sH = self.tgt[self.iH], self.src[self.iH]
         self.tA, self.sA = self.tgt[self.iA], self.src[self.iA]
@@ -202,13 +220,18 @@ class Midbrain:
 
     def _learn_pass(self, X, new):
         h = self.h
-        if len(self.iH):                                               # 黒質（Harnett、bench_v93d と同じ順：減り → 跳ね → 入力）
+        if len(self.iH):                                               # 黒質（Harnett、bench_v93d2 と同じ順：減り → 跳ね → 入力）
             pre = X[self.sH]; post = new[self.tH]
             a, b = self.ha[self.sH], self.hb[self.sH]
             self.c.mul_(h["ec"])
-            dw = h["Ap"] * a * b * post
-            self.c += post * ((a < ORDER_A).float() if SN_LTD_ORDER else 1.0)
-            dw = dw - (h["Am"] * self.c + h["A0"]) * pre
+            self.z[self.sn] = self.z[self.sn] * h["ez"] + new[self.sn]
+            du = self.u * (1 - h["eu"]); self.u -= du
+            burst = post * (self.z[self.tH] > h["th"]).float()        # 跳ねの発火（1発では越えない）
+            dw = h["Ap"] * a * b * burst - du
+            self.c += burst * ((a < ORDER_A).float() if SN_LTD_ORDER else 1.0)
+            self.u *= (1 - post)                                       # 撃つと入力だけの弱まりは止まる
+            dw = dw - h["Am"] * self.c * pre
+            self.u += h["A0"] * pre
             self.w[self.iH] = (self.w[self.iH] + dw).clamp(0.0, W_MAX)
         if len(self.iA):                                               # 決め A：送り手の痕跡があるうちに受け手が撃つ ⇒ 跡
             self.elig += self.pa[self.sA] * new[self.tA]
