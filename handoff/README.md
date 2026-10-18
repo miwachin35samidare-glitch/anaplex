@@ -1,3 +1,5 @@
+> **2026-10-18 夜：次のスレッドは `docs/引き継ぎ_版93.md` から（版93 を arkhe で回した結果を受けて）**
+
 # AnaPlex 引き継ぎ（2026-10-12 14時。claude.ai のプロジェクト「AnaPlex-Next Transformer」から Claude Code へ）
 
 > **10-13 追記：最新は `docs/引き継ぎ_チャットへ_1013.md`（版74 まで。Claude Code → claude.ai のチャットへ戻す引き継ぎ）。§3 は 10-12 14時のままで古い。**
