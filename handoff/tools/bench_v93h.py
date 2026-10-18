@@ -236,7 +236,7 @@ def main():
     def volley(B=64):
         m = Mid(P, B); m.run(200)
         jit = torch.randint(0, 30, (B,))
-        o = m.run(80, volley=40, jit=jit)
+        o = m.run(110, volley=40, jit=jit)                         # ⟲ 80 だと jit の分だけ足りなかった
         s = torch.stack([o["黒"][b, jit[b]:jit[b] + 60] for b in range(B)])   # 歩の刻み（10.67ms）
         return s
     lo, hi = 0.01, 2.0
