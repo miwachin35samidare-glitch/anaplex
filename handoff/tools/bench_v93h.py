@@ -15,6 +15,8 @@
   黒質：v_r 0・← PPN（23.2Hz【ヒト】）・視床下核の辺縁・前頭前野 8本 興奮 ／ ← 吻内側被蓋核 抑制・NMDA 75.5ms
      g_e：率 4.56Hz・CV 0.61・半分戻るまで 106ms に一番近いもの（試し台その7 と同じ選び方。CV は見張る項目）
      g_S：外側手綱核をそろって1発で 10〜40ms 約0.4倍【マカク】Matsumoto 2007
+版2【み】10-18 14:56「合わせ直すなら今合わせる必要無くない？」⇒ 境の視床下核からの強さ ge_gph は仮に「視床下核を止めて 0.95 倍」【マカク】2022 Nat Commun（内節 変わらず）で。版95 で外節と一緒に合わせ直す
+  0・1 の結果は1回目のものを使う（ENV FAST=1）
 確かめ：1発の形 ／「来なかった」を 150ms 撃たせて境 +40% にしたときの外側手綱核・ドーパミン（サル 約5 → 約2Hz）
 """
 import math, sys, numpy as np, torch
@@ -109,7 +111,7 @@ class Mid:
                 i_sn = f["吻"][:, self.ix["吻→黒"]].mean(2)
                 z = torch.zeros(B, N)
                 s_stn = self.stn.step(e_stn, z, P["ge_stn"], 0.0, cut_e=(cut == "視グル"))
-                s_gph = self.gph.step(e_gph, i_gph, P["ge_gp"], P["gi_gp"])
+                s_gph = self.gph.step(e_gph, i_gph, P["ge_gph"], P["gi_gp"], cut_e=(cut == "境視"))
                 s_lhb = self.lhb.step(e_lhb, z, P["g_L"], 0.0)
                 if volley is not None and p == 0:
                     vm = (rel == volley)[:, None]
@@ -160,32 +162,45 @@ def cv_half(sp):
 
 
 def main():
+    import os
     print("0 外節の g_e・g_i・NMDA の割合 f（試し台その3 の開いた輪、尾は半々）", flush=True)
-    bg = C.fit("外節", C.MIX["半々"], int(3000 / DT))
-    _, ge_gp, gi_gp, _, f = bg
+    if os.environ.get("FAST"):
+        ge_gp, gi_gp, f = 4.056, 12.055, 0.4                       # 1回目の結果
+    else:
+        _, ge_gp, gi_gp, _, f = C.fit("外節", C.MIX["半々"], int(3000 / DT))
     print(f"  g_e {ge_gp:.3f}・g_i {gi_gp:.3f}・f {f}", flush=True)
-    P = dict(f=f, ge_gp=ge_gp, gi_gp=gi_gp, ge_stn=1.0, i0_stn=0.02, i0_gph=0.05, i0_lhb=0.0, g_L=1.0,
+    P = dict(f=f, ge_gp=ge_gp, gi_gp=gi_gp, ge_gph=ge_gp, ge_stn=1.0, i0_stn=0.02, i0_gph=0.05, i0_lhb=0.0, g_L=1.0,
              i0_rmtg=0.027, g_R=0.24, i0_sn=0.007, ge_sn=0.9, g_S=0.15)
 
     print("\n1 視床下核の辺縁：グルタミン酸を止めて −16%・率 19.3Hz", flush=True)
     best = None
-    for ge in (0.1, 0.3, 1.0, 3.0, 10.0):
+    if os.environ.get("FAST"):
+        P["ge_stn"], P["i0_stn"] = 0.857, 0.0337
+        print("  1回目の結果：g_e 0.857・i0 0.0337", flush=True)
+    for ge in (() if os.environ.get("FAST") else (0.1, 0.3, 1.0, 3.0, 10.0)):
         P["ge_stn"] = ge
         r = bisect(P, "i0_stn", "視", 19.3)
         rc = rate(P, "視", cut="視グル")
         print(f"  g_e {ge:5.1f}・i0 {P['i0_stn']:.4f} ⇒ {r:.1f}Hz ／ 止める {rc / r:.2f}（的 0.84）", flush=True)
         if best is None or abs(rc / r - 0.84) < abs(best[0] - 0.84):
             best = (rc / r, ge, P["i0_stn"])
-    _, P["ge_stn"], P["i0_stn"] = best
-    lo, hi = best[1] / 3, best[1] * 3
-    for _ in range(7):
+    if best:
+        _, P["ge_stn"], P["i0_stn"] = best
+        lo, hi = best[1] / 3, best[1] * 3
+    for _ in (() if os.environ.get("FAST") else range(7)):
         P["ge_stn"] = math.sqrt(lo * hi); r = bisect(P, "i0_stn", "視", 19.3); rc = rate(P, "視", cut="視グル") / r
         lo, hi = (P["ge_stn"], hi) if rc > 0.84 else (lo, P["ge_stn"])
-    print(f"  ⇒ g_e {P['ge_stn']:.3f}・i0 {P['i0_stn']:.4f}（止める {rc:.2f}）", flush=True)
+    if not os.environ.get("FAST"):
+        print(f"  ⇒ g_e {P['ge_stn']:.3f}・i0 {P['i0_stn']:.4f}（止める {rc:.2f}）", flush=True)
 
-    print("\n2 境：外節の強さ・率 33Hz", flush=True)
-    r = bisect(P, "i0_gph", "境", 33.0)
-    print(f"  i0 {P['i0_gph']:.4f} ⇒ {r:.1f}Hz", flush=True)
+    print("\n2 境：視床下核を止めて 0.95 倍（仮）・率 33Hz ／ 抑制は外節の g_i", flush=True)
+    lo, hi = 0.01, ge_gp
+    for _ in range(9):
+        P["ge_gph"] = math.sqrt(lo * hi)
+        r = bisect(P, "i0_gph", "境", 33.0)
+        rc = rate(P, "境", cut="境視") / r
+        print(f"  g_e {P['ge_gph']:.3f}・i0 {P['i0_gph']:.4f} ⇒ {r:.1f}Hz ／ 止める {rc:.2f}", flush=True)
+        lo, hi = (P["ge_gph"], hi) if rc > 0.95 else (lo, P["ge_gph"])
 
     print("\n3 外側手綱核：率 30Hz（i0 ≥ 0）・境 +40% ⇒ +60% に近い g_L", flush=True)
     # 境 +40% を作る「来なかった」の率を先に探す（g_L に関係しない）
