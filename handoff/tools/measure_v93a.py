@@ -90,7 +90,7 @@ def report():
               "入る Hz：" + "・".join(S["srcs"]) + " ／ 黒質の重さ：PPN・視床下核・前頭前野・上丘（最大）／ ほかの重さ："
               + "・".join(nm for nm, _ in S["ag"]), flush=True)
     order = ("黒質", "視床下核", "境", "外側手綱核", "吻内側被蓋核")
-    names = list(mb.n)
+    names = [k for k, _, _ in mb.seg]          # rate_sum は核の並び（NAMES_MB）。⟲ 10-18 の初版は mb.n の並びで読んで列がずれていた
     print(f"   中脳 {S['cyc']:3d}  歩 {n:4d}  門 {float(S['gsum'])/n:5.2f}・{float(S['gmax']):5.2f}・{float(S['g2'])/n:5.1%}  ／ "
           + " ".join(f"{hz[names.index(k)]:5.1f}" for k in order) + "  ／ "
           + " ".join(f"{v:5.2f}" for v in inp) + "  ／ "
