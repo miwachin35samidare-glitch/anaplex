@@ -1,4 +1,4 @@
-"""版93 の試し台 その6（版5）：中脳の鎖（境 → 外側手綱核 → 吻内側被蓋核 → 黒質）の強さを霊長類の応えに合わせ、動く最低数を測り直す
+"""版93 の試し台 その6（版6）：中脳の鎖（境 → 外側手綱核 → 吻内側被蓋核 → 黒質）の強さを霊長類の応えに合わせ、動く最低数を測り直す
   python3 bench_v93f.py
   （網は使わない。何も書き換えない。CPU）
 【み】10-18 0:17「調べて」→ 0:20・0:22 の PDF で値（設計案_基底核と小脳 10-18 0:20〜）
@@ -21,6 +21,8 @@
 版5【み】10-18 9:36「Aでいいよ」：黒質は v_r ＝ 0 のまま、g_e 0.889（bench_v93g 版2：興奮の揺れで撃つ。0.065 だと閾値すれすれ）
      g_S は Matsumoto の1発に合わせる。CV（0.27〜0.40 の見込み）は版95 まで見張る項目
      合図・1発の時刻を回ごとに 0〜300ms ずらす（黒質は規則的に撃つので、そろったまま回ごとに同じ揺れが残るため）
+版6【み】10-18 11:20「a」：吻内側被蓋核の全部の細胞に i0（外側手綱核が無いとき 6.7Hz【ラット】Matsui 博士論文、切片 35℃）
+     ⇒ i0 を先に g_R ＝ 0 で 6.7Hz に合わせ、そのあと g_R をふだん 17.8Hz に合わせる
 確かめ（合わせない）
   1 外側手綱核をそろって1発 ⇒ ドーパミン 10〜40ms で 約6割減・50〜60ms で戻る（Matsumoto 2007）
   2 境 +40%（150ms）⇒ ドーパミンが下がるか（大きさ・遅れ）
@@ -57,6 +59,9 @@ def pick(n_src, n_tgt, k, gen):
     return torch.stack([torch.randperm(n_src, generator=gen)[:k] for _ in range(n_tgt)])
 
 
+I0R = 0.0   # 版6：吻内側被蓋核の i0（main で合わせる）
+
+
 def chain(N, gL, gR, i0L, i0S, nstep, events=(), volley=(), B=1, seed=1, gS=2.0, spikes=False):
     """B 回を並べて回す。返り値：各核の発火の率（Hz、[B, 時刻]）"""
     W = WARM
@@ -64,7 +69,7 @@ def chain(N, gL, gR, i0L, i0S, nstep, events=(), volley=(), B=1, seed=1, gS=2.0,
     off = torch.randint(0, JIT, (B,), generator=gen)              # 版5：回ごとのずれ
     start = W + off; total = nstep + W + JIT
     iL, iR, iS = pick(N, N, K, gen), pick(N, N, K, gen), pick(N, N, K, gen)
-    L = Pop(N, i0L, (B,)); R = Pop(N, 0.0, (B,)); S = Pop(N, i0S, (B,))
+    L = Pop(N, i0L, (B,)); R = Pop(N, I0R, (B,)); S = Pop(N, i0S, (B,))
     out = {"境": [], "外側手綱核": [], "吻内側被蓋核": [], "黒質": []}
     fL = torch.zeros(B, N); fR = torch.zeros(B, N)
     p_g = 33.0 * DT / 1000
@@ -158,7 +163,15 @@ def main():
                 best = (resp, g)
         gL = best[1]
     i0L, _, _ = fit_i0(N, gL, 1.0, i0L, i0S, only="外側手綱核")
-    lo, hi = 0.1, 50.0                                           # 吻内側被蓋核の強さ：率 17.8Hz
+    global I0R                                                   # 版6：吻内側被蓋核の i0：外側手綱核なし（g_R ＝ 0）で 6.7Hz
+    lo, hi = 0.0, 0.3
+    for _ in range(14):
+        I0R = (lo + hi) / 2
+        rr = float(chain(N, gL, 0.0, i0L, i0S, int(2500 / DT), B=4)["吻内側被蓋核"].mean())
+        lo, hi = (I0R, hi) if rr < 6.7 else (lo, I0R)
+    I0R = (lo + hi) / 2
+    print(f"  吻内側被蓋核 i0 {I0R:.5f}（外側手綱核なしで {rr:.1f}Hz）", flush=True)
+    lo, hi = 0.01, 50.0                                           # 吻内側被蓋核の強さ：率 17.8Hz
     for _ in range(12):
         gR = math.sqrt(lo * hi)
         o = chain(N, gL, gR, i0L, i0S, int(2500 / DT), B=4)
