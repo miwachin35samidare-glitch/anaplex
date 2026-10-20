@@ -106,6 +106,8 @@ class Teacher:
             else:
                 self.hz_ext[a:a + n] = hz
 
+    pois = {}
+
     def sl(self, k):
         return slice(self.off[k], self.off[k] + N)
 
@@ -145,6 +147,8 @@ class Teacher:
                         i0[self.sl(k)] += val
             v = (v * ALPHA + i0 + x - I * wi).clamp(min=-5.0)
             fr = v >= 1.0
+            for k_, hz_ in self.pois.items():                       # 版3：切り分け用（核の発火を同じ率のポアソンに差し替える）
+                fr[self.sl(k_)] = torch.rand(N) < hz_ * DT / 1000
             if fire_now is not None:
                 fr[fire_now] = True
             v = torch.where(fr, torch.zeros_like(v), v)
