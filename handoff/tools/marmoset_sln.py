@@ -40,12 +40,13 @@ for a, ks in by_area.items():
             print(f"  ⚠️ {k} が読めない：{e}")
             continue
         loc = collections.defaultdict(lambda: [0, 0])
-        rd = csv.reader(io.StringIO(txt.lstrip("\ufeff")))
+        body = "\n".join(l for l in txt.lstrip("\ufeff").splitlines() if not l.lstrip().startswith("#"))   # 頭の説明（#）を飛ばす
+        rd = csv.reader(io.StringIO(body))
         head = [h.strip().lower() for h in next(rd, [])]
         cs = [i for i, h in enumerate(head) if h == "source"]
         kl = [i for i, h in enumerate(head) if "laminar" in h]
         if not cs or not kl:                                  # 表の形が違う ⇒ ヘッダーを出して飛ばす
-            print(f"  ⚠️ {k} の表の形が違う（飛ばす）：{head[:10]} ／ 1行目 {txt.splitlines()[1][:120] if len(txt.splitlines()) > 1 else ''}")
+            print(f"  ⚠️ {k} の表の形が違う（飛ばす）：{head[:10]} ／ 1行目 {body.splitlines()[1][:120] if len(body.splitlines()) > 1 else ''}")
             continue
         for r_ in rd:
             if len(r_) <= max(cs[0], kl[0]):
