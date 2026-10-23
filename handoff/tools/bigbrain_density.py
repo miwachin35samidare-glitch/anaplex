@@ -14,7 +14,8 @@
 区画（HCP-MMP1）：補足 6mp ／ 前補足 6ma ／ SCEF ／ 一次運動 4 ／ 運動前 6d・6a・6v・6r ／ 前頭前野 8BL・8Ad・9-46d・46・p9-46v ／ 44 ／ 確かめ V1・V2・V4・A1・MBelt・LBelt・PBelt
 """
 import sys, glob, os, re
-import numpy as np
+import numpy as np, warnings
+warnings.filterwarnings("ignore")
 import nibabel as nib
 
 root = sys.argv[1] if len(sys.argv) > 1 else "BBW_BigData"
@@ -31,11 +32,12 @@ def pick(*pats, must=("fs_LR",)):
 print(f"展開した所：{root}（ファイル {len(files)}）")
 need = {}
 for h in ("L", "R"):
-    need[("prof", h)] = pick("profiles", f"hemi-{h}")
+    need[("prof", h)] = pick("profiles", f"hemi-{h}") or pick("profiles")       # 版2：左右で1つのファイル（L の後に R）
     for k in range(1, 7):
         need[(f"l{k}", h)] = pick(f"layer{k}", "thick", f"hemi-{h}")
     need[("g1", h)] = pick("Hist-G1", f"hemi-{h}") or pick("Hist_G1", f"hemi-{h}") or pick("G1", "hist", f"hemi-{h}")
-miss = [k for k, v in need.items() if not v and k[0] != "g1"]
+miss = [k for k, v in need.items() if not v and k[0] == "prof"]   # 版2：層の厚さは無くてもよい（全体の濃さだけ使う）
+HAS_TH = all(need[(f"l{k}", h)] for k in range(1, 7) for h in ("L", "R"))
 for k, v in need.items():
     print(f"  {k}: {os.path.basename(v[0]) if v else '― 見つからない'}{'' if len(v) < 2 else f'（ほか {len(v) - 1}）'}")
 if miss:
@@ -76,18 +78,32 @@ res = {}
 for h in ("L", "R"):
     lab, names = labels(h)
     nv = len(lab)
-    prof = load_vec(need[("prof", h)][0])
-    if prof.size % nv:
-        sys.exit(f"⚠️ profiles の長さ {prof.size} が頂点 {nv} で割れない")
-    nd = prof.size // nv
-    P = prof.reshape(nd, nv)
+    if "_prof" not in globals():
+        _prof = load_vec(need[("prof", h)][0])
+    prof = _prof
+    nvL = len(labels("L")[0]); nvR = len(labels("R")[0])
+    if not need[("prof", h)][0].count(f"hemi-{h}"):                  # 左右で1つ ⇒ 50 段 × (L ＋ R)
+        if prof.size % (nvL + nvR):
+            sys.exit(f"⚠️ profiles の長さ {prof.size} が頂点 {nvL}＋{nvR} で割れない")
+        nd = prof.size // (nvL + nvR)
+        PP = prof.reshape(nd, nvL + nvR)
+        P = PP[:, :nvL] if h == "L" else PP[:, nvL:]
+        print(f"  profiles は左右で1つ：{nd} 段 × {nvL}＋{nvR}（⚠️ 並びは L の後に R と見た）")
+    else:
+        if prof.size % nv:
+            sys.exit(f"⚠️ profiles の長さ {prof.size} が頂点 {nv} で割れない")
+        nd = prof.size // nv
+        P = prof.reshape(nd, nv)
     if nd != 50:
         print(f"  ⚠️ 深さの段が {nd}（50 のはず）")
-    th = np.stack([load_vec(need[(f"l{k}", h)][0]) for k in range(1, 7)])        # [6, nv]
-    tot = th.sum(0)
-    tot[tot <= 0] = np.nan
-    b_sup = (th[0] + th[1] + th[2]) / tot                                         # 層3の下 ＝ 浅い層の終わり（深さの割合）
-    b_inf = (th[0] + th[1] + th[2] + th[3]) / tot                                 # 層4の下 ＝ 深い層の始まり
+    if HAS_TH:
+        th = np.stack([load_vec(need[(f"l{k}", h)][0]) for k in range(1, 7)])        # [6, nv]
+        tot = th.sum(0)
+        tot[tot <= 0] = np.nan
+        b_sup = (th[0] + th[1] + th[2]) / tot                                         # 層3の下 ＝ 浅い層の終わり（深さの割合）
+        b_inf = (th[0] + th[1] + th[2] + th[3]) / tot                                 # 層4の下 ＝ 深い層の始まり
+    else:                                                                             # 版2：層の厚さが無い ⇒ 浅・深は出さない
+        b_sup = np.full(nv, -1.0); b_inf = np.full(nv, 2.0)
     # 深さの向き：表の1段目が軟膜か白質か ⇒ 層1（細胞が少ない）は薄い ⇒ 両端の濃さの低い方を軟膜と見る【C】
     top_first = np.nanmean(P[: nd // 10]) < np.nanmean(P[-nd // 10:])
     if not top_first:
