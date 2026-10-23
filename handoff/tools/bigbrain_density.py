@@ -52,8 +52,9 @@ def load_vec(path):
     if path.endswith(".gii"):
         g = nib.load(path)
         return np.concatenate([d.data.ravel() for d in g.darrays]).astype(float)
-    if path.endswith((".txt", ".csv")):
-        return np.loadtxt(path, delimiter="," if path.endswith(".csv") else None).ravel().astype(float)
+    if path.endswith((".txt", ".csv")):                    # 版3：カンマでも空白でも
+        with open(path) as f:
+            return np.array(f.read().replace(",", " ").split(), dtype=float)
     if path.endswith(".npy"):
         return np.load(path).ravel().astype(float)
     try:
