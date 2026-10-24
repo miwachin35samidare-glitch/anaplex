@@ -1,4 +1,5 @@
-> **2026-10-24：版97 を組んだ（docs/引き継ぎ_版93.md §41・docs/設計案_版97_続けて流す.md）。arkhe は版96 ⇒ apply_v97.py → measure_life97.py。次は小脳**
+> **2026-10-25：資料をまとめ直した。入口は docs/00_入口.md（読む順）→ docs/01_現在地.md。前の資料は docs/archive/docs_1025/（経緯だけ。根拠にしない）。arkhe は版96。版97 は当てていない（直してから渡す）**
+> ⚠️ 下の §0〜§5 は 10-12 の引き継ぎのまま古い。決まりは docs/00_入口.md、現在地は docs/01_現在地.md を見る
 
 # AnaPlex 引き継ぎ（2026-10-12 14時。claude.ai のプロジェクト「AnaPlex-Next Transformer」から Claude Code へ）
 
