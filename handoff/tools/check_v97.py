@@ -5,8 +5,8 @@
   2 耳の音の重ね方：重なった歩は強さ（パワ−）の和
   3 口：運動の領野が1つのモーラの型で撃ち続けると、力が越えた歩でそのモーラを読み、声を鳴らす（鳴っている間は読まず、鳴り終われば又読む）
   4 返し手：口が出した声に返す（合図の外の声＝自発にも）・遅れは声の終わりから
-  5 続けて流す：合図（足場）が入り、補助輪の指令が声の CMD_LEAD 歩前から入る・網が回る（合図の間を短くして）
-  6 健診：自分・録音・返し手の誤差が出る（録音は2回以上前）
+  5 続けて流す：番の並びは版96 までのまま（言う番・黙る番）。合図と補助輪の指令は言う番の中だけ・学ぶ暮らしに録音は無い
+  6 健診：学びは止めない・10番ごとに録音3つ（2回以上前）・録音の番に指令は入らない
 """
 import sys, numpy as np, torch
 sys.path.insert(0, ".")
@@ -77,30 +77,72 @@ while got is None and n_try < 50:
     n_try += 1
 chk(got is not None and got[0] == got[1], f"返し手は声（後ろの静けさ込み）の終わりから遅れを数える（{got}）")
 
-print("5 続けて流す", flush=True)
-L.CUE_MEAN = 60.0                                    # ⚠️ 確かめだけ：合図の間を短く（人は約 1,250歩）
-life2 = B.life_of(b, True, np.random.default_rng(3), np.random.default_rng(4))
-seen_cmd, cue_seen, steps = 0, 0, 0
-orig = b.step
+print("5 続けて流す（版96 までの番の並び。番の決まりだけを見るので網は作り物：b.step を呼んだ記録を取る）", flush=True)
 
 
-def spy(ear, cmd, eye=None, learn=True):
-    global seen_cmd, cue_seen
-    seen_cmd += int(float(cmd.sum()) > 0)
-    cue_seen += int(b.cue_t is not None)
-    return orig(ear, cmd, eye=eye, learn=learn)
+class StubBrain:
+    """網の代わり（番・合図・指令・学びの引数だけを記録）。口は撃たないので声は出ない ⇒ 声は _speak で入れる"""
+
+    def __init__(self, n):
+        self.motor_rep = torch.zeros(n); self.cue_t = None; self.log = []
+
+    def go(self):
+        self.cue_t = 0
+
+    def step(self, ear, cmd, eye=None, learn=True):
+        self.log.append((self.L.turn["kind"], float(cmd.sum()) > 0, self.cue_t is not None, learn))
+        if self.cue_t is not None:
+            self.cue_t += 1
+            if self.cue_t > 94:
+                self.cue_t = None
+        return None, torch.zeros(4), None, None
 
 
-b.step = spy
-life2.run_plans(2, learn=True)
-b.step = orig
-st = life2.stats
-chk(st["plans"] >= 2 and seen_cmd > 0 and cue_seen > 0, f"{life2.t}歩・合図 {st['plans']}・指令の入った歩 {seen_cmd}・合図の歩 {cue_seen}・声 {st['voices']}（自発 {st['spont']}）")
+sb = StubBrain(mo.n_cmd)
+life2 = L.Life(sb, L.FakeVoice(), mo, L.FakeReplier(L.FakeVoice()), np.random.default_rng(3), np.random.default_rng(4), "cpu")
+sb.L = life2
+orig_new = life2._new_turn
 
-print("6 健診", flush=True)
-for k in range(3):                                   # 録音を3つ作る
-    life2.recs.append(L.FakeVoice().sound(want, 1.0))
-h = life2.health(n=2)
+
+def new_turn(t, rec_test):
+    tu = orig_new(t, rec_test)
+    if tu["kind"] == "言う":                               # 口の代わり：準備の終わりに選んだモーラを言わせる
+        tu["_say_at"] = t + C.GO_LEAD
+    return tu
+
+
+life2._new_turn = new_turn
+orig_step = life2.step
+
+
+def step(learn=True, rec_test=False):
+    tu = life2.turn
+    if tu is not None and tu["kind"] == "言う" and tu.get("_say_at") == life2.t and tu["said"] is None:
+        life2._speak([(m, 0.07, 0.12, float(np.log(300.0))) for m in tu["want"]], 1.0, life2.t)
+    orig_step(learn, rec_test)
+
+
+life2.step = step
+life2.run_plans(30, learn=True)
+st = life2.stats; log = sb.log
+kinds = {k for k, *_ in log}
+chk(st["turns"] == 30 and 0 < st["plans"] < 30, f"{life2.t}歩・番 {st['turns']}（言う {st['plans']}・黙る {st['turns'] - st['plans']}）声 {st['voices']} 返し手 {st['replies']}")
+chk(all(k == "言う" for k, c, *_ in log if c), "語の指令（補助輪）は「言う」番の中だけ")
+chk(all(k == "言う" for k, c, q, _ in log if q), "合図は「言う」番の中だけ")
+chk("録音" not in kinds, "学ぶ暮らし（rec_test なし）に録音は鳴らない")
+chk(st["replies"] > 0, f"返し手が返した（{st['replies']}）")
+
+print("6 健診（学びは止めない・10番ごとに録音3つ）", flush=True)
+sb.log.clear()
+h = life2.health(n=10)
+log = sb.log
 print(f"  （見るだけ）{ {k: (round(v, 4) if isinstance(v, float) else v) for k, v in h.items()} }", flush=True)
-chk(isinstance(h["supp"], float) and "言えた" in h, "健診が回る")
+chk(h["録音の数"] == 3 and h["番"] == 10, f"10番で録音 {h['録音の数']}（3）")
+chk(all(l for *_, l in log), "健診のあいだも学ぶ（learn=True）")
+chk(any(k == "録音" for k, *_ in log) and not any(c for k, c, *_ in log if k == "録音"), "録音の番に補助輪の指令は入らない（口は回る）")
+
+print("7 本物の網で1番（回る）", flush=True)
+life3 = B.life_of(b, True, np.random.default_rng(5), np.random.default_rng(6))
+life3.run_plans(1, learn=True)
+chk(life3.t > 0, f"{life3.t}歩 回った（番 {life3.stats['turns']}・声 {life3.stats['voices']}）")
 print("✅ 版97 の確かめ 全部通った" if ok else "⚠️ 通らない所がある", flush=True)
