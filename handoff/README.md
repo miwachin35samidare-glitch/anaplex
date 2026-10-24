@@ -1,4 +1,4 @@
-> **2026-10-24：版96 を組んだ（docs/引き継ぎ_版93.md §40・docs/設計案_版96の組み表.md §7・§8）。arkhe は版95d ⇒ apply_v96.py → measure_speed95.py。次は版97**
+> **2026-10-24：版97 を組んだ（docs/引き継ぎ_版93.md §41・docs/設計案_版97_続けて流す.md）。arkhe は版96 ⇒ apply_v97.py → measure_life97.py。次は小脳**
 
 # AnaPlex 引き継ぎ（2026-10-12 14時。claude.ai のプロジェクト「AnaPlex-Next Transformer」から Claude Code へ）
 
