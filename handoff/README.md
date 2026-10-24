@@ -1,4 +1,4 @@
-> **2026-10-22 23:04：次のスレッドは `docs/引き継ぎ_版93.md` の §36・§37 と `docs/設計案_版96の組み表.md` から。arkhe は版95c ⇒ apply_v95d.py → measure_speed95.py の結果待ち。次は版96（未の答え・6 は調べる）**
+> **2026-10-24：版96 を組んだ（docs/引き継ぎ_版93.md §40・docs/設計案_版96の組み表.md §7・§8）。arkhe は版95d ⇒ apply_v96.py → measure_speed95.py。次は版97**
 
 # AnaPlex 引き継ぎ（2026-10-12 14時。claude.ai のプロジェクト「AnaPlex-Next Transformer」から Claude Code へ）
 
