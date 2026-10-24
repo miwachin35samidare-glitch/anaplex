@@ -15,8 +15,8 @@ import torch_group2 as G
 import torch_brain as TB
 from torch_brain import Brain
 
-if B.VERSION not in (95,):
-    sys.exit(f"⚠️ babble.py が版95 ではない（版 {B.VERSION}）")
+if B.VERSION not in (95, 96):   # 版96 でも回る
+    sys.exit(f"⚠️ babble.py が版95・96 ではない（版 {B.VERSION}）")
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NS = int(args[0]) if args else 300
