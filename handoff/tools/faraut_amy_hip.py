@@ -1,7 +1,8 @@
 """人の扁桃体と海馬の発火の列を同じ物差しで比べる（Faraut 2018、42人・1,576体）
 （arkhe で。網は使わない。何も書き換えない）
   ~/anaplex の外でよい。データは Dryad（doi:10.5061/dryad.46st5）の RecogMemory_MTL_release_v2.zip（58MB）
-  python3 faraut_amy_hip.py ~/Downloads/RecogMemory_MTL_release_v2.zip
+  ~/siibra-venv/bin/python faraut_amy_hip.py ~/Downloads/RecogMemory_MTL_release_v2.zip
+  ⚠️ システムの python3 は scipy（apt）と numpy 2（~/.local）が合わず止まる ⇒ siibra の箱で回す（scikit-image の依存で scipy が入っている）
   （展開したフォルダを渡してもよい）
 なぜ：扁桃体（基底外側）の素子を今の海馬の型で組めるかを、人の自然な撃ち方で決める【み】10-25 23:35「イ」
   10 §2：作り直すのは挙動の違う型だけ・焼く的は人の自然な状態の列
