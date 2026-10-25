@@ -1,6 +1,6 @@
 """Julich-Brain の最大確率地図で、眼窩前頭（Fo1〜Fo7）と前帯状（s24・p24・s32・p32・33・25）の体積を数える
 （arkhe で。網は使わない。何も書き換えない。地図は EBRAINS から取る。julich_volume.py と同じ取り方）
-  python3 julich_ofc.py
+  ~/siibra-venv/bin/python julich_ofc.py   （siibra は 10-16 に作った箱 ~/siibra-venv に入っている。無ければ python3 -m venv ~/siibra-venv && ~/siibra-venv/bin/pip install siibra）
 出すもの
   1 領域ごとの体積（mm³、MNI152 と Colin27、左右込み）と、確かめ用の Te1（1.0＋1.1＋1.2）との比
   2 MNI152 で脳梁膝より前（y ＞ y0）にある体積の割合（y0 ＝ 25・30・35mm）
@@ -18,7 +18,7 @@ Y0 = (25.0, 30.0, 35.0)
 try:
     import siibra
 except ImportError:
-    sys.exit("⚠️ siibra が無い：pip install siibra（だめなら pip install --user siibra）")
+    sys.exit("⚠️ siibra が無い：~/siibra-venv/bin/python julich_ofc.py で回す（箱が無ければ python3 -m venv ~/siibra-venv の後 ~/siibra-venv/bin/pip install siibra）")
 print(f"siibra {getattr(siibra, '__version__', '?')}", flush=True)
 parc = None
 for name in ("julich 3.1", "julich 3.0.3", "julich 3", "julich 2.9", "julich"):
