@@ -32,6 +32,13 @@ EDGE_LAB = ["1歩", "2歩", "3〜4", "5〜8", "9〜16", "17〜64", "65〜"]
 if len(sys.argv) < 2:
     sys.exit("使い方：python3 faraut_amy_hip.py <zip かフォルダ>")
 src = os.path.expanduser(sys.argv[1])
+if not os.path.exists(src):                       # 置き場所の名前が違うとき、近い候補を出して止まる
+    home = os.path.expanduser("~")
+    cand = []
+    for d in (home, os.path.join(home, "Downloads"), os.path.join(home, "ダウンロード"), os.getcwd()):
+        for pat in ("*RecogMemory*", "*46st5*", "*dryad*"):
+            cand += glob.glob(os.path.join(d, pat))
+    sys.exit(f"⚠️ {src} が無い。候補：" + ("／".join(sorted(set(cand))) if cand else "見つからない（Dryad から落とした zip の場所を渡す）"))
 if src.endswith(".zip"):
     out = os.path.splitext(src)[0]
     if not os.path.isdir(out):
