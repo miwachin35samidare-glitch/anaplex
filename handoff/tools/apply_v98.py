@@ -15,6 +15,8 @@ bad = []
 for f, (h, text) in FILES.items():
     ast.parse(text)
     p = pathlib.Path(f)
+    if p.exists() and p.read_text() == text:      # もう版98 の形（先に置いた道具）なら、そのままで良い
+        continue
     if h is None:
         if p.exists():
             bad.append(f + "（もうある）")
