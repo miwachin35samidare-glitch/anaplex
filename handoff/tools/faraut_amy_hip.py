@@ -64,6 +64,35 @@ if not dirs:
     sys.exit("⚠️ brainArea.mat が見つからない。フォルダの中身：" + "／".join(sorted(os.listdir(src))[:20]))
 
 
+import re
+SESS = {}                                         # フォルダ名 → (使う実験の番号, 発作の場所の番号)
+for mf in glob.glob(os.path.join(src, "**", "defineNOsessions_release.m"), recursive=True):
+    txt = open(mf, encoding="latin1").read()
+    for b in re.split(r"\nc\s*=\s*\d+;", txt)[1:]:
+        def g(k):
+            m = re.search(r"NOsessions\(c\)\." + k + r"\s*=\s*'?([^';%]+)'?\s*;", b)
+            return m.group(1).strip() if m else None
+        name, le, rc, dx = g("session"), g("EXPERIMENTIDLearn"), g("EXPERIMENTIDRecog"), g("diagnosisCode")
+        if name and le and rc:
+            ids, _ = SESS.get(name, (set(), None))
+            SESS[name] = (ids | {float(le), float(rc)}, int(dx) if dx not in (None, "") else None)
+print(f"課題の表（defineNOsessions_release.m）から {len(SESS)} 個のフォルダ", flush=True)
+
+
+def epi_side(dx, code):
+    """発作の場所と同じ側か（EpilepticSitesExclusion.m のとおり）：1 同じ側・0 違う・2 分からない"""
+    right = code in (1, 3, 18)
+    if dx is None or dx == 0:
+        return 2
+    if dx == 1:
+        return 1 if right else 0
+    if dx == 2:
+        return 0 if right else 1
+    if dx == 7:
+        return 1
+    return 0
+
+
 def segments(evdir, spikes_all):
     """記録した区間（µs）。events の列 2（実験の番号）ごとに、その番号の最初から最後まで。
     1回目の版は events の最初から最後までを1つの区間にした ⇒ 覚える課題と思い出す課題のあいだ（記録していない時間）まで入り、率が低く CV が大きく出た（10-25 23:44）"""
@@ -74,7 +103,12 @@ def segments(evdir, spikes_all):
                 ev = np.asarray(loadmat(p)["events"], dtype=float)
             except Exception:
                 continue
-            if ev.ndim == 2 and ev.shape[1] >= 3:
+            sess = os.path.basename(os.path.dirname(evdir.rstrip(os.sep)))
+            use = SESS.get(sess, (None, None))[0]
+            if ev.ndim == 2 and ev.shape[1] >= 3 and use:   # この課題（覚える・思い出す）の番号だけ。ほかの実験・番号 0 の区間は使わない（3回目、10-25 23:49）
+                segs = [(ev[ev[:, 2] == e, 0].min(), ev[ev[:, 2] == e, 0].max()) for e in use if np.any(ev[:, 2] == e)]
+                name = name + "（課題の番号だけ）"
+            elif ev.ndim == 2 and ev.shape[1] >= 3:
                 segs = [(ev[ev[:, 2] == e, 0].min(), ev[ev[:, 2] == e, 0].max()) for e in np.unique(ev[:, 2])]
             else:
                 segs = [(ev[:, 0].min(), ev[:, 0].max())]
@@ -138,7 +172,9 @@ for evdir, bap in dirs.items():
         s = stats(parts)
         if s is None or dur <= 0:
             continue
-        s.update(area=AREA[code], side=SIDE[code], rate=sum(len(x) for x in parts) / dur, sess=evdir)
+        sess = os.path.basename(os.path.dirname(evdir.rstrip(os.sep)))
+        s.update(area=AREA[code], side=SIDE[code], rate=sum(len(x) for x in parts) / dur, sess=evdir,
+                 epi=epi_side(SESS.get(sess, (None, None))[1], code))
         rows.append(s)
 print(f"区間の重なりをまとめた（負の「あいだ」は出ないはず）")
 print(f"区間の取り方 {hows}・区間の数 中央値 {np.median(nseg):.0f}（{min(nseg)}〜{max(nseg)}）・記録した長さ 中央値 {np.median(durs) / 60:.1f}分・区間のあいだ（数えない）中央値 {np.median(gaps) / 60:.1f}分", flush=True)
@@ -171,6 +207,9 @@ def table(sel, title):
     print("    海馬   " + "  ".join(f"{v:6.1%}" for v in hh), flush=True)
 
 
+table([r for r in rows if r["epi"] == 0], "発作の側を除く（EpilepticSitesExclusion のとおり。ここを主に見る）")
+table([r for r in rows if r["epi"] == 0 and r["rate"] < 5], "発作の側を除く・率 5Hz 未満")
+table([r for r in rows if r["epi"] == 0 and r["rate"] >= 5], "発作の側を除く・率 5Hz 以上")
 table(rows, "全部")
 table([r for r in rows if r["rate"] < 5], "率 5Hz 未満（錐体らしい側）")
 table([r for r in rows if r["rate"] >= 5], "率 5Hz 以上（介在らしい側）")
