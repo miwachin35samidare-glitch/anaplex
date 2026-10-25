@@ -78,7 +78,14 @@ def segments(evdir, spikes_all):
                 segs = [(ev[ev[:, 2] == e, 0].min(), ev[ev[:, 2] == e, 0].max()) for e in np.unique(ev[:, 2])]
             else:
                 segs = [(ev[:, 0].min(), ev[:, 0].max())]
-            return [(a0, b0) for a0, b0 in segs if b0 > a0], name
+            segs = sorted((a0, b0) for a0, b0 in segs if b0 > a0)
+            merged = []                               # 重なる区間は1つにまとめる（2回目の版は重なりを2度数えた、10-25 23:47）
+            for a0, b0 in segs:
+                if merged and a0 <= merged[-1][1]:
+                    merged[-1] = (merged[-1][0], max(merged[-1][1], b0))
+                else:
+                    merged.append((a0, b0))
+            return merged, name
     t = np.concatenate(spikes_all) if spikes_all else np.zeros(1)
     return [(float(t.min()), float(t.max()))], "発火の端"
 
@@ -133,6 +140,7 @@ for evdir, bap in dirs.items():
             continue
         s.update(area=AREA[code], side=SIDE[code], rate=sum(len(x) for x in parts) / dur, sess=evdir)
         rows.append(s)
+print(f"区間の重なりをまとめた（負の「あいだ」は出ないはず）")
 print(f"区間の取り方 {hows}・区間の数 中央値 {np.median(nseg):.0f}（{min(nseg)}〜{max(nseg)}）・記録した長さ 中央値 {np.median(durs) / 60:.1f}分・区間のあいだ（数えない）中央値 {np.median(gaps) / 60:.1f}分", flush=True)
 print(f"数えた体 {len(rows)}（扁桃体 {sum(r['area'] == '扁桃体' for r in rows)}・海馬 {sum(r['area'] == '海馬' for r in rows)}）・発火のファイルなし {miss}", flush=True)
 
