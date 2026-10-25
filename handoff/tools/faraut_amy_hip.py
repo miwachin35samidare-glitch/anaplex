@@ -64,33 +64,40 @@ if not dirs:
     sys.exit("⚠️ brainArea.mat が見つからない。フォルダの中身：" + "／".join(sorted(os.listdir(src))[:20]))
 
 
-def span(evdir, spikes_all):
+def segments(evdir, spikes_all):
+    """記録した区間（µs）。events の列 2（実験の番号）ごとに、その番号の最初から最後まで。
+    1回目の版は events の最初から最後までを1つの区間にした ⇒ 覚える課題と思い出す課題のあいだ（記録していない時間）まで入り、率が低く CV が大きく出た（10-25 23:44）"""
     for name in ("eventsRaw.mat", "events.mat"):
         p = os.path.join(evdir, name)
         if os.path.isfile(p):
             try:
                 ev = np.asarray(loadmat(p)["events"], dtype=float)
-                t = ev[:, 0]
-                return float(t.min()), float(t.max()), name
             except Exception:
-                pass
+                continue
+            if ev.ndim == 2 and ev.shape[1] >= 3:
+                segs = [(ev[ev[:, 2] == e, 0].min(), ev[ev[:, 2] == e, 0].max()) for e in np.unique(ev[:, 2])]
+            else:
+                segs = [(ev[:, 0].min(), ev[:, 0].max())]
+            return [(a0, b0) for a0, b0 in segs if b0 > a0], name
     t = np.concatenate(spikes_all) if spikes_all else np.zeros(1)
-    return float(t.min()), float(t.max()), "発火の端"
+    return [(float(t.min()), float(t.max()))], "発火の端"
 
 
-def stats(ts):
-    isi = np.diff(ts)
+def stats(parts):
+    isi = np.concatenate([np.diff(x) for x in parts if len(x) > 1]) if parts else np.zeros(0)
     if len(isi) < 20:
         return None
     cv = isi.std() / isi.mean()
-    lv = 3 * np.mean(((isi[:-1] - isi[1:]) / (isi[:-1] + isi[1:])) ** 2)
+    lv = np.mean([3 * np.mean(((np.diff(x)[:-1] - np.diff(x)[1:]) / (np.diff(x)[:-1] + np.diff(x)[1:])) ** 2)
+                  for x in parts if len(x) > 2])
     k = np.floor(isi / STEP).astype(np.int64) + 1          # 何歩目に次が来たか（同じ歩は 1）
     h = np.histogram(k, bins=EDGES)[0] / len(isi)
-    return dict(cv=cv, lv=lv, b3=np.mean(isi < 3e-3), b10=np.mean(isi < 10e-3), h=h)
+    return dict(cv=cv, lv=lv, b3=np.mean(isi < 3e-3), b10=np.mean(isi < 10e-3), h=h, long=np.mean(isi > 5.0))
 
 
 rows = []
 miss = 0
+hows, nseg, durs, gaps = {}, [], [], []
 for evdir, bap in dirs.items():
     sortdir = evdir.replace(os.sep + "events" + os.sep, os.sep + "sorted" + os.sep)
     try:
@@ -114,15 +121,19 @@ for evdir, bap in dirs.items():
             alls.append(ts * 1e6)
     if not cells:
         continue
-    t0, t1, how = span(evdir, alls)
-    dur = (t1 - t0) * 1e-6
+    segs, how = segments(evdir, alls)
+    dur = sum(b0 - a0 for a0, b0 in segs) * 1e-6
+    whole = (max(b0 for _, b0 in segs) - min(a0 for a0, _ in segs)) * 1e-6
+    hows[how] = hows.get(how, 0) + 1
+    nseg.append(len(segs)); durs.append(dur); gaps.append(whole - dur)
     for code, ts in cells:
-        ts = ts[(ts >= t0 * 1e-6) & (ts <= t1 * 1e-6)]
-        s = stats(ts)
+        parts = [ts[(ts >= a0 * 1e-6) & (ts <= b0 * 1e-6)] for a0, b0 in segs]
+        s = stats(parts)
         if s is None or dur <= 0:
             continue
-        s.update(area=AREA[code], side=SIDE[code], rate=len(ts) / dur, sess=evdir)
+        s.update(area=AREA[code], side=SIDE[code], rate=sum(len(x) for x in parts) / dur, sess=evdir)
         rows.append(s)
+print(f"区間の取り方 {hows}・区間の数 中央値 {np.median(nseg):.0f}（{min(nseg)}〜{max(nseg)}）・記録した長さ 中央値 {np.median(durs) / 60:.1f}分・区間のあいだ（数えない）中央値 {np.median(gaps) / 60:.1f}分", flush=True)
 print(f"数えた体 {len(rows)}（扁桃体 {sum(r['area'] == '扁桃体' for r in rows)}・海馬 {sum(r['area'] == '海馬' for r in rows)}）・発火のファイルなし {miss}", flush=True)
 
 
@@ -139,7 +150,7 @@ def table(sel, title):
     if len(a) < 5 or len(h) < 5:
         print("  少なすぎて比べない", flush=True)
         return
-    for key, lab in (("rate", "率 Hz"), ("cv", "間隔の CV"), ("lv", "LV"), ("b3", "3ms 以内"), ("b10", "10ms 未満")):
+    for key, lab in (("rate", "率 Hz"), ("cv", "間隔の CV"), ("lv", "LV"), ("b3", "3ms 以内"), ("b10", "10ms 未満"), ("long", "5秒超")):
         xa, xh = [r[key] for r in a], [r[key] for r in h]
         p1 = mannwhitneyu(xa, xh).pvalue
         p2 = ks_2samp(xa, xh).pvalue
