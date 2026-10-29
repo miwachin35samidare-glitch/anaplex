@@ -7,8 +7,8 @@ import sys, time, collections, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T, torch_brain as TB
 from torch_brain import Brain
 
-if B.VERSION != 98:
-    sys.exit(f"⚠️ babble.py が版98 ではない（版 {B.VERSION}）")
+if B.VERSION not in (98, 99, 100, 101, 102):
+    sys.exit(f"⚠️ babble.py が版98〜100 ではない（版 {B.VERSION}）")
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NS = int(args[0]) if args else 300
