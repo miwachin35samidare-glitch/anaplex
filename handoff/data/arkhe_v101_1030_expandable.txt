@@ -1,0 +1,51 @@
+miwa@arkhe:~/anaplex$ PYTORCH_HIP_ALLOC_CONF=expandable_segments:True PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True python3 measure_mem99.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+版 101 ／ torch 2.14.1+rocm7.14 ／ AMD Radeon RX 9070 XT ／ 記録 なし
+⚠️ prior_v2_PAG.npz が無い ⇒ 型「PAG」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_PPN.npz が無い ⇒ 型「PPN」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_プルキンエ.npz が無い ⇒ 型「プルキンエ」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_下オリーブ.npz が無い ⇒ 型「下オリーブ」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_内節.npz が無い ⇒ 型「内節」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_分子層.npz が無い ⇒ 型「分子層」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_吻内側被蓋核.npz が無い ⇒ 型「吻内側被蓋核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_外側手綱核.npz が無い ⇒ 型「外側手綱核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_外節.npz が無い ⇒ 型「外節」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_小脳核.npz が無い ⇒ 型「小脳核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_橋核.npz が無い ⇒ 型「橋核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_網様部.npz が無い ⇒ 型「網様部」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_線条体.npz が無い ⇒ 型「線条体」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_腹側淡蒼球.npz が無い ⇒ 型「腹側淡蒼球」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_視床下核.npz が無い ⇒ 型「視床下核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_赤核.npz が無い ⇒ 型「赤核」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_顆粒.npz が無い ⇒ 型「顆粒」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+⚠️ prior_v2_黒質.npz が無い ⇒ 型「黒質」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
+体 2,244,601 ／ 網の辺 105,084,583 ／ 刈り込み 1000歩ごと
+1 組んだ直後：取り置き 5.39GB ／ 使用 4.18GB
+     1歩目：取り置き 5.39 → 5.75GB（+0.36）／ 使用 5.01 ／ グラフを撮った 1回（この歩 +1）
+Traceback (most recent call last):
+  File "/home/miwa/anaplex/measure_mem99.py", line 53, in <module>
+    b.step(up(np.asarray(ear[t], np.float32)), up(np.asarray(cmd[t], np.float32)), learn=True)
+  File "/home/miwa/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/miwa/anaplex/torch_brain.py", line 1690, in step
+    outs = self.g.step(x, e, learn)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/miwa/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/miwa/anaplex/torch_group2.py", line 1095, in step
+    out = self._fast_step(x_all, ext_all, learn) if self._fast_ok(learn) else None   # 版90：1つのグラフで
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/miwa/.local/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/miwa/anaplex/torch_group2.py", line 1271, in _fast_step
+    self._fast_run(key, e)
+  File "/home/miwa/anaplex/torch_group2.py", line 1316, in _fast_run
+    with torch.cuda.graph(g, pool=self._gpool):
+  File "/home/miwa/.local/lib/python3.12/site-packages/torch/cuda/graphs.py", line 1183, in __enter__
+    self.cuda_graph.capture_begin(
+  File "/home/miwa/.local/lib/python3.12/site-packages/torch/cuda/graphs.py", line 610, in capture_begin
+    super().capture_begin(
+RuntimeError: it->second->use_count > 0 INTERNAL ASSERT FAILED at "/__w/pytorch/pytorch/c10/hip/HIPCachingAllocator.cpp":3330, please report a bug to PyTorch. 
