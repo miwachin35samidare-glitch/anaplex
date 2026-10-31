@@ -1,0 +1,362 @@
+miwa@arkhe:~/anaplex$ ~/siibra-venv/bin/python julich_density.py
+[siibra:INFO] Version: 1.0.1-alpha.25
+Please file issues at https://github.com/FZJ-INM1-BDA/siibra-python.
+siibra 1.0.1-alpha.25
+Loading preconfigured Parcellation instances: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 29/29 [00:00<00:00, 296.70Parcellation/s]
+地図：Julich-Brain Cytoarchitectonic Atlas (v3.1)
+
+1 体積（mm³、最大確率地図・MNI152）
+Loading preconfigured Space instances: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 12073.41Space/s]
+Loading preconfigured Map instances: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 63/63 [00:00<00:00, 158.30Map/s]
+  Area 44 (IFG) left：3,987
+  Area 44 (IFG) right：2,661
+  Area 45 (IFG) left：3,621
+  Area 45 (IFG) right：5,267
+  Area STS1 (STS) left：3,310
+  Area STS1 (STS) right：3,326
+  Area STS2 (STS) left：5,240
+  Area STS2 (STS) right：6,573
+  Area TPJ (STG, SMG) left：2,159
+  Area TPJ (STG, SMG) right：1,465
+  Area Te 1.0 (HESCHL) left：625
+  Area Te 1.0 (HESCHL) right：779
+  Area Te 1.1 (HESCHL) left：1,210
+  Area Te 1.1 (HESCHL) right：1,078
+  Area Te 1.2 (HESCHL) left：439
+  Area Te 1.2 (HESCHL) right：523
+  Area Te 3 (STG) left：3,942
+  Area Te 3 (STG) right：4,309
+
+2 細胞の密度
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Loading preconfigured LayerwiseCellDensity instances: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 5247.80LayerwiseCellDensity/s]
+Matching LayerwiseCellDensity to Area 44 (IFG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 13.52it/s]
+  ── Area 44 (IFG) ／ LayerwiseCellDensity ／ Layerwise Cell Density
+     unit：# detected cells / $0.1mm^3$
+     modality：Cell body density
+     anchor：Area 44 (IFG) with Set of 10 points in the Bounding box from (-55.66,22.70,6.50)mm to (49.49,33.50,18.56)mm in BigBrain microscopic template (histology) space
+         layer layername  counts      area_mu2     volume    density regionspec  section  patch
+     0       1         I     301  5.225746e+05  13.014846  23.127435   Broca_44     4861      2
+     1       2        II     540  3.118355e+05   7.766339  69.530829   Broca_44     4861      2
+     2       3       III    1422  1.203571e+06  29.975226  47.439175   Broca_44     4861      2
+     3       4        IV     377  2.968806e+05   7.393883  50.988092   Broca_44     4861      2
+     4       5         V     480  4.731825e+05  11.784724  40.730695   Broca_44     4861      2
+     5       6        VI    1206  1.210980e+06  30.159758  39.987058   Broca_44     4861      2
+     6       1         I     270  3.890197e+05   9.688630  27.867718   Broca_44     4951      3
+     7       2        II     433  2.375084e+05   5.915204  73.201201   Broca_44     4951      3
+     8       3       III    1561  1.251860e+06  31.177869  50.067566   Broca_44     4951      3
+     9       4        IV     363  2.207317e+05   5.497376  66.031503   Broca_44     4951      3
+     10      5         V     965  7.746307e+05  19.292365  50.019787   Broca_44     4951      3
+     11      6        VI    1509  1.316997e+06  32.800139  46.005903   Broca_44     4951      3
+     12      1         I     353  4.538559e+05  11.303390  31.229569   Broca_44     4636      3
+     13      2        II     612  3.201440e+05   7.973263  76.756530   Broca_44     4636      3
+     14      3       III    1821  1.421993e+06  35.415083  51.418
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area 44 (IFG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6744.16it/s]
+  ── Area 44 (IFG) left ／ LayerwiseCellDensity ／ Layerwise Cell Density
+     unit：# detected cells / $0.1mm^3$
+     modality：Cell body density
+     anchor：Area 44 (IFG) with Set of 10 points in the Bounding box from (-55.66,22.70,6.50)mm to (49.49,33.50,18.56)mm in BigBrain microscopic template (histology) space
+         layer layername  counts      area_mu2     volume    density regionspec  section  patch
+     0       1         I     301  5.225746e+05  13.014846  23.127435   Broca_44     4861      2
+     1       2        II     540  3.118355e+05   7.766339  69.530829   Broca_44     4861      2
+     2       3       III    1422  1.203571e+06  29.975226  47.439175   Broca_44     4861      2
+     3       4        IV     377  2.968806e+05   7.393883  50.988092   Broca_44     4861      2
+     4       5         V     480  4.731825e+05  11.784724  40.730695   Broca_44     4861      2
+     5       6        VI    1206  1.210980e+06  30.159758  39.987058   Broca_44     4861      2
+     6       1         I     270  3.890197e+05   9.688630  27.867718   Broca_44     4951      3
+     7       2        II     433  2.375084e+05   5.915204  73.201201   Broca_44     4951      3
+     8       3       III    1561  1.251860e+06  31.177869  50.067566   Broca_44     4951      3
+     9       4        IV     363  2.207317e+05   5.497376  66.031503   Broca_44     4951      3
+     10      5         V     965  7.746307e+05  19.292365  50.019787   Broca_44     4951      3
+     11      6        VI    1509  1.316997e+06  32.800139  46.005903   Broca_44     4951      3
+     12      1         I     353  4.538559e+05  11.303390  31.229569   Broca_44     4636      3
+     13      2        II     612  3.201440e+05   7.973263  76.756530   Broca_44     4636      3
+     14      3       III    1821  1.421993e+06  35.415083  51.418
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area 44 (IFG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7732.62it/s]
+  ── Area 44 (IFG) right ／ LayerwiseCellDensity ／ Layerwise Cell Density
+     unit：# detected cells / $0.1mm^3$
+     modality：Cell body density
+     anchor：Area 44 (IFG) with Set of 10 points in the Bounding box from (-55.66,22.70,6.50)mm to (49.49,33.50,18.56)mm in BigBrain microscopic template (histology) space
+         layer layername  counts      area_mu2     volume    density regionspec  section  patch
+     0       1         I     301  5.225746e+05  13.014846  23.127435   Broca_44     4861      2
+     1       2        II     540  3.118355e+05   7.766339  69.530829   Broca_44     4861      2
+     2       3       III    1422  1.203571e+06  29.975226  47.439175   Broca_44     4861      2
+     3       4        IV     377  2.968806e+05   7.393883  50.988092   Broca_44     4861      2
+     4       5         V     480  4.731825e+05  11.784724  40.730695   Broca_44     4861      2
+     5       6        VI    1206  1.210980e+06  30.159758  39.987058   Broca_44     4861      2
+     6       1         I     270  3.890197e+05   9.688630  27.867718   Broca_44     4951      3
+     7       2        II     433  2.375084e+05   5.915204  73.201201   Broca_44     4951      3
+     8       3       III    1561  1.251860e+06  31.177869  50.067566   Broca_44     4951      3
+     9       4        IV     363  2.207317e+05   5.497376  66.031503   Broca_44     4951      3
+     10      5         V     965  7.746307e+05  19.292365  50.019787   Broca_44     4951      3
+     11      6        VI    1509  1.316997e+06  32.800139  46.005903   Broca_44     4951      3
+     12      1         I     353  4.538559e+05  11.303390  31.229569   Broca_44     4636      3
+     13      2        II     612  3.201440e+05   7.973263  76.756530   Broca_44     4636      3
+     14      3       III    1821  1.421993e+06  35.415083  51.418
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area 45 (IFG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6097.11it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Loading preconfigured CellDensityProfile instances: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 13436.93CellDensityProfile/s]
+Matching CellDensityProfile to Area 45 (IFG): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59245.70it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 427132.79it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 275036.33it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 427489.63it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 306900.29it/s]
+  Area 45 (IFG)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area 45 (IFG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7700.68it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area 45 (IFG) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 60314.13it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 341136.73it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 285975.27it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 397286.56it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 284359.59it/s]
+  Area 45 (IFG) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area 45 (IFG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 8333.05it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area 45 (IFG) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 62077.53it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 340229.45it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 290934.38it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area 45 (IFG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 380449.88it/s]
+Matching LayerwiseCellDensity to Area 45 (IFG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 275036.33it/s]
+  Area 45 (IFG) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS1 (STS): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6129.04it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS1 (STS): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 62824.44it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 399145.93it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 193583.26it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 399457.52it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 290934.38it/s]
+  Area STS1 (STS)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS1 (STS) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7853.28it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS1 (STS) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59632.34it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 346683.66it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 266305.02it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 369729.11it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 214177.23it/s]
+  Area STS1 (STS) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS1 (STS) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6054.57it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS1 (STS) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59300.62it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 355104.16it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 281182.39it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS1 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 367604.23it/s]
+Matching LayerwiseCellDensity to Area STS1 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 266305.02it/s]
+  Area STS1 (STS) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS2 (STS): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6062.59it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS2 (STS): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 62662.88it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 397286.56it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 290934.38it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 389425.49it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 292625.86it/s]
+  Area STS2 (STS)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS2 (STS) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7855.73it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS2 (STS) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59535.21it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 322842.33it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 262144.00it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 355350.76it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 264903.41it/s]
+  Area STS2 (STS) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area STS2 (STS) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7992.96it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area STS2 (STS) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 58621.27it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 351204.59it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 267721.53it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area STS2 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 353631.71it/s]
+Matching LayerwiseCellDensity to Area STS2 (STS) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 262144.00it/s]
+  Area STS2 (STS) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6082.37it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area TPJ (STG, SMG): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 62220.95it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 384740.67it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 278075.40it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 355844.98it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 282762.07it/s]
+  Area TPJ (STG, SMG)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7802.15it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59115.65it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 367340.34it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 263516.48it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 364722.09it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 259441.48it/s]
+  Area TPJ (STG, SMG) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7751.68it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59472.93it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 367340.34it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 275036.33it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area TPJ (STG, SMG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 367604.23it/s]
+Matching LayerwiseCellDensity to Area TPJ (STG, SMG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 264903.41it/s]
+  Area TPJ (STG, SMG) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6288.31it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 61636.36it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 399145.93it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 289262.34it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 376253.74it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 303202.70it/s]
+  Area Te 1.0 (HESCHL)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7994.23it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59925.65it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 367076.82it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 263516.48it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 361884.79it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 266305.02it/s]
+  Area Te 1.0 (HESCHL) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7551.64it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 58742.40it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 358086.14it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 263516.48it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.0 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 338877.54it/s]
+Matching LayerwiseCellDensity to Area Te 1.0 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 259441.48it/s]
+  Area Te 1.0 (HESCHL) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6145.50it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 61377.60it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 393922.32it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 287609.42it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 393922.32it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 284359.59it/s]
+  Area Te 1.1 (HESCHL)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7947.52it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59088.35it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 382154.66it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 263516.48it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 370532.29it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 266305.02it/s]
+  Area Te 1.1 (HESCHL) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7921.25it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 59027.00it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 362654.21it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 269153.20it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.1 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 362140.90it/s]
+Matching LayerwiseCellDensity to Area Te 1.1 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 269153.20it/s]
+  Area Te 1.1 (HESCHL) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6092.68it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 62002.31it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 387068.90it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 229824.88it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 377642.13it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL): 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 237413.43it/s]
+  Area Te 1.2 (HESCHL)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7626.01it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 58850.50it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 345280.09it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 256794.12it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 349764.24it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) left: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 264903.41it/s]
+  Area Te 1.2 (HESCHL) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7773.23it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 58850.50it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 364202.91it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 249166.57it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 1.2 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 336648.08it/s]
+Matching LayerwiseCellDensity to Area Te 1.2 (HESCHL) right: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 267721.53it/s]
+  Area Te 1.2 (HESCHL) right：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 3 (STG): 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 6120.09it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 3 (STG): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 60470.94it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 393619.30it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 290934.38it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 328648.10it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 292625.86it/s]
+  Area Te 3 (STG)：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 3 (STG) left: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 8014.59it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 3 (STG) left: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 60066.33it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 368133.16it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 266305.02it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 366813.68it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG) left: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 264903.41it/s]
+  Area Te 3 (STG) left：密度の特徴なし
+[siibra:INFO] 'LayerwiseCellDensity' decoded as feature type/s: ['LayerwiseCellDensity'].
+Matching LayerwiseCellDensity to Area Te 3 (STG) right: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 7820.33it/s]
+[siibra:INFO] 'CellDensityProfile' decoded as feature type/s: ['CellDensityProfile'].
+Matching CellDensityProfile to Area Te 3 (STG) right: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 58148.31it/s]
+[siibra:INFO] 'cell density' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 345047.26it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 223696.21it/s]
+[siibra:INFO] 'celldensity' decoded as feature type/s: ['CellDensityProfile', 'LayerwiseCellDensity'].
+Matching CellDensityProfile to Area Te 3 (STG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 122/122 [00:00<00:00, 330345.44it/s]
+Matching LayerwiseCellDensity to Area Te 3 (STG) right: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 12/12 [00:00<00:00, 264903.41it/s]
+  Area Te 3 (STG) right：密度の特徴なし
