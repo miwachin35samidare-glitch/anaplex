@@ -63,3 +63,16 @@ print("領域 ／ 体積 mm³ ／ y0 より前の割合 ／ y の 5% ・中央�
 for n, v, f, a, m, b in sorted(rows):
     print(f"  {n}：{v:,.0f} ／ {f:.0%} ／ {a:.0f}・{m:.0f}・{b:.0f}", flush=True)
 print(f"\n数えた領域 {len(rows)}", flush=True)
+
+
+def path(r):
+    out, p = [], r.parent
+    while p is not None:
+        out.append(p.name.lower())
+        p = p.parent
+    return " / ".join(out)
+
+
+# 中側頭回などの区画が地図にあるか：側頭葉の下の葉の名前を全部出す
+tl = sorted({r.name for r in parc if not r.children and "temporal" in path(r)})
+print(f"\n側頭葉の区画（{len(tl)}）：" + "／".join(tl), flush=True)
