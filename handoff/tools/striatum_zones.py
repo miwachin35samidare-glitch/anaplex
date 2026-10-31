@@ -23,6 +23,8 @@ FILES = {
     "striatum-con-label-thr25-7sub-1mm.nii.gz": "Striatum/",
     "striatum-con-label-thr50-7sub-1mm.nii.gz": "Striatum/",
     "striatum-structural-1mm.nii.gz": "Striatum/",
+    "striatum-con-prob-thr25-1mm.nii.gz": "Striatum/",
+    "striatum-con-prob-thr50-1mm.nii.gz": "Striatum/",
 }
 D = os.path.expanduser("~/anaplex/striatum_atlas")
 os.makedirs(D, exist_ok=True)
@@ -63,7 +65,7 @@ for thr in ("thr25", "thr50"):
     vals = sorted(set(np.unique(c)) - {0})
     print(f"\n== {thr}（帯の画像の値 {vals}。xml の番号は 0 から、画像の値は 1 から の見込み ⇒ 値 − 1 を名前に当てる）", flush=True)
     for sv in sorted(set(np.unique(st)) - {0}):
-        sname = st_names.get(sv - 1, st_names.get(sv, f"番号{sv}"))
+        sname = st_names.get(sv, f"番号{sv}")  # 11-01 3:32：核の画像の値は xml の番号そのまま（1 腹側・2 被殻・3 尾状核）
         for side, sel in (("左", x_mm < 0), ("右", x_mm > 0)):
             m = (st == sv) & sel
             n = int(m.sum())
@@ -75,4 +77,19 @@ for thr in ("thr25", "thr50"):
                 row.append(f"{con_names.get(cv - 1, cv)} {k}（{k / n:.0%}）")
             nolab = int(((c == 0) & m).sum())
             print(f"  {sname} {side}（{n} 点）：" + "／".join(row) + f"／ 帯なし {nolab}", flush=True)
+
+# 11-01 3:32 足し：帯の画像は「一番繋がる帯」だけを塗る（少ない帯が消える）⇒ 確率の地図（7枚）で、核の中の平均を帯ごとに出す
+for thr in ("thr25", "thr50"):
+    pi = nib.load(os.path.join(D, f"striatum-con-prob-{thr}-1mm.nii.gz"))
+    pr = np.asarray(pi.dataobj).astype(float)
+    print(f"\n== 確率の地図 {thr}：画像 {pr.shape}・最大 {pr.max():.2f}", flush=True)
+    if pr.ndim != 4 or pr.shape[:3] != st.shape:
+        print("⚠️ 形が合わない", flush=True)
+        continue
+    for sv in sorted(set(np.unique(st)) - {0}):
+        m = st == sv
+        mean = pr[m].mean(axis=0)
+        tot = mean.sum()
+        print(f"  {st_names.get(sv, sv)}（{int(m.sum())} 点）：" + "／".join(
+            f"{con_names.get(i, i)} {v:.3f}（{v / tot:.0%}）" for i, v in enumerate(mean)), flush=True)
 print("\n終わり", flush=True)
