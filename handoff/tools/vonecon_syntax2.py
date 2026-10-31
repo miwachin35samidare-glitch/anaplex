@@ -1,5 +1,6 @@
 """vonecon_syntax.py の出直し（arkhe で。網は使わない。何も書き換えない）
   ~/siibra-venv/bin/python vonecon_syntax2.py
+11-01 1:38 直し：probe で、fetch(index=…) が区画だけの 0/1 の画像を返すと分かった（番号 1000 などで切ると空）⇒ 丸ごと取って番号で切る。Julich は左右が別の画像（fragment）なので半球ごとに取る
 11-01 1:23 の結果に2つおかしい所があった
   ① HarvardOxford：下前頭回の y 中央が 0 より後ろ（前頭葉なのに）・左の角回が左右両方の Broca に重なる
      ⇒ 区画ごとの切り出し（get_regional_mask）が名前と中身でずれている疑い。地図を丸ごと取り、番号で切り直す
@@ -39,9 +40,13 @@ def labelled_sets(parc, keys=None):
             continue
         try:
             idx = m.get_index(r)
-            fk = (idx.volume, getattr(idx, "fragment", None))
+            frag = getattr(idx, "fragment", None)
+            fk = (idx.volume, frag)
             if fk not in cache:
-                cache[fk] = m.fetch(index=idx)
+                # fetch(index=…) は区画だけの 0/1 の画像を返すので番号で切れない（11-01 1:38 probe）。丸ごと（半球ごと）取る
+                cache[fk] = m.fetch(fragment=frag) if frag else m.fetch()
+                a = cache[fk].affine
+                print(f"  （{parc.name[:30]} {frag or ''}：画像 {cache[fk].shape}・原点 {a[:3, 3].round(1).tolist()}・向き {np.diag(a)[:3].round(2).tolist()}）", flush=True)
             img = cache[fk]
             d = np.asarray(img.dataobj)
             mask = d == idx.label if idx.label is not None else d > 0
