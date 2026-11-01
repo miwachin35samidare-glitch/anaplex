@@ -1,0 +1,54 @@
+miwa@arkhe:~/anaplex$ python3 measure_speed98.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 68.5ms（部分ごとに待つので普段より少し遅い）
+  1歩ぜんぶ            68.03ms
+  網の領野（Group2）     45.66ms
+  下からの線の表（足す）       9.80ms
+  平行線維（足す）          7.07ms
+  抑制の線              0.67ms
+  下からの線の表（学ぶ）       0.63ms
+  平行線維（学ぶ）          0.29ms
+  核どうしの学び           0.25ms
+（顆粒の領野：体 191,472・平行線維 444,040本 ／ 版96 の内訳：網 12.56・足す 3.58・学ぶ 0.59・核どうし 0.20・外 1.53ms）
+miwa@arkhe:~/anaplex$ python3 measure_prof103.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+USDT:2026-11-01 15:54:15 1570336:1570336 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-01 15:54:17 1570336:1570336 SyncActivityProfilerHandler.cpp:46] profiler_stop
+版 103 ／ AMD Radeon RX 9070 XT ／ グラフ eager ／ 体 2,456,296・辺 94,403,195
+1 グラフなしの暮らしの1歩 66.8ms ／ GPU の時間の合計 105.3ms ／ CPU の時間の合計 42.7ms ／ GPU の命令 5484回/歩
+2 GPU の時間の多い命令（1歩あたり）
+     6.88ms     5.1回  aten::binomial
+     6.88ms     5.1回  void at::native::(anonymous namespace)::distribution_binary_elementwise_kernel<(anonymous 
+     6.37ms     1.0回  _p1_learn_k.kd
+     6.35ms     1.0回  _p1_flush_k.kd
+     5.29ms    83.7回  aten::sum
+     5.19ms    45.0回  Cijk_Ailk_Bljk_S_B_Bias_HA_S_SAV_UserArgs_MT64x64x16_SN_LDSB0_AFC1_AG0_AGGSUA0_AGNTAB0_AFE
+     5.07ms    75.1回  aten::index_add_
+     5.05ms    70.1回  void at::native::indexFuncLargeIndex<float, long, unsigned int, 1, 1, -2, true, at::native
+     4.77ms    23.0回  aten::mm
+     4.63ms    22.0回  void at::native::reduce_kernel<128, 4, at::native::ReduceOp<float, at::native::func_wrappe
+     3.59ms     1.0回  aten::bincount
+     3.59ms     1.0回  void at::cuda::kernelHistogram1D<long, long, long, 1, 2, -1, (at::cuda::CUDAHistogramMemor
+     2.41ms  1467.0回  hipPointerGetAttribute
+     2.34ms   134.1回  aten::fill_
+     2.19ms   108.1回  void at::native::vectorized_elementwise_kernel<4, at::native::FillFunctor<float>, std::arr
+     2.00ms    38.0回  aten::_index_put_impl_
+     1.98ms    36.0回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native:
+     1.86ms     2.1回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub_select_where_0
+     1.86ms     2.1回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub_select_where_0.kd
+     1.81ms   135.9回  aten::index
+     1.71ms   261.4回  aten::copy_
+     1.29ms   113.8回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_index_kernel<at::native:
+     1.19ms     1.0回  triton_poi_fused_add_arange_index_searchsorted_sub_0
+     1.19ms     1.0回  triton_poi_fused_add_arange_index_searchsorted_sub_0.kd
+     1.18ms   234.2回  __amd_rocclr_copyBuffer.kd
+     0.93ms     4.1回  aten::index_fill_
+     0.93ms     4.1回  void at::native::index_elementwise_kernel<128, 4, at::native::index_fill_kernel_impl<at::n
+     0.88ms     2.1回  triton_poi_fused_add_index_mul_rsub_select_where_1
+     0.88ms     2.1回  triton_poi_fused_add_index_mul_rsub_select_where_1.kd
+     0.82ms   200.8回  aten::mul
+3 呼んだ所（自分のコードの行）ごとの GPU の時間（1歩あたり）
+   105.28ms  (自分のコードの外)
+（data_prof103.txt に書いた）
+miwa@arkhe:~/anaplex$ 
+
