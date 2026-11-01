@@ -10,7 +10,7 @@
   出力は data_prof103.txt にも書く
 """
 import os, sys
-os.environ.setdefault("ANAPLEX_GRAPH", "eager")
+os.environ.setdefault("ANAPLEX_GRAPH", "eager")   # 版103e：ANAPLEX_GRAPH=1 python3 measure_prof103.py でグラフありのまま（グラフの中の核が見えるかを見る）
 import time, collections, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T, torch_brain as TB
 from torch_brain import Brain
@@ -39,13 +39,15 @@ with profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA], with_stac
     torch.cuda.synchronize()
 ka = prof.key_averages()
 dev_t = lambda e: getattr(e, "self_device_time_total", getattr(e, "self_cuda_time_total", 0))
-tot_dev = sum(dev_t(e) for e in ka) / 1000 / NS
+from torch.autograd import DeviceType
+is_k = lambda e: getattr(e, "device_type", None) == DeviceType.CUDA      # 版103e：核の行だけ（⟲ aten の行と核の行を2回数えていた）
+tot_dev = sum(dev_t(e) for e in ka if is_k(e)) / 1000 / NS
 tot_cpu = sum(e.self_cpu_time_total for e in ka) / 1000 / NS
-n_k = sum(e.count for e in ka if dev_t(e) > 0) / NS
+n_k = sum(e.count for e in ka if is_k(e)) / NS
 out = [f"版 {B.VERSION} ／ {torch.cuda.get_device_name(0)} ／ グラフ {os.environ['ANAPLEX_GRAPH']} ／ 体 {b.n_cells:,}・辺 {len(b.g.w):,}",
        f"1 グラフなしの暮らしの1歩 {wall:.1f}ms ／ GPU の時間の合計 {tot_dev:.1f}ms ／ CPU の時間の合計 {tot_cpu:.1f}ms ／ GPU の命令 {n_k:.0f}回/歩",
-       "2 GPU の時間の多い命令（1歩あたり）"]
-rows = sorted((e for e in ka if dev_t(e) > 0), key=lambda e: -dev_t(e))[:30]
+       "2 GPU の時間の多い核（1歩あたり。核の行だけ）"]
+rows = sorted((e for e in ka if is_k(e)), key=lambda e: -dev_t(e))[:40]
 for e in rows:
     out.append(f"  {dev_t(e) / 1000 / NS:7.2f}ms  {e.count / NS:6.1f}回  {e.key[:90]}")
 out.append("3 呼んだ所（自分のコードの行）ごとの GPU の時間（1歩あたり）")
