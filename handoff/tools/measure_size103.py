@@ -25,7 +25,7 @@ RATIO = float(args[0]) if args else 1.0
 NS = int(args[1]) if len(args) > 1 else 1100
 SHR = {nm: max(1, int(round(TB.N_NEW[nm] * RATIO))) for nm in ("前頭前野", "眼窩前頭", "前帯状") + TB.SYN}
 TB.N_NEW.update(SHR)                      # 版103 の体数 × 比
-n_assoc, n_high = max(1, int(round(204 * RATIO))), max(1, int(round(224 * RATIO)))
+n_assoc, n_high = max(1, int(round(112 * RATIO))), max(1, int(round(123 * RATIO)))   # 版103b の 112・123 が 1
 if B.VERSION not in (103,):
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版103 の網のため")
 if TEST:
@@ -41,7 +41,7 @@ torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev,
           n_assoc=n_assoc, n_high=n_high)
 print(f"比 {RATIO}：連合 {b.n['連合']}・高次 {b.n['高次']}・前頭前野 {b.n['前頭前野']}・眼窩前頭 {b.n['眼窩前頭']}・前帯状 {b.n['前帯状']}・"
-      + "・".join(f"{k} {b.n[k]}" for k in TB.SYN) + f"（係数 {0.619 * RATIO:.3f}/100万）", flush=True)
+      + "・".join(f"{k} {b.n[k]}" for k in TB.SYN) + f"（係数 {0.340 * RATIO:.3f}/100万。版103b が比 1）", flush=True)
 b.bs.set_state(BS.WAKE)
 g = b.g
 print(f"体 {b.n_cells:,} ／ 網の辺 {len(g.w):,} ／ 刈り込み {g.rewire_every}歩ごと", flush=True)
