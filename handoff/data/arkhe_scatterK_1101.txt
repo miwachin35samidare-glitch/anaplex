@@ -1,0 +1,15 @@
+miwa@arkhe:~/anaplex$ ANAPLEX_SCATTER_K=32 python3 measure_life97.py
+ANAPLEX_SCATTER_K=16 python3 measure_life97.py
+ANAPLEX_SCATTER_K=8 python3 measure_life97.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 65.8ms ／ 網だけ（無音）の1歩 80.8ms ／ 差 -15.0ms
+（650歩・合図 4・声 6・自発 5・返し手 2）
+人の速さ（1歩 10.67ms）に対して 6.17倍の時間
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 63.9ms ／ 網だけ（無音）の1歩 81.0ms ／ 差 -17.1ms
+（650歩・合図 5・声 2・自発 2・返し手 0）
+人の速さ（1歩 10.67ms）に対して 5.99倍の時間
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 63.7ms ／ 網だけ（無音）の1歩 81.9ms ／ 差 -18.2ms
+（650歩・合図 5・声 1・自発 1・返し手 0）
+人の速さ（1歩 10.67ms）に対して 5.97倍の時間
