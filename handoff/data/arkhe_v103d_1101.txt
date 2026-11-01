@@ -1,0 +1,22 @@
+miwa@arkhe:~/anaplex$ python3 apply_v103d.py && python3 check_v103d.py && python3 measure_life97.py && python3 measure_speed98.py
+✅ 版103d を当てた（放出のくじを同じ分布の別の引き方に）。網は同じ
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+  ✓ 二項分布の確率との最大のずれ 0.00073（(32, 0.03)。揺らぎの目安 0.00035 の 6倍まで）
+  torch.binomial：100万本 1.87ms/回
+  新しい引き方：100万本 0.07ms/回
+✅ 版103d の確かめ 全部通った
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 55.1ms ／ 網だけ（無音）の1歩 64.6ms ／ 差 -9.5ms
+（650歩・合図 5・声 3・自発 3・返し手 1）
+人の速さ（1歩 10.67ms）に対して 5.17倍の時間
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 53.0ms（部分ごとに待つので普段より少し遅い）
+  1歩ぜんぶ            52.48ms
+  網の領野（Group2）     36.48ms
+  平行線維（足す）          7.06ms
+  下からの線の表（足す）       3.66ms
+  抑制の線              0.67ms
+  下からの線の表（学ぶ）       0.61ms
+  平行線維（学ぶ）          0.28ms
+  核どうしの学び           0.24ms
+（顆粒の領野：体 191,472・平行線維 444,040本 ／ 版96 の内訳：網 12.56・足す 3.58・学ぶ 0.59・核どうし 0.20・外 1.53ms）
