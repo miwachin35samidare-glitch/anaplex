@@ -1,0 +1,28 @@
+miwa@arkhe:~/anaplex$ python3 apply_v103c.py
+✅ 版103c を当てた（速さ：下書き 16枚・見込みの核・数えの searchsorted）。網は同じ
+   次：python3 check_v103c.py → python3 measure_life97.py → python3 measure_speed98.py
+miwa@arkhe:~/anaplex$ python3 check_v103c.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+  ✓ 暮らし 60歩 回った
+  ✓ 下書き 16枚・見込みの核 True・Triton True
+  ✓ 見込み：核と前の形の差 最大 8.94e-06（受け手 220,720・値の大きさ 6.41）
+  見込み 前の形：2.62ms/回
+  見込み 核：0.05ms/回
+✅ 版103c の確かめ 全部通った
+miwa@arkhe:~/anaplex$ python3 measure_life97.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 53.4ms ／ 網だけ（無音）の1歩 61.5ms ／ 差 -8.1ms
+（650歩・合図 5・声 5・自発 5・返し手 2）
+人の速さ（1歩 10.67ms）に対して 5.01倍の時間
+miwa@arkhe:~/anaplex$ python3 measure_speed98.py
+E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
+暮らしの1歩 54.7ms（部分ごとに待つので普段より少し遅い）
+  1歩ぜんぶ            54.22ms
+  網の領野（Group2）     38.96ms
+  平行線維（足す）          6.85ms
+  下からの線の表（足す）       3.90ms
+  下からの線の表（学ぶ）       0.59ms
+  抑制の線              0.48ms
+  平行線維（学ぶ）          0.26ms
+  核どうしの学び           0.22ms
+（顆粒の領野：体 191,472・平行線維 444,040本 ／ 版96 の内訳：網 12.56・足す 3.58・学ぶ 0.59・核どうし 0.20・外 1.53ms）
