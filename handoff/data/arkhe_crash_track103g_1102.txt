@@ -1,0 +1,68 @@
+miwa@arkhe:~$ cd ~/anaplex; echo "=== track103g.txt の最後 ==="; tail -n 30 track103g.txt 2>/dev/null; echo "=== 今の起動のカーネル（GPU・メモリ） ==="; journalctl -k -b 0 --since "-6 hours" --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 前の起動のカーネル（再起動していたら） ==="; journalctl -k -b -1 --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 起動の一覧 ==="; journalctl --list-boots --no-pager 2>/dev/null | tail -n 3
+=== track103g.txt の最後 ===
+=== 今の起動のカーネル（GPU・メモリ） ===
+11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: SMU is initialized successfully!
+11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: [drm] Display Core v3.2.369 initialized on DCN 4.0.1
+11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: [drm] DP-HDMI FRL PCON supported
+11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: [drm] DMUB hardware initialized: version=0x0A000800
+11月 02 19:41:08 arkhe kernel: snd_hda_intel 0000:03:00.1: bound 0000:03:00.0 (ops amdgpu_dm_audio_component_bind_ops [amdgpu])
+11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: [drm] DP-1: PSR support 0, DC PSR ver -1, sink PSR ver 0 DPCD caps 0x0 su_y_granularity 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] DP-2: PSR support 0, DC PSR ver -1, sink PSR ver 0 DPCD caps 0x0 su_y_granularity 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] DP-3: PSR support 0, DC PSR ver -1, sink PSR ver 0 DPCD caps 0x0 su_y_granularity 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] HDMI-A-1: PSR support 0, DC PSR ver -1, sink PSR ver 0 DPCD caps 0x0 su_y_granularity 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: program CP_MES_CNTL : 0x4000000
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: program CP_MES_CNTL : 0xc000000
+11月 02 19:41:09 arkhe kernel: amdgpu: Virtual CRAT table created for GPU
+11月 02 19:41:09 arkhe kernel: amdgpu: Topology: Add GPU node [0x1002:0x7550]
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: SE 4, SH per SE 2, CU per SH 8, active_cu_number 64
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 uses VM inv eng 0 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring comp_1.0.0 uses VM inv eng 1 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring comp_1.1.0 uses VM inv eng 4 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring comp_1.0.1 uses VM inv eng 7 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring comp_1.1.1 uses VM inv eng 8 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring sdma0 uses VM inv eng 9 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring sdma1 uses VM inv eng 10 on hub 0
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring vcn_unified_0 uses VM inv eng 0 on hub 8
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: ring jpeg_dec uses VM inv eng 1 on hub 8
+11月 02 19:41:09 arkhe kernel: amdgpu: HMM registered 16304MB device memory
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: Using BACO for runtime pm
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] Registered 4 planes with drm panic
+11月 02 19:41:09 arkhe kernel: [drm] Initialized amdgpu 3.64.0 for 0000:03:00.0 on minor 1
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] Failed to setup vendor infoframe on connector HDMI-A-1: -22
+11月 02 19:41:09 arkhe kernel: fbcon: amdgpudrmfb (fb0) is primary device
+11月 02 19:41:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] fb0: amdgpudrmfb frame buffer device
+=== 前の起動のカーネル（再起動していたら） ===
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: ring sdma1 uses VM inv eng 10 on hub 0
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: ring vcn_unified_0 uses VM inv eng 0 on hub 8
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: ring jpeg_dec uses VM inv eng 1 on hub 8
+10月 29 22:32:44 arkhe kernel: amdgpu: HMM registered 16304MB device memory
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: Using BACO for runtime pm
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] Registered 4 planes with drm panic
+10月 29 22:32:44 arkhe kernel: [drm] Initialized amdgpu 3.64.0 for 0000:03:00.0 on minor 1
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] Failed to setup vendor infoframe on connector HDMI-A-1: -22
+10月 29 22:32:44 arkhe kernel: fbcon: amdgpudrmfb (fb0) is primary device
+10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] fb0: amdgpudrmfb frame buffer device
+11月 01 17:38:23 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome(3305) task chrome:cs0(3274) is non-zero when fini
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=25314521, emitted seq=25314523
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2240015 thread chrome:cs0 pid 2240044
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome(2240044) task chrome:cs0(2240015) is non-zero when fini
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=25314679, emitted seq=25314681
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg pid 1477 thread Xorg:cs0 pid 1480
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 02 19:37:18 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 02 19:37:18 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+=== 起動の一覧 ===
+ -2 059c1e29c4444d1f9b31907aba04b36e Mon 2026-10-26 21:46:33 JST Thu 2026-10-29 22:32:41 JST
+ -1 ac59b684e04840489e09c7b822e56604 Thu 2026-10-29 22:32:06 JST Mon 2026-11-02 19:39:42 JST
+  0 27f31da85d05456189b248278f0be65e Mon 2026-11-02 19:41:05 JST Mon 2026-11-02 19:58:15 JST
