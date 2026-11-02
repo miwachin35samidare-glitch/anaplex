@@ -55,8 +55,8 @@ def pick(nm):
 
 
 def report(tag, rep_hz):
-    print(f"\n[{tag}]  閾値 {TH:.1f}（人の繋がり何本ぶん）", flush=True)
-    print(f"  {'領野':<8s} {'体':>5s} {'相手':>7s} {'送り手':>7s} {'繋がる':>7s} {'自分':>5s} {'w中央':>7s} {'w90%':>7s} {'w最大':>7s}"
+    print(f"\n[{tag}]  閾値 {TH:.1f}（1 ＝ 人の1本の平均 1.12mV。⇒ {TH*1.12:.0f}mV）", flush=True)
+    print(f"  {'領野':<8s} {'体':>5s} {'相手':>7s} {'送り手':>7s} {'繋がる':>7s} {'自分':>5s} {'w中央':>7s} {'w90%':>7s} {'w最大':>7s} {'1本最大':>8s}"
           f" {'1本中央':>8s} {'全部の和':>9s} {'率Hz':>6s}", flush=True)
     for nm in W_:
         e, r, j, nc = pick(nm)
@@ -72,7 +72,7 @@ def report(tag, rep_hz):
         amp_row = torch.zeros(nc, device=dev).index_add_(0, r, amp)
         q = torch.quantile(w[:min(len(w), 1 << 24)], torch.tensor([0.5, 0.9], device=dev))
         print(f"  {nm:<8s} {nc:5d} {float(per_row.mean()):7.1f} {float(senders.mean()):7.1f} {float(senders.mean()) / nc:7.1%}"
-              f" {self_e / nc:5.2f} {float(q[0]):7.3f} {float(q[1]):7.3f} {float(w.max()):7.2f}"
+              f" {self_e / nc:5.2f} {float(q[0]):7.3f} {float(q[1]):7.3f} {float(w.max()):7.2f} {float(amp.max()):8.1f}"
               f" {float(amp.median()):8.3f} {float(amp_row.mean()):9.1f} {rep_hz.get(nm, float('nan')):6.1f}", flush=True)
         del e, r, j, w, ce, amp, uniq
     torch.cuda.empty_cache() if dev != "cpu" else None
@@ -98,4 +98,5 @@ for mk in MARKS:
         i = NAMES.index(nm); nc, oc = g.areas[i].n_ch, int(b.off_ch[i])
         hz[nm] = float(rep_n[oc:oc + nc].mean()) / ns / (10.67 / 1000.0) if life.t > t0 else float("nan")
     report(f"{mk}番（{life.t}歩）", hz)
-print("\n⚠️ 繋がる：模型の体1つは人の切片の何体ぶんかで読み方が変わる（10 §5 の体の置き方）。そのまま人の 15.8% と比べない", flush=True)
+print("\n繋がる：素子1体 ＝ ニューロン1個（10 §7）なので人の 15.8%（側頭葉の切片の L2-3）と並べられる。⚠️ 運動野の人の値は引いていない", flush=True)
+print("1本の量：1 ＝ 人の1本の平均 1.12mV（Hunt 2023）。人の錐体どうしは 0.1〜6mV ⇒ 0.09〜5.4", flush=True)
