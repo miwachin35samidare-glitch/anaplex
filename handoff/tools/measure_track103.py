@@ -34,11 +34,11 @@ ch_off, buf_off = [0], [0]
 for a in g.areas:
     ch_off.append(ch_off[-1] + a.ch.n_cells); buf_off.append(buf_off[-1] + a.n_src * a.D)
 bb = ch_off[-1]
-lab = torch.empty(g.n_send_all, dtype=torch.long, device=dev)
+lab = torch.empty(g.n_send_all, dtype=torch.int16, device=dev)   # 送り手は数千万。long にしない
 for i in range(A):
     lab[ch_off[i]:ch_off[i + 1]] = i
     lab[bb + buf_off[i]:bb + buf_off[i + 1]] = i
-is_buf = torch.arange(g.n_send_all, device=dev) >= bb
+is_buf = torch.zeros(g.n_send_all, dtype=torch.bool, device=dev); is_buf[bb:] = True
 # 遅れの列の中の送り元：領野の送り元は [表現 n_ch ・ ext（ほかの領野から写した入口）n_ext ・ 抑制]、列は 送り元 × D の順
 is_ext = torch.zeros(g.n_send_all, dtype=torch.bool, device=dev)
 for i, a in enumerate(g.areas):
@@ -49,12 +49,26 @@ rows = {}
 for nm in W_:
     i = NAMES.index(nm); lo = int(g.off_recv[i]); nc = g.areas[i].n_ch
     rows[nm] = (i, lo + nc, lo + 2 * nc, nc, int(b.off_ch[i]))
-r_all = g.e_recv.long()
+CH = 1 << 21          # 版103 の網は辺 9,440万。足し込みは塊ごとに（一度に long へ広げると GPU の山を越える）
 sel = {}
 for nm, (i, a0, a1, nc, oc) in rows.items():
-    m = (r_all >= a0) & (r_all < a1) & ~g.e_inh
-    sel[nm] = torch.nonzero(m).squeeze(1)
-del r_all
+    parts = []
+    for c0 in range(0, len(g.e_recv), CH * 8):
+        r_ = g.e_recv[c0:c0 + CH * 8]
+        m = (r_ >= a0) & (r_ < a1) & ~g.e_inh[c0:c0 + CH * 8]
+        parts.append((torch.nonzero(m).squeeze(1) + c0).int())
+    sel[nm] = torch.cat(parts)
+    del parts
+torch.cuda.empty_cache() if dev != "cpu" else None
+
+
+def wsum_rep():
+    out_ = torch.zeros(g.n_recv_all, device=dev)
+    for c0 in range(0, len(g.e_recv), CH * 8):
+        out_.index_add_(0, g.e_recv[c0:c0 + CH * 8].long(), g.w[c0:c0 + CH * 8] * (~g.e_inh[c0:c0 + CH * 8]).float())
+    return out_
+
+
 sync = (lambda: torch.cuda.synchronize()) if dev != "cpu" else (lambda: None)
 f = lambda x: float(x) if not torch.is_tensor(x) else float(x.float().mean())
 out = []
@@ -72,13 +86,16 @@ def window(n):
         rep_n.add_(g._any[0][:g.n_ch_all].float())
         on = getattr(g, "_base_on", None)
         if k[0] < SRC_N and on is not None:
-            for nm, e in sel.items():
-                s = g.e_src[e].long()
-                live = (on[s] > 0) & ~g.mod_send[s]
-                amp = (g.w[e] * g.c_exc[g.e_recv[e].long()] * g.send_gain[s] * live.float()).double()
-                own = lab[s] == rows[nm][0]
-                c = torch.where(own & ~is_buf[s], 0, torch.where(own & ~is_ext[s], 1, torch.where(own, 2, 3)))
-                src[nm].index_add_(0, c, amp)
+            for nm, e_all in sel.items():
+                for c0 in range(0, len(e_all), CH):
+                    e = e_all[c0:c0 + CH].long()
+                    s = g.e_src[e].long()
+                    live = (on[s] > 0) & ~g.mod_send[s]
+                    amp = g.w[e] * g.c_exc[g.e_recv[e].long()] * g.send_gain[s] * live.float()
+                    own = lab[s] == rows[nm][0]
+                    c = torch.where(own & ~is_buf[s], 0, torch.where(own & ~is_ext[s], 1, torch.where(own, 2, 3)))
+                    src[nm].index_add_(0, c, amp.double())
+                    del e, s, live, amp, own, c
         k[0] += 1
 
     life.step = st
@@ -88,7 +105,7 @@ def window(n):
     life.step = P0
     ns = max(1, life.t - t0s)
     d = {kk: life.stats[kk] - st0[kk] for kk in life.stats}
-    wsum = torch.zeros(g.n_recv_all, device=dev).index_add_(0, g.e_recv.long(), g.w * (~g.e_inh).float())
+    wsum = wsum_rep()
     rec = {"ms": (time.time() - t0) / ns * 1000.0, "歩": ns, "声": d["voices"], "言えた": f"{d['ok']}/{d['tried']}",
            "圧": f(bs.pressure), "覚醒": f(bs.arousal), "th": f(g.th_gain), "眠る時": bool(bs.sleep_due), "a": {}}
     for nm, (i, a0, a1, nc, oc) in rows.items():
