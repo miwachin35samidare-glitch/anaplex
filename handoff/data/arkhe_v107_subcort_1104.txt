@@ -1,0 +1,165 @@
+miwa@arkhe:~/anaplex$ cd ~/anaplex && ~/siibra-venv/bin/python v107_subcort.py 2>&1 | tee data_v107_subcort_out.txt
+[fetch_atlas_harvard_oxford] Added README.md to /home/miwa/nilearn_data
+[fetch_atlas_harvard_oxford] Dataset created in /home/miwa/nilearn_data/fsl
+[fetch_atlas_harvard_oxford] Downloading data from https://www.nitrc.org/frs/download.php/9902/HarvardOxford.tgz ...
+Downloaded 573440 of 25716861 bytes (2.2%%, 00 HR 00 MIN 46 SEC remaining)
+Downloaded 2842624 of 25716861 bytes (11.1%%, 00 HR 00 MIN 17 SEC remaining)
+Downloaded 6283264 of 25716861 bytes (24.4%%, 00 HR 00 MIN 10 SEC remaining)
+Downloaded 9969664 of 25716861 bytes (38.8%%, 00 HR 00 MIN 07 SEC remaining)
+Downloaded 13795328 of 25716861 bytes (53.6%%, 00 HR 00 MIN 05 SEC remaining)
+Downloaded 17694720 of 25716861 bytes (68.8%%, 00 HR 00 MIN 03 SEC remaining)
+Downloaded 21610496 of 25716861 bytes (84.0%%, 00 HR 00 MIN 01 SEC remaining)
+Downloaded 25526272 of 25716861 bytes (99.3%%, 00 HR 00 MIN 00 SEC remaining)
+[fetch_atlas_harvard_oxford]  ...done. (9 seconds, 0 min)
+
+[fetch_atlas_harvard_oxford] Extracting data from /home/miwa/nilearn_data/fsl/52fc6e9a44cb308dcf34a89091317d8b/HarvardOxford.tgz...
+[fetch_atlas_harvard_oxford] .. done.
+
+[fetch_atlas_harvard_oxford] Dataset directory found: /home/miwa/nilearn_data/fsl
+HarvardOxford：皮質の外 22 ／ 皮質 49 の札
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'aghourian2017', 'desc': 'feobv', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    M Aghourian, C Legault-Denis, JP Soucy, P Rosa-Neto, S Gauthier, A Kostikov, P Gravel, and MA Bedard. Quantification of brain cholinergic denervation in alzheimer’s disease using pet imaging with [18 f]-feobv. Molecular psychiatry, 22(11):1531–1538, 2017.
+    Justine Y Hansen, Golia Shafiei, Ross D Markello, Kelly Smart, Sylvia ML Cox, Martin Nørgaard, Vincent Beliveau, Yanjun Wu, Jean-Dominique Gallezot, Étienne Aumont, and others. Mapping neurotransmitter systems to the structural and functional organization of the human neocortex. Nature neuroscience, 25(11):1569–1581, 2022.
+  [secondary]:
+    
+
+══ aghourian2017・feobv（MNI152）
+  皮質の外（平均 69.9 を 1 とした比）
+    尾状核      104（1.48）
+    被殻       127（1.81）
+    側坐核      97.9（1.40）
+    淡蒼球      42.5（0.61）
+    視床       43.8（0.63）
+    海馬       35.1（0.50）
+    扁桃体      39.6（0.57）
+  皮質（平均 26.9 を 1 とした比）
+    聴覚       32.9（1.22）
+    連合       28.3（1.05）
+    高次       27.3（1.01）
+    中側頭後     24.2（0.90）
+    44       25.6（0.95）
+    45       25.5（0.95）
+    運動       27.2（1.01）
+    前頭前野     22.9（0.85）
+    眼窩前頭     26.5（0.98）
+    前帯状      31.7（1.18）
+    補足       28.9（1.07）
+    島        32.6（1.21）
+    縁上回      24.2（0.90）
+    海馬傍      22.6（0.84）
+    視覚       22.8（0.85）
+    脳梁膨大後    27.5（1.02）
+[Warning] for {'source': 'beliveau2017', 'desc': 'cumi101', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cumi101', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・cumi101（MNI152）
+  皮質の外（平均 14.9 を 1 とした比）
+    尾状核      0.128（0.01）
+    被殻       6.76（0.45）
+    側坐核      17.3（1.16）
+    淡蒼球      0.338（0.02）
+    視床       5.49（0.37）
+    海馬       49.3（3.30）
+    扁桃体      25.2（1.69）
+  皮質（平均 16 を 1 とした比）
+    聴覚       14（0.88）
+    連合       16.9（1.05）
+    高次       19.2（1.20）
+    中側頭後     21.4（1.34）
+    44       14.1（0.88）
+    45       15.7（0.98）
+    運動       10（0.63）
+    前頭前野     11.6（0.73）
+    眼窩前頭     18.4（1.15）
+    前帯状      12.4（0.78）
+    補足       12.8（0.80）
+    島        27.1（1.70）
+    縁上回      15.4（0.97）
+    海馬傍      28.9（1.81）
+    視覚       6.85（0.43）
+    脳梁膨大後    10.9（0.68）
+[Warning] for {'source': 'beliveau2017', 'desc': 'cimbi36', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cimbi36', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・cimbi36（MNI152）
+  皮質の外（平均 11.5 を 1 とした比）
+    尾状核      2.64（0.23）
+    被殻       12.6（1.10）
+    側坐核      18.9（1.65）
+    淡蒼球      6.96（0.61）
+    視床       11.9（1.04）
+    海馬       15.1（1.32）
+    扁桃体      12.1（1.06）
+  皮質（平均 25.2 を 1 とした比）
+    聴覚       28（1.11）
+    連合       31.4（1.25）
+    高次       31.4（1.25）
+    中側頭後     31.9（1.26）
+    44       24.7（0.98）
+    45       28.2（1.12）
+    運動       18（0.71）
+    前頭前野     22.6（0.90）
+    眼窩前頭     28.2（1.12）
+    前帯状      16.7（0.66）
+    補足       22.8（0.90）
+    島        26.1（1.03）
+    縁上回      26.2（1.04）
+    海馬傍      16.1（0.64）
+    視覚       30.4（1.21）
+    脳梁膨大後    21.1（0.83）
+[Warning] for {'source': 'beliveau2017', 'desc': 'dasb', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'dasb', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・dasb（MNI152）
+  皮質の外（平均 11.6 を 1 とした比）
+    尾状核      8.1（0.70）
+    被殻       16.3（1.40）
+    側坐核      12.9（1.10）
+    淡蒼球      15.3（1.31）
+    視床       15.1（1.30）
+    海馬       4.66（0.40）
+    扁桃体      9.17（0.79）
+  皮質（平均 2.67 を 1 とした比）
+    聴覚       3.53（1.32）
+    連合       3.04（1.14）
+    高次       2.66（0.99）
+    中側頭後     1.91（0.72）
+    44       1.84（0.69）
+    45       2.24（0.84）
+    運動       1.61（0.60）
+    前頭前野     1.41（0.53）
+    眼窩前頭     3.22（1.21）
+    前帯状      2.31（0.86）
+    補足       2.23（0.83）
+    島        5.02（1.88）
+    縁上回      1.67（0.63）
+    海馬傍      4.53（1.69）
+    視覚       3.42（1.28）
+    脳梁膨大後    2.14（0.80）
+
+（data_v107_subcort.txt に書いた）
