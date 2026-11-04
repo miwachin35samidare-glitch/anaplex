@@ -1,0 +1,343 @@
+miwa@arkhe:~/anaplex$ cd ~/anaplex && ~/siibra-venv/bin/pip install neuromaps nibabel && ~/siibra-venv/bin/python v107_receptor.py 2>&1 | tee data_v107_receptor_out.txt
+Collecting neuromaps
+  Downloading neuromaps-0.0.7-py3-none-any.whl.metadata (31 kB)
+Requirement already satisfied: nibabel in /home/miwa/siibra-venv/lib/python3.12/site-packages (5.4.2)
+Requirement already satisfied: numpy>=1.14.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from neuromaps) (2.5.4)
+Requirement already satisfied: scipy>=0.17 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from neuromaps) (1.18.1)
+Collecting matplotlib>=3.5.0 (from neuromaps)
+  Downloading matplotlib-3.11.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (80 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.3/80.3 kB 5.9 MB/s eta 0:00:00
+Requirement already satisfied: scikit-learn in /home/miwa/siibra-venv/lib/python3.12/site-packages (from neuromaps) (1.9.1)
+Requirement already satisfied: nilearn in /home/miwa/siibra-venv/lib/python3.12/site-packages (from neuromaps) (0.14.1)
+Requirement already satisfied: packaging>=20 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nibabel) (26.3)
+Requirement already satisfied: typing-extensions>=4.6 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nibabel) (4.16.0)
+Collecting contourpy>=1.0.1 (from matplotlib>=3.5.0->neuromaps)
+  Downloading contourpy-1.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+Collecting cycler>=0.10 (from matplotlib>=3.5.0->neuromaps)
+  Using cached cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+Collecting fonttools>=4.28.2 (from matplotlib>=3.5.0->neuromaps)
+  Downloading fonttools-4.68.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (139 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 139.9/139.9 kB 22.0 MB/s eta 0:00:00
+Collecting kiwisolver>=1.3.1 (from matplotlib>=3.5.0->neuromaps)
+  Downloading kiwisolver-1.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.2 kB)
+Requirement already satisfied: pillow>=9 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from matplotlib>=3.5.0->neuromaps) (12.3.0)
+Collecting pyparsing>=3 (from matplotlib>=3.5.0->neuromaps)
+  Downloading pyparsing-3.3.3-py3-none-any.whl.metadata (5.9 kB)
+Requirement already satisfied: python-dateutil>=2.7 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from matplotlib>=3.5.0->neuromaps) (2.9.0.post0)
+Requirement already satisfied: jinja2>=3.1.6 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nilearn->neuromaps) (3.1.6)
+Requirement already satisfied: joblib>=1.2.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nilearn->neuromaps) (1.6.0)
+Requirement already satisfied: pandas>=2.3.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nilearn->neuromaps) (3.0.6)
+Requirement already satisfied: requests>=2.33.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from nilearn->neuromaps) (2.34.2)
+Requirement already satisfied: narwhals>=2.0.1 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from scikit-learn->neuromaps) (2.27.1)
+Requirement already satisfied: threadpoolctl>=3.5.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from scikit-learn->neuromaps) (3.7.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from jinja2>=3.1.6->nilearn->neuromaps) (3.0.4)
+Requirement already satisfied: cloudpickle>=3.0 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from joblib>=1.2.0->nilearn->neuromaps) (3.1.2)
+Requirement already satisfied: six>=1.5 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from python-dateutil>=2.7->matplotlib>=3.5.0->neuromaps) (1.17.0)
+Requirement already satisfied: charset_normalizer<4,>=2 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from requests>=2.33.0->nilearn->neuromaps) (3.5.2)
+Requirement already satisfied: idna<4,>=2.5 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from requests>=2.33.0->nilearn->neuromaps) (3.20)
+Requirement already satisfied: urllib3<3,>=1.26 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from requests>=2.33.0->nilearn->neuromaps) (2.8.0)
+Requirement already satisfied: certifi>=2023.5.7 in /home/miwa/siibra-venv/lib/python3.12/site-packages (from requests>=2.33.0->nilearn->neuromaps) (2026.7.22)
+Downloading neuromaps-0.0.7-py3-none-any.whl (126 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.5/126.5 kB 44.0 MB/s eta 0:00:00
+Downloading matplotlib-3.11.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.9/9.9 MB 60.4 MB/s eta 0:00:00
+Downloading contourpy-1.4.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (383 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 383.2/383.2 kB 63.7 MB/s eta 0:00:00
+Using cached cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Downloading fonttools-4.68.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.4/5.4 MB 50.9 MB/s eta 0:00:00
+Downloading kiwisolver-1.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 52.6 MB/s eta 0:00:00
+Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.4/126.4 kB 68.2 MB/s eta 0:00:00
+Installing collected packages: pyparsing, kiwisolver, fonttools, cycler, contourpy, matplotlib, neuromaps
+Successfully installed contourpy-1.4.0 cycler-0.12.1 fonttools-4.68.0 kiwisolver-1.5.1 matplotlib-3.11.2 neuromaps-0.0.7 pyparsing-3.3.3
+使える地図：aghourian2017・feobv・MNI152・1mm ／ beliveau2017・az10419369・MNI152・1mm ／ beliveau2017・az10419369・fsaverage・164k ／ beliveau2017・cimbi36・MNI152・1mm ／ beliveau2017・cimbi36・fsaverage・164k ／ beliveau2017・cumi101・MNI152・1mm ／ beliveau2017・cumi101・fsaverage・164k ／ beliveau2017・dasb・MNI152・1mm ／ beliveau2017・dasb・fsaverage・164k ／ beliveau2017・sb207145・MNI152・1mm ／ beliveau2017・sb207145・fsaverage・164k
+区画 lh：頂点 163842（fsaverage 164k なら 163842）
+区画 rh：頂点 163842（fsaverage 164k なら 163842）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196ca94bbe37803aa59fd16 ...
+Downloaded 1630208 of 22138678 bytes (7.4%%, 00 HR 00 MIN 14 SEC remaining)
+Downloaded 6823936 of 22138678 bytes (30.8%%, 00 HR 00 MIN 05 SEC remaining)
+Downloaded 10117120 of 22138678 bytes (45.7%%, 00 HR 00 MIN 04 SEC remaining)
+Downloaded 13688832 of 22138678 bytes (61.8%%, 00 HR 00 MIN 03 SEC remaining)
+Downloaded 17326080 of 22138678 bytes (78.3%%, 00 HR 00 MIN 01 SEC remaining)
+Downloaded 21209088 of 22138678 bytes (95.8%%, 00 HR 00 MIN 00 SEC remaining)
+[fetch_single_file]  ...done. (10 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'aghourian2017', 'desc': 'feobv', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    M Aghourian, C Legault-Denis, JP Soucy, P Rosa-Neto, S Gauthier, A Kostikov, P Gravel, and MA Bedard. Quantification of brain cholinergic denervation in alzheimer’s disease using pet imaging with [18 f]-feobv. Molecular psychiatry, 22(11):1531–1538, 2017.
+    Justine Y Hansen, Golia Shafiei, Ross D Markello, Kelly Smart, Sylvia ML Cox, Martin Nørgaard, Vincent Beliveau, Yanjun Wu, Jean-Dominique Gallezot, Étienne Aumont, and others. Mapping neurotransmitter systems to the structural and functional organization of the human neocortex. Nature neuroscience, 25(11):1569–1581, 2022.
+  [secondary]:
+    
+（aghourian2017・feobv・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196cb28bbe37803c059ee6d ...
+Downloaded 1482752 of 2343758 bytes (63.3%%, 00 HR 00 MIN 01 SEC remaining)
+[fetch_single_file]  ...done. (4 seconds, 0 min)
+
+[Warning] for {'source': 'beliveau2017', 'desc': 'az10419369', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'az10419369', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+（beliveau2017・az10419369・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543b0723a11190518c8a6 ...
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543a2c86e2818da88f993 ...
+[fetch_single_file]  ...done. (2 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'az10419369', 'space': 'fsaverage', 'den': '164k'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・az10419369・fsaverage・164k
+  聴覚       左 21（全皮質の 1.05倍） ／ 右 20.2（全皮質の 1.01倍）
+  連合       左 19（全皮質の 0.95倍） ／ 右 19.2（全皮質の 0.96倍）
+  高次       左 19.1（全皮質の 0.95倍） ／ 右 19.2（全皮質の 0.96倍）
+  STS1     左 18.7（全皮質の 0.93倍） ／ 右 17.3（全皮質の 0.86倍）
+  STS2     左 18.8（全皮質の 0.94倍） ／ 右 18.4（全皮質の 0.92倍）
+  中側頭後     左 20（全皮質の 1.00倍） ／ 右 19.7（全皮質の 0.98倍）
+  TPJ      左 20.3（全皮質の 1.01倍） ／ 右 20.5（全皮質の 1.02倍）
+  44       左 24.5（全皮質の 1.22倍） ／ 右 24.1（全皮質の 1.20倍）
+  45       左 23.9（全皮質の 1.19倍） ／ 右 23.9（全皮質の 1.19倍）
+  運動       左 22.6（全皮質の 1.12倍） ／ 右 21.9（全皮質の 1.09倍）
+  前頭前野     左 23.5（全皮質の 1.17倍） ／ 右 22.9（全皮質の 1.14倍）
+  眼窩前頭     左 20.7（全皮質の 1.03倍） ／ 右 19.5（全皮質の 0.97倍）
+  前帯状      左 22（全皮質の 1.10倍） ／ 右 21.4（全皮質の 1.07倍）
+  補足       左 21.2（全皮質の 1.06倍） ／ 右 21.6（全皮質の 1.07倍）
+  前補足      左 22.7（全皮質の 1.13倍） ／ 右 22.3（全皮質の 1.11倍）
+  視覚       左 30.1（全皮質の 1.50倍） ／ 右 30.6（全皮質の 1.52倍）
+  嗅内       左 7.49（全皮質の 0.37倍） ／ 右 6.06（全皮質の 0.30倍）
+  島前       左 21.9（全皮質の 1.09倍） ／ 右 20.5（全皮質の 1.02倍）
+  島後       左 17.4（全皮質の 0.87倍） ／ 右 16.1（全皮質の 0.80倍）
+  縁上回      左 20.1（全皮質の 1.00倍） ／ 右 20（全皮質の 1.00倍）
+  腹側運動前    左 24（全皮質の 1.19倍） ／ 右 23.4（全皮質の 1.17倍）
+  海馬傍      左 12.6（全皮質の 0.63倍） ／ 右 11.6（全皮質の 0.58倍）
+  脳梁膨大後    左 13.6（全皮質の 0.68倍） ／ 右 14.5（全皮質の 0.72倍）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196cb34bbe37803bd59f194 ...
+Downloaded 1630208 of 2351727 bytes (69.3%%, 00 HR 00 MIN 01 SEC remaining)
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[Warning] for {'source': 'beliveau2017', 'desc': 'cimbi36', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cimbi36', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+（beliveau2017・cimbi36・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543bf228a5a18987bc2c1 ...
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543cdc86e2818da88f9e7 ...
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cimbi36', 'space': 'fsaverage', 'den': '164k'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・cimbi36・fsaverage・164k
+  聴覚       左 55.8（全皮質の 1.08倍） ／ 右 54.7（全皮質の 1.08倍）
+  連合       左 55（全皮質の 1.07倍） ／ 右 56（全皮質の 1.10倍）
+  高次       左 59.4（全皮質の 1.15倍） ／ 右 58.7（全皮質の 1.16倍）
+  STS1     左 56.3（全皮質の 1.09倍） ／ 右 54.2（全皮質の 1.07倍）
+  STS2     左 61.1（全皮質の 1.18倍） ／ 右 63.8（全皮質の 1.26倍）
+  中側頭後     左 65.7（全皮質の 1.27倍） ／ 右 61.2（全皮質の 1.20倍）
+  TPJ      左 59.7（全皮質の 1.16倍） ／ 右 56.9（全皮質の 1.12倍）
+  44       左 59.3（全皮質の 1.15倍） ／ 右 58.2（全皮質の 1.15倍）
+  45       左 59.4（全皮質の 1.15倍） ／ 右 55.7（全皮質の 1.10倍）
+  運動       左 53.2（全皮質の 1.03倍） ／ 右 52.9（全皮質の 1.04倍）
+  前頭前野     左 58.5（全皮質の 1.13倍） ／ 右 57.1（全皮質の 1.13倍）
+  眼窩前頭     左 56（全皮質の 1.09倍） ／ 右 54.3（全皮質の 1.07倍）
+  前帯状      左 56.2（全皮質の 1.09倍） ／ 右 52.7（全皮質の 1.04倍）
+  補足       左 43（全皮質の 0.83倍） ／ 右 45.1（全皮質の 0.89倍）
+  前補足      左 53.1（全皮質の 1.03倍） ／ 右 51.5（全皮質の 1.01倍）
+  視覚       左 55（全皮質の 1.07倍） ／ 右 54.8（全皮質の 1.08倍）
+  嗅内       左 18.7（全皮質の 0.36倍） ／ 右 15.1（全皮質の 0.30倍）
+  島前       左 47.8（全皮質の 0.93倍） ／ 右 48.3（全皮質の 0.95倍）
+  島後       左 45.9（全皮質の 0.89倍） ／ 右 44.6（全皮質の 0.88倍）
+  縁上回      左 56.5（全皮質の 1.09倍） ／ 右 53.3（全皮質の 1.05倍）
+  腹側運動前    左 56.8（全皮質の 1.10倍） ／ 右 58.3（全皮質の 1.15倍）
+  海馬傍      左 45.8（全皮質の 0.89倍） ／ 右 40.9（全皮質の 0.81倍）
+  脳梁膨大後    左 41.5（全皮質の 0.80倍） ／ 右 42.3（全皮質の 0.83倍）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196cb3f0b0c1e03d87fbf65 ...
+Downloaded 876544 of 2194374 bytes (39.9%%, 00 HR 00 MIN 02 SEC remaining)
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[Warning] for {'source': 'beliveau2017', 'desc': 'cumi101', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cumi101', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+（beliveau2017・cumi101・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543ea1daa6b183975935a ...
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638543dbc86e2818d988f7ea ...
+[fetch_single_file]  ...done. (1 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'cumi101', 'space': 'fsaverage', 'den': '164k'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・cumi101・fsaverage・164k
+  聴覚       左 25.7（全皮質の 0.83倍） ／ 右 25.8（全皮質の 0.83倍）
+  連合       左 29.8（全皮質の 0.96倍） ／ 右 29.4（全皮質の 0.95倍）
+  高次       左 37.2（全皮質の 1.20倍） ／ 右 36.1（全皮質の 1.16倍）
+  STS1     左 40.3（全皮質の 1.30倍） ／ 右 39.1（全皮質の 1.26倍）
+  STS2     左 41.9（全皮質の 1.35倍） ／ 右 42.6（全皮質の 1.37倍）
+  中側頭後     左 42.4（全皮質の 1.37倍） ／ 右 41.3（全皮質の 1.33倍）
+  TPJ      左 36.3（全皮質の 1.17倍） ／ 右 36.2（全皮質の 1.17倍）
+  44       左 35（全皮質の 1.13倍） ／ 右 34.8（全皮質の 1.12倍）
+  45       左 32.3（全皮質の 1.04倍） ／ 右 32.4（全皮質の 1.04倍）
+  運動       左 30.4（全皮質の 0.98倍） ／ 右 30.7（全皮質の 0.99倍）
+  前頭前野     左 32.4（全皮質の 1.04倍） ／ 右 31.5（全皮質の 1.01倍）
+  眼窩前頭     左 38.3（全皮質の 1.24倍） ／ 右 36.9（全皮質の 1.19倍）
+  前帯状      左 38（全皮質の 1.23倍） ／ 右 37（全皮質の 1.19倍）
+  補足       左 23.6（全皮質の 0.76倍） ／ 右 24.4（全皮質の 0.79倍）
+  前補足      左 26.8（全皮質の 0.86倍） ／ 右 27.6（全皮質の 0.89倍）
+  視覚       左 12.4（全皮質の 0.40倍） ／ 右 13.7（全皮質の 0.44倍）
+  嗅内       左 49.6（全皮質の 1.60倍） ／ 右 54.1（全皮質の 1.74倍）
+  島前       左 42.7（全皮質の 1.38倍） ／ 右 41.7（全皮質の 1.34倍）
+  島後       左 49.4（全皮質の 1.59倍） ／ 右 48.4（全皮質の 1.56倍）
+  縁上回      左 34.1（全皮質の 1.10倍） ／ 右 35（全皮質の 1.13倍）
+  腹側運動前    左 32.8（全皮質の 1.06倍） ／ 右 33.3（全皮質の 1.07倍）
+  海馬傍      左 51.3（全皮質の 1.65倍） ／ 右 49.8（全皮質の 1.60倍）
+  脳梁膨大後    左 17.7（全皮質の 0.57倍） ／ 右 18.9（全皮質の 0.61倍）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196cb1c0b0c1e03ca7fd263 ...
+Downloaded 1630208 of 2457718 bytes (66.3%%, 00 HR 00 MIN 01 SEC remaining)
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[Warning] for {'source': 'beliveau2017', 'desc': 'dasb', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'dasb', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+（beliveau2017・dasb・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/63854394228a5a18987bc26e ...
+[fetch_single_file]  ...done. (4 seconds, 0 min)
+
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/63854385c86e2818da88f94b ...
+[fetch_single_file]  ...done. (2 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'dasb', 'space': 'fsaverage', 'den': '164k'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・dasb・fsaverage・164k
+  聴覚       左 7.97（全皮質の 1.64倍） ／ 右 7.54（全皮質の 1.62倍）
+  連合       左 6.75（全皮質の 1.39倍） ／ 右 6.44（全皮質の 1.38倍）
+  高次       左 5.34（全皮質の 1.10倍） ／ 右 5.17（全皮質の 1.11倍）
+  STS1     左 5.05（全皮質の 1.04倍） ／ 右 5.02（全皮質の 1.08倍）
+  STS2     左 4.29（全皮質の 0.88倍） ／ 右 4.26（全皮質の 0.91倍）
+  中側頭後     左 3.7（全皮質の 0.76倍） ／ 右 3.57（全皮質の 0.77倍）
+  TPJ      左 4.72（全皮質の 0.97倍） ／ 右 4.42（全皮質の 0.95倍）
+  44       左 4.62（全皮質の 0.95倍） ／ 右 4.2（全皮質の 0.90倍）
+  45       左 5.01（全皮質の 1.03倍） ／ 右 4.54（全皮質の 0.98倍）
+  運動       左 3.87（全皮質の 0.80倍） ／ 右 3.34（全皮質の 0.72倍）
+  前頭前野     左 4.33（全皮質の 0.89倍） ／ 右 3.84（全皮質の 0.82倍）
+  眼窩前頭     左 5.8（全皮質の 1.19倍） ／ 右 5.5（全皮質の 1.18倍）
+  前帯状      左 6.21（全皮質の 1.28倍） ／ 右 5.87（全皮質の 1.26倍）
+  補足       左 3.66（全皮質の 0.75倍） ／ 右 3.74（全皮質の 0.80倍）
+  前補足      左 3.14（全皮質の 0.65倍） ／ 右 3.14（全皮質の 0.68倍）
+  視覚       左 5.89（全皮質の 1.21倍） ／ 右 5.9（全皮質の 1.27倍）
+  嗅内       左 6.67（全皮質の 1.37倍） ／ 右 6.18（全皮質の 1.33倍）
+  島前       左 7.45（全皮質の 1.53倍） ／ 右 7.06（全皮質の 1.52倍）
+  島後       左 10（全皮質の 2.05倍） ／ 右 9.71（全皮質の 2.09倍）
+  縁上回      左 4.3（全皮質の 0.88倍） ／ 右 4.07（全皮質の 0.87倍）
+  腹側運動前    左 4.1（全皮質の 0.84倍） ／ 右 3.85（全皮質の 0.83倍）
+  海馬傍      左 7.38（全皮質の 1.52倍） ／ 右 7.42（全皮質の 1.59倍）
+  脳梁膨大後    左 4.98（全皮質の 1.02倍） ／ 右 5.24（全皮質の 1.13倍）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/6196cb10bbe37803b559fe58 ...
+Downloaded 1548288 of 2374138 bytes (65.2%%, 00 HR 00 MIN 01 SEC remaining)
+[fetch_single_file]  ...done. (3 seconds, 0 min)
+
+[Warning] for {'source': 'beliveau2017', 'desc': 'sb207145', 'space': 'MNI152', 'res': '1mm'}: This annotation is best used in the provided fsaverage space. MNI152 maps should only be used for subcortical data.
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'sb207145', 'space': 'MNI152', 'res': '1mm'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+（beliveau2017・sb207145・MNI152・1mm は MNI152 の地図 ⇒ 皮質の区画では平均しない。皮質の外は次の道具で）
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638542c2c86e2818d588f461 ...
+[fetch_single_file]  ...done. (4 seconds, 0 min)
+
+[fetch_single_file] Downloading data from https://files.osf.io/v1/resources/4mw3a/providers/osfstorage/638542b2a98e5f1ac2103866 ...
+[fetch_single_file]  ...done. (1 seconds, 0 min)
+
+
+[References] Please cite the following papers if you are using this data:
+
+  For {'source': 'beliveau2017', 'desc': 'sb207145', 'space': 'fsaverage', 'den': '164k'}:
+  [primary]:
+    Vincent Beliveau, Melanie Ganz, Ling Feng, Brice Ozenne, Liselotte Højgaard, Patrick M Fisher, Claus Svarer, Douglas N Greve, and Gitte M Knudsen. A high-resolution in vivo atlas of the human brain's serotonin system. Journal of Neuroscience, 37(1):120–128, 2017.
+  [secondary]:
+    
+
+══ beliveau2017・sb207145・fsaverage・164k
+  聴覚       左 1.96（全皮質の 0.93倍） ／ 右 1.9（全皮質の 0.92倍）
+  連合       左 2.09（全皮質の 1.00倍） ／ 右 2.09（全皮質の 1.02倍）
+  高次       左 2.63（全皮質の 1.25倍） ／ 右 2.58（全皮質の 1.25倍）
+  STS1     左 2.6（全皮質の 1.24倍） ／ 右 2.48（全皮質の 1.21倍）
+  STS2     左 2.67（全皮質の 1.27倍） ／ 右 2.7（全皮質の 1.31倍）
+  中側頭後     左 2.83（全皮質の 1.35倍） ／ 右 2.72（全皮質の 1.32倍）
+  TPJ      左 2.64（全皮質の 1.26倍） ／ 右 2.62（全皮質の 1.27倍）
+  44       左 2.25（全皮質の 1.07倍） ／ 右 2.14（全皮質の 1.04倍）
+  45       左 2.18（全皮質の 1.04倍） ／ 右 2.1（全皮質の 1.02倍）
+  運動       左 1.98（全皮質の 0.94倍） ／ 右 1.89（全皮質の 0.92倍）
+  前頭前野     左 2.29（全皮質の 1.09倍） ／ 右 2.14（全皮質の 1.04倍）
+  眼窩前頭     左 2.25（全皮質の 1.07倍） ／ 右 2.14（全皮質の 1.04倍）
+  前帯状      左 2.33（全皮質の 1.11倍） ／ 右 2.2（全皮質の 1.07倍）
+  補足       左 1.53（全皮質の 0.73倍） ／ 右 1.6（全皮質の 0.78倍）
+  前補足      左 1.86（全皮質の 0.89倍） ／ 右 1.84（全皮質の 0.90倍）
+  視覚       左 1.42（全皮質の 0.68倍） ／ 右 1.46（全皮質の 0.71倍）
+  嗅内       左 1.88（全皮質の 0.90倍） ／ 右 1.87（全皮質の 0.91倍）
+  島前       左 2.17（全皮質の 1.04倍） ／ 右 2.05（全皮質の 0.99倍）
+  島後       左 2.26（全皮質の 1.08倍） ／ 右 2.21（全皮質の 1.07倍）
+  縁上回      左 2.51（全皮質の 1.20倍） ／ 右 2.42（全皮質の 1.17倍）
+  腹側運動前    左 2.18（全皮質の 1.04倍） ／ 右 2.13（全皮質の 1.03倍）
+  海馬傍      左 2.17（全皮質の 1.04倍） ／ 右 2.05（全皮質の 0.99倍）
+  脳梁膨大後    左 1.61（全皮質の 0.77倍） ／ 右 1.68（全皮質の 0.82倍）
+
+（data_v107_receptor.txt に書いた）
