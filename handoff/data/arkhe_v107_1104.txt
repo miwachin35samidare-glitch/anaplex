@@ -1,0 +1,679 @@
+miwa@arkhe:~/anaplex$ cd ~/anaplex && ~/siibra-venv/bin/python v107_measure.py 2>&1 | tee data_v107_out.txt && ~/siibra-venv/bin/python julich_volume.py Ia Id Ig PFop PFt "PF " PFcm 6v1 6v2 6r1 Ph1 Ph2 Ph3 2>&1 | tee data_julich107.txt
+1 体積（HCP、左＋右 mm³）と体数（高次 10,808 を 224 × 0.55 ＝ 123体として比で）
+  島前（AAIC・AVI・MI）7,571 ⇒ 86体
+  島後（Ig・PoI1・PoI2）7,693 ⇒ 88体
+  縁上回（PF・PFop・PFt・PFcm）14,848 ⇒ 169体
+  腹側運動前（6r・55b）7,656 ⇒ 87体
+  海馬傍（PeEc・PHA1・PHA2・PHA3）11,002 ⇒ 125体
+  脳梁膨大後（RSC）1,922 ⇒ 22体
+  （確かめ）44（44）4,628 ⇒ 53体
+  （確かめ）TPJ（PSL・STV・TPOJ1）11,770 ⇒ 134体
+  （確かめ：版103 の 44 は Julich で 99体・TPJ は 54体。HCP の比が大きくずれるなら地図の差）
+⚠️ 並びの mat が読めない：Please use HDF reader for matlab v7.3 files, e.g. h5py
+⚠️ 並びは annot から仮に（左→右）
+並びの確かめ L：MST⇄MT = -1.10（-1 前後なら合っている）
+並びの確かめ R：MST⇄MT = -1.09（-1 前後なら合っている）
+
+2 左：新しい部位（行）× 相手（列）の百分位（100 が最強）。93 以上に ＊
+  島前 ｜ 島前:― 島後:94＊ 縁上回:70 腹側運動前:59 海馬傍:30 脳梁膨大後:40 聴覚:78 連合:83 高次:75 STS1:54 STS2:55 中側頭後:64 TPJ:57 44:92 45:96＊ 運動:41 前頭前野:57 眼窩前頭:77 前帯状:19 補足:56 前補足:71 視覚:69 嗅内:40 海馬:40 比べ10pp:77
+  島後 ｜ 島前:94＊ 島後:― 縁上回:89 腹側運動前:64 海馬傍:37 脳梁膨大後:47 聴覚:95＊ 連合:94＊ 高次:89 STS1:67 STS2:64 中側頭後:75 TPJ:74 44:82 45:91 運動:46 前頭前野:54 眼窩前頭:69 前帯状:16 補足:58 前補足:70 視覚:70 嗅内:36 海馬:39 比べ10pp:62
+  縁上回 ｜ 島前:70 島後:89 縁上回:― 腹側運動前:78 海馬傍:22 脳梁膨大後:40 聴覚:90 連合:92 高次:91 STS1:72 STS2:72 中側頭後:81 TPJ:89 44:83 45:81 運動:80 前頭前野:42 眼窩前頭:32 前帯状:8 補足:51 前補足:51 視覚:31 嗅内:25 海馬:32 比べ10pp:50
+  腹側運動前 ｜ 島前:59 島後:64 縁上回:78 腹側運動前:― 海馬傍:20 脳梁膨大後:22 聴覚:41 連合:56 高次:62 STS1:55 STS2:62 中側頭後:87 TPJ:70 44:96＊ 45:84 運動:98＊ 前頭前野:84 眼窩前頭:26 前帯状:17 補足:84 前補足:94＊ 視覚:27 嗅内:17 海馬:29 比べ10pp:59
+  海馬傍 ｜ 島前:30 島後:37 縁上回:22 腹側運動前:20 海馬傍:― 脳梁膨大後:92 聴覚:18 連合:36 高次:46 STS1:31 STS2:32 中側頭後:71 TPJ:34 44:28 45:49 運動:11 前頭前野:26 眼窩前頭:55 前帯状:48 補足:19 前補足:24 視覚:92 嗅内:96＊ 海馬:98＊ 比べ10pp:57
+  脳梁膨大後 ｜ 島前:40 島後:47 縁上回:40 腹側運動前:22 海馬傍:92 脳梁膨大後:― 聴覚:36 連合:57 高次:62 STS1:45 STS2:48 中側頭後:70 TPJ:57 44:43 45:60 運動:15 前頭前野:33 眼窩前頭:67 前帯状:92 補足:57 前補足:41 視覚:94＊ 嗅内:96＊ 海馬:95＊ 比べ10pp:64
+
+2 右：新しい部位（行）× 相手（列）の百分位（100 が最強）。93 以上に ＊
+  島前 ｜ 島前:― 島後:94＊ 縁上回:76 腹側運動前:57 海馬傍:26 脳梁膨大後:32 聴覚:78 連合:84 高次:80 STS1:71 STS2:69 中側頭後:72 TPJ:75 44:94＊ 45:96＊ 運動:36 前頭前野:50 眼窩前頭:70 前帯状:12 補足:40 前補足:57 視覚:74 嗅内:20 海馬:28 比べ10pp:70
+  島後 ｜ 島前:94＊ 島後:― 縁上回:89 腹側運動前:60 海馬傍:34 脳梁膨大後:45 聴覚:95＊ 連合:95＊ 高次:90 STS1:79 STS2:76 中側頭後:80 TPJ:83 44:87 45:91 運動:47 前頭前野:51 眼窩前頭:64 前帯状:15 補足:49 前補足:59 視覚:72 嗅内:25 海馬:34 比べ10pp:64
+  縁上回 ｜ 島前:76 島後:89 縁上回:― 腹側運動前:68 海馬傍:17 脳梁膨大後:41 聴覚:90 連合:93 高次:90 STS1:68 STS2:69 中側頭後:76 TPJ:88 44:81 45:82 運動:74 前頭前野:40 眼窩前頭:27 前帯状:9 補足:42 前補足:43 視覚:28 嗅内:18 海馬:26 比べ10pp:48
+  腹側運動前 ｜ 島前:57 島後:60 縁上回:68 腹側運動前:― 海馬傍:13 脳梁膨大後:20 聴覚:37 連合:51 高次:55 STS1:36 STS2:36 中側頭後:75 TPJ:50 44:96＊ 45:83 運動:98＊ 前頭前野:84 眼窩前頭:19 前帯状:19 補足:84 前補足:93 視覚:25 嗅内:13 海馬:21 比べ10pp:53
+  海馬傍 ｜ 島前:26 島後:34 縁上回:17 腹側運動前:13 海馬傍:― 脳梁膨大後:92 聴覚:11 連合:28 高次:52 STS1:43 STS2:43 中側頭後:68 TPJ:38 44:27 45:38 運動:12 前頭前野:21 眼窩前頭:58 前帯状:57 補足:21 前補足:25 視覚:92 嗅内:95＊ 海馬:97＊ 比べ10pp:67
+  脳梁膨大後 ｜ 島前:32 島後:45 縁上回:41 腹側運動前:20 海馬傍:92 脳梁膨大後:― 聴覚:30 連合:53 高次:66 STS1:52 STS2:55 中側頭後:62 TPJ:60 44:43 45:48 運動:21 前頭前野:30 眼窩前頭:59 前帯状:93 補足:57 前補足:40 視覚:94＊ 嗅内:95＊ 海馬:94＊ 比べ10pp:62
+
+（data_v107.txt に書いた）
+[siibra:INFO] Version: 1.0.1-alpha.25
+Please file issues at https://github.com/FZJ-INM1-BDA/siibra-python.
+siibra 1.0.1-alpha.25
+Loading preconfigured Parcellation instances: 100%|██████████| 29/29 [00:00<00:00, 297.00Parcellation/s]
+地図：Julich-Brain Cytoarchitectonic Atlas (v3.1)
+数える領域 278：FuCd (Ventral Striatum, Fundus of Caudate Nucleus) right／FuCd (Ventral Striatum, Fundus of Caudate Nucleus) left／AcbM (Ventral Striatum, Medial Accumbens) right／AcbM (Ventral Striatum, Medial Accumbens) left／AcbL (Ventral Striatum, Lateral Accumbens) right／AcbL (Ventral Striatum, Lateral Accumbens) left／FuP (Ventral Striatum, Fundus of Putamen) right／FuP (Ventral Striatum, Fundus of Putamen) left／Area 6ma (preSMA, mesial SFG) right／Area 6ma (preSMA, mesial SFG) left／Area 6mp (SMA, mesial SFG) right／Area 6mp (SMA, mesial SFG) left／Area Ia2 (Insula) right／Area Ia2 (Insula) left／Area Ia1 (Insula) right／Area Ia1 (Insula) left／Area Ia3 (Insula) right／Area Ia3 (Insula) left／Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) right／Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right／Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) left／Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left／Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) right／Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) right／Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) left／Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) left／SNC (Midbrain, Substantia Nigra pars compacta) right／SNC (Midbrain, Substantia Nigra pars compacta) left／SNR (Midbrain, Substantia Nigra pars reticulata) right／SNR (Midbrain, Substantia Nigra pars reticulata) left／Nfast (Cerebellum, Fastigial Nucleus) right／Nfast (Cerebellum, Fastigial Nucleus) left／PUm (Thalamus, medial pulvinar) right／PUm (Thalamus, medial pulvinar) left／AM (Thalamus, anteromedial Nucleus) right／AM (Thalamus, anteromedial Nucleus) left／VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) right／VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) left／VIM (Thalamus, ventral intermediate Nucleus) right／VIM (Thalamus, ventral intermediate Nucleus) left／VM (Thalamus, ventral medial Nucleus) right／VM (Thalamus, ventral medial Nucleus) left／VPM (Thalamus, ventral posterior medial Nucleus) right／VPM (Thalamus, ventral posterior medial Nucleus) left／CM (Thalamus, centromedian Nucleus) right／CM (Thalamus, centromedian Nucleus) left／VP (Ventral Pallidum) right／VP (Ventral Pallidum) left／Area Id2 (Insula) right／Area Id2 (Insula) left／Area Id8 (Insula) right／Area Id8 (Insula) left／Area Id1 (Insula) right／Area Id1 (Insula) left／Area Id9 (Insula) right／Area Id9 (Insula) left／Area Id7 (Insula) right／Area Id7 (Insula) left／Area Id5 (Insula) right／Area Id5 (Insula) left／Area Id6 (Insula) right／Area Id6 (Insula) left／Area Id10 (Insula) right／Area Id10 (Insula) left／Area Id4 (Insula) right／Area Id4 (Insula) left／Area Id3 (Insula) right／Area Id3 (Insula) left／NRp (Midbrain, Nucleus Ruber, parvocellular part) right／NRp (Midbrain, Nucleus Ruber, parvocellular part) left／NRm (Midbrain, Nucleus Ruber, magnocellular part) right／NRm (Midbrain, Nucleus Ruber, magnocellular part) left／Ch 4 (Basal Forebrain) right／BST (Basal Forebrain, Bed Nucleus) right／Ch 123 (Basal Forebrain) right／CM.AAA (Amygdala) right／CM.Ce (Amygdala) right／CM.Me (Amygdala) right／LB.Bl (Amygdala) right／LB.Bm (Amygdala) right／LB.Pl (Amygdala) right／LB.La (Amygdala) right／SF.AHi (Amygdala) right／SF.APir (Amygdala) right／SF.VCo (Amygdala) right／Astr (Amygdala) right／VTM (Amygdala) right／IF.ice (Amygdala) right／IF.iol (Amygdala) right／IF.ld (Amygdala) right／MF.icm (Amygdala) right／MF.lm (Amygdala) right／Area 5L (SPL) right／Area 7M (SPL) right／Area 7PC (SPL) right／Area 5M (SPL) right／Area 7P (SPL) right／Area 5Ci (SPL) right／Area 7A (SPL) right／Area 3b (PostCG) right／Area 1 (PostCG) right／Area 2 (PostCS) right／Area 3a (PostCG) right／Area Op1 (POperc) right／Area Op2 (POperc) right／Area Op3 (POperc) right／Area Op4 (POperc) right／Area PF (IPL) right／Area PFcm (IPL) right／Area PGa (IPL) right／Area PFt (IPL) right／Area PFm (IPL) right／Area PGp (IPL) right／Area PFop (IPL) right／Area hPO1 (POS) right／Area hIP1 (IPS) right／Area hIP7 (IPS) right／Area hIP3 (IPS) right／Area hIP2 (IPS) right／Area hIP4 (IPS) right／Area hIP5 (IPS) right／Area hIP6 (IPS) right／Area hIP8 (IPS) right／Frontal-to-Occipital (GapMap) right／Temporal-to-Parietal (GapMap) right／Frontal-I.2 (GapMap) right／Frontal-to-Temporal-II (GapMap) right／Frontal-I.1 (GapMap) right／Frontal-to-Temporal-I (GapMap) right／Frontal-II (GapMap) right／Area 6v3 (PreCG) right／Area 6v2 (PreCG) right／Area 6r1 (PreCG) right／Area 6v1 (PreCG) right／Area 6d2 (PreCG) right／Area 6d1 (PreCG) right／Area Fp1 (FPole) right／Area Fp2 (FPole) right／Area Fo1 (OFC) right／Area Fo3 (OFC) right／Area Fo2 (OFC) right／Area 4p (PreCG) right／Area 4a (PreCG) right／Area Op10 (Frontal Operculum) right／Area Op6 (Frontal Operculum) right／Area Op5 (Frontal Operculum) right／Area Op7 (Frontal Operculum) right／Area Op9 (Frontal Operculum) right／Area Op8 (Frontal Operculum) right／Area IFS4 (IFS) right／Area IFS2 (IFS) right／Area IFS1 (IFS) right／Area IFJ2 (IFS, PreCS) right／Area IFS3 (IFS) right／Area IFJ1 (IFS, PreCS) right／Area MFG2 (MFG) right／Area 44 (IFG) right／Area 45 (IFG) right／Area 8v2 (MFG) right／Area 8v1 (MFG) right／Area MFG4 (MFG) right／Area MFG1 (MFG) right／Area SFS2 (SFS) right／Area 6d3 (SFS) right／Area SFS1 (SFS) right／Area SFG3 (SFG) right／Area MFG5 (MFG, IFG) right／Area SFG2 (SFG) right／Area 8d2 (SFG) right／Area 8d1 (SFG) right／Area SFG4 (SFG) right／Area Fo6 (OFC) right／Area Fo5 (OFC) right／Area Fo7 (OFC) right／Area Fo4 (OFC) right／Area Ig3 (Insula) right／Area Ig3 (Insula) left／Area Ig1 (Insula) right／Area Ig1 (Insula) left／Area Ig2 (Insula) right／Area Ig2 (Insula) left／Area STS2 (STS) right／Area STS1 (STS) right／Area OTS1 (OTS) right／Area Te 3 (STG) right／Area Te 2.2 (STG) right／Area Te 2.1 (STG) right／Area Te 1.1 (HESCHL) right／Area Te 1.2 (HESCHL) right／Area Te 1.0 (HESCHL) right／Area Ph1 (PhG) right／Area Ph2 (PhG) right／Area Ph3 (PhG) right／Area CoS1 (CoS) right／Area TI (STG) right／Area TeI (STG) right／Area FG5 (FusG) right／Area FG2 (FusG) right／Area FG3 (FusG) right／Area FG1 (FusG) right／Area FG4 (FusG) right／Area TPJ (STG, SMG) right／Area hOc2 (V2, 18) right／Area hOc1 (V1, 17, CalcS) right／Area hOc6 (POS) right／Area hOc4d (Cuneus) right／Area hOc3d (Cuneus) right／Area hOc3v (LingG) right／Area hOc4v (LingG) right／Area hOc4lp (LOC) right／Area hOc5 (LOC) right／Area hOc4la (LOC) right／Area p24c.pd24cd (pACC) right／Area p24c.pd24cv (pACC) right／Area p24c.pv24c (pACC) right／Area 25.25a (sACC) right／Area 25.25p (sACC) right／Area p24ab.p24a (pACC) right／Area p24ab.p24b (pACC) right／Area s32 (sACC) right／Area 33 (ACC) right／Area p32 (pACC) right／Area s24.s24a (sACC) right／Area s24.s24b (sACC) right／HATA (Hippocampus) right／CA3 (Hippocampus) right／TrS (Hippocampus, Transsubiculum) right／Subc.PaS (Hippocampus, Parasubiculum) right／Subc.PreS (Hippocampus, Presubiculum) right／Subc.ProS (Hippocampus, Prosubiculum) right／Subc.Sub (Hippocampus, Subiculum) right／DG (Hippocampus) right／CA2 (Hippocampus) right／Area EC (Hippocampal Region, Entorhinal Cortex) right／CA1 (Hippocampus) right／TuTi (Basal Forebrain, Terminal islands) right／Tu (Basal Forebrain, Tuberculum) right／Ninterp (Cerebellum, Interposed Nucleus) right／Ndentv (Cerebellum, Ventral Dentate Nucleus) right／Ndentd (Cerebellum, Dorsal Dentate Nucleus) right／STN (Subthalamus) right／Rt (Thalamus, reticular Nucleus) right／ZI (Thalamus, zona incerta) right／CGM (Metathalamus) right／CGL (Metathalamus) right／MV (Thalamus, medioventral Nucleus) right／MD (Thalamus, mediodorsal Nucleus) right／Pv (Thalamus, paraventricular Nucleus) right／Po (Thalamus, posterior Nucleus) right／PUl (Thalamus, lateral pulvinar) right／Li (Thalamus, limitans Nucleus) right／Sg (Thalamus, suprageniculate Nucleus) right／LP (Thalamus, lateral posterior Nucleus) right／PUi (Thalamus, inferior pulvinar) right／PUa (Thalamus, anterior pulvinar) right／LD (Thalamus, lateral dorsal Nucleus) right／AV (Thalamus, anteroventral Nucleus) right／VPi (Thalamus, ventroposterior inferior Nucleus) right／VPL (Thalamus, ventral posterior lateral Nucleus) right／VLP (Thalamus, ventral lateral posterior Nucleus) right／VA (Thalamus, ventral anterior Nucleus (ventral)) right／VLA (Thalamus, ventral lateral anterior Nucleus) right／VAmc (Thalamus, ventral anterior Nucleus, magnocellular part) right／sPf (Thalamus, subparafascicular Nucleus) right／Pf (Thalamus, parafascicular Nucleus) right／CL (Thalamus, anterior intralaminar nuclei) right／Area PFop (IPL) left／Area PFt (IPL) left／Area PF (IPL) left／sPf (Thalamus, subparafascicular Nucleus) left／Pf (Thalamus, parafascicular Nucleus) left／Area PFcm (IPL) left／Area 6v1 (PreCG) left／Area 6v2 (PreCG) left／Area 6r1 (PreCG) left／Area Ph1 (PhG) left／Area Ph2 (PhG) left／Area Ph3 (PhG) left
+
+座標 mni152（最大確率の印、mm³）
+Loading preconfigured Space instances: 100%|██████████| 10/10 [00:00<00:00, 5870.26Space/s]
+Loading preconfigured Map instances: 100%|██████████| 63/63 [00:00<00:00, 158.79Map/s]
+  FuCd (Ventral Striatum, Fundus of Caudate Nucleus) right      1,043（mask）
+  FuCd (Ventral Striatum, Fundus of Caudate Nucleus) left      1,010（mask）
+  AcbM (Ventral Striatum, Medial Accumbens) right        178（mask）
+  AcbM (Ventral Striatum, Medial Accumbens) left        179（mask）
+  AcbL (Ventral Striatum, Lateral Accumbens) right        315（mask）
+  AcbL (Ventral Striatum, Lateral Accumbens) left        359（mask）
+  FuP (Ventral Striatum, Fundus of Putamen) right      1,671（mask）
+  FuP (Ventral Striatum, Fundus of Putamen) left      1,479（mask）
+  Area 6ma (preSMA, mesial SFG) right                3,528（mask）
+  Area 6ma (preSMA, mesial SFG) left                 3,435（mask）
+  Area 6mp (SMA, mesial SFG) right                   2,093（mask）
+  Area 6mp (SMA, mesial SFG) left                    1,859（mask）
+  Area Ia2 (Insula) right                              192（mask）
+  Area Ia2 (Insula) left                               183（mask）
+  Area Ia1 (Insula) right                              274（mask）
+  Area Ia1 (Insula) left                               189（mask）
+  Area Ia3 (Insula) right                              234（mask）
+  Area Ia3 (Insula) left                               358（mask）
+[siibra:WARNING] Region Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) right ✗ mask: NoMapAvailableError Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, 
+[siibra:WARNING] Region Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right ✗ mask: NoMapAvailableError Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right is not  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, U
+[siibra:WARNING] Region Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) left ✗ mask: NoMapAvailableError Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, 
+[siibra:WARNING] Region Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left ✗ mask: NoMapAvailableError Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left is not m ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, U
+[siibra:WARNING] Region Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) right ✗ mask: NoMapAvailableError Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) r ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) right ✗ mask: NoMapAvailableError Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part)  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) left ✗ mask: NoMapAvailableError Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) l ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) left ✗ mask: NoMapAvailableError Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part)  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal A
+  SNC (Midbrain, Substantia Nigra pars compacta) right        915（mask）
+  SNC (Midbrain, Substantia Nigra pars compacta) left        635（mask）
+  SNR (Midbrain, Substantia Nigra pars reticulata) right        606（mask）
+  SNR (Midbrain, Substantia Nigra pars reticulata) left        792（mask）
+  Nfast (Cerebellum, Fastigial Nucleus) right          243（mask）
+  Nfast (Cerebellum, Fastigial Nucleus) left           156（mask）
+  PUm (Thalamus, medial pulvinar) right                512（mask）
+  PUm (Thalamus, medial pulvinar) left                 810（mask）
+  AM (Thalamus, anteromedial Nucleus) right            135（mask）
+  AM (Thalamus, anteromedial Nucleus) left             130（mask）
+  VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) right         34（mask）
+  VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) left         28（mask）
+  VIM (Thalamus, ventral intermediate Nucleus) right      1,135（mask）
+  VIM (Thalamus, ventral intermediate Nucleus) left      1,124（mask）
+  VM (Thalamus, ventral medial Nucleus) right           47（mask）
+  VM (Thalamus, ventral medial Nucleus) left            20（mask）
+  VPM (Thalamus, ventral posterior medial Nucleus) right          7（mask）
+  VPM (Thalamus, ventral posterior medial Nucleus) left          9（mask）
+  CM (Thalamus, centromedian Nucleus) right            199（mask）
+  CM (Thalamus, centromedian Nucleus) left             164（mask）
+  VP (Ventral Pallidum) right                          635（mask）
+  VP (Ventral Pallidum) left                           539（mask）
+  Area Id2 (Insula) right                              480（mask）
+  Area Id2 (Insula) left                               656（mask）
+  Area Id8 (Insula) right                              870（mask）
+  Area Id8 (Insula) left                             1,064（mask）
+  Area Id1 (Insula) right                              394（mask）
+  Area Id1 (Insula) left                               386（mask）
+  Area Id9 (Insula) right                              916（mask）
+  Area Id9 (Insula) left                               688（mask）
+  Area Id7 (Insula) right                              719（mask）
+  Area Id7 (Insula) left                               826（mask）
+  Area Id5 (Insula) right                              954（mask）
+  Area Id5 (Insula) left                               740（mask）
+  Area Id6 (Insula) right                            2,641（mask）
+  Area Id6 (Insula) left                             2,930（mask）
+  Area Id10 (Insula) right                           1,632（mask）
+  Area Id10 (Insula) left                            1,436（mask）
+  Area Id4 (Insula) right                              903（mask）
+  Area Id4 (Insula) left                               904（mask）
+  Area Id3 (Insula) right                            1,114（mask）
+  Area Id3 (Insula) left                             1,131（mask）
+  NRp (Midbrain, Nucleus Ruber, parvocellular part) right        363（mask）
+  NRp (Midbrain, Nucleus Ruber, parvocellular part) left        272（mask）
+  NRm (Midbrain, Nucleus Ruber, magnocellular part) right         66（mask）
+  NRm (Midbrain, Nucleus Ruber, magnocellular part) left        285（mask）
+  Ch 4 (Basal Forebrain) right                         166（mask）
+  BST (Basal Forebrain, Bed Nucleus) right             180（mask）
+  Ch 123 (Basal Forebrain) right                       255（mask）
+[siibra:WARNING] Region CM.AAA (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.AAA (Amygdala) right                       ✗ mask: NoMapAvailableError CM.AAA (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.AAA (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region CM.Ce (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.Ce (Amygdala) right                        ✗ mask: NoMapAvailableError CM.Ce (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.Ce (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region CM.Me (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.Me (Amygdala) right                        ✗ mask: NoMapAvailableError CM.Me (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.Me (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Bl (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Bl (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Bl (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Bl (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Bm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Bm (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Bm (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Bm (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Pl (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Pl (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Pl (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Pl (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.La (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.La (Amygdala) right                        ✗ mask: NoMapAvailableError LB.La (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.La (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region SF.AHi (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.AHi (Amygdala) right                       ✗ mask: NoMapAvailableError SF.AHi (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.AHi (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region SF.APir (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.APir (Amygdala) right                      ✗ mask: NoMapAvailableError SF.APir (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetri ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.APir (Amygdala) right' does not match to any structure map
+[siibra:WARNING] Region SF.VCo (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.VCo (Amygdala) right                       ✗ mask: NoMapAvailableError SF.VCo (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.VCo (Amygdala) right' does not match to any structure mapp
+  Astr (Amygdala) right                                345（mask）
+  VTM (Amygdala) right                                 220（mask）
+[siibra:WARNING] Region IF.ice (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.ice (Amygdala) right                       ✗ mask: NoMapAvailableError IF.ice (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.ice (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region IF.iol (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.iol (Amygdala) right                       ✗ mask: NoMapAvailableError IF.iol (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.iol (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region IF.ld (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.ld (Amygdala) right                        ✗ mask: NoMapAvailableError IF.ld (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.ld (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region MF.icm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  MF.icm (Amygdala) right                       ✗ mask: NoMapAvailableError MF.icm (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'MF.icm (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region MF.lm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  MF.lm (Amygdala) right                        ✗ mask: NoMapAvailableError MF.lm (Amygdala) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetric  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'MF.lm (Amygdala) right' does not match to any structure mappe
+  Area 5L (SPL) right                                2,429（mask）
+  Area 7M (SPL) right                                  369（mask）
+  Area 7PC (SPL) right                               2,286（mask）
+  Area 5M (SPL) right                                2,796（mask）
+  Area 7P (SPL) right                                4,009（mask）
+  Area 5Ci (SPL) right                               2,068（mask）
+  Area 7A (SPL) right                                6,069（mask）
+  Area 3b (PostCG) right                             2,249（mask）
+  Area 1 (PostCG) right                              4,608（mask）
+  Area 2 (PostCS) right                              2,732（mask）
+  Area 3a (PostCG) right                               657（mask）
+  Area Op1 (POperc) right                            2,002（mask）
+  Area Op2 (POperc) right                              680（mask）
+  Area Op3 (POperc) right                              726（mask）
+  Area Op4 (POperc) right                            2,634（mask）
+  Area PF (IPL) right                                4,920（mask）
+  Area PFcm (IPL) right                              2,299（mask）
+  Area PGa (IPL) right                               6,386（mask）
+  Area PFt (IPL) right                               3,366（mask）
+  Area PFm (IPL) right                               5,753（mask）
+  Area PGp (IPL) right                               6,284（mask）
+  Area PFop (IPL) right                              1,423（mask）
+  Area hPO1 (POS) right                              1,997（mask）
+  Area hIP1 (IPS) right                              1,246（mask）
+  Area hIP7 (IPS) right                              2,281（mask）
+  Area hIP3 (IPS) right                              4,382（mask）
+  Area hIP2 (IPS) right                                784（mask）
+  Area hIP4 (IPS) right                              1,063（mask）
+  Area hIP5 (IPS) right                              1,189（mask）
+  Area hIP6 (IPS) right                              2,212（mask）
+  Area hIP8 (IPS) right                              1,767（mask）
+  Frontal-to-Occipital (GapMap) right               33,839（mask）
+  Temporal-to-Parietal (GapMap) right               67,445（mask）
+  Frontal-I.2 (GapMap) right                         5,462（mask）
+  Frontal-to-Temporal-II (GapMap) right              2,558（mask）
+  Frontal-I.1 (GapMap) right                         5,377（mask）
+  Frontal-to-Temporal-I (GapMap) right               2,062（mask）
+  Frontal-II (GapMap) right                          3,963（mask）
+  Area 6v3 (PreCG) right                             2,802（mask）
+  Area 6v2 (PreCG) right                             3,872（mask）
+  Area 6r1 (PreCG) right                             2,405（mask）
+  Area 6v1 (PreCG) right                             3,947（mask）
+  Area 6d2 (PreCG) right                             3,385（mask）
+  Area 6d1 (PreCG) right                             4,739（mask）
+  Area Fp1 (FPole) right                            10,210（mask）
+  Area Fp2 (FPole) right                             3,469（mask）
+  Area Fo1 (OFC) right                               3,045（mask）
+  Area Fo3 (OFC) right                               6,747（mask）
+  Area Fo2 (OFC) right                               1,942（mask）
+  Area 4p (PreCG) right                              1,500（mask）
+  Area 4a (PreCG) right                              9,280（mask）
+  Area Op10 (Frontal Operculum) right                  174（mask）
+  Area Op6 (Frontal Operculum) right                 1,045（mask）
+  Area Op5 (Frontal Operculum) right                 1,503（mask）
+  Area Op7 (Frontal Operculum) right                   398（mask）
+  Area Op9 (Frontal Operculum) right                 2,449（mask）
+  Area Op8 (Frontal Operculum) right                 1,262（mask）
+  Area IFS4 (IFS) right                                702（mask）
+  Area IFS2 (IFS) right                                311（mask）
+  Area IFS1 (IFS) right                              1,267（mask）
+  Area IFJ2 (IFS, PreCS) right                         454（mask）
+  Area IFS3 (IFS) right                                437（mask）
+  Area IFJ1 (IFS, PreCS) right                         401（mask）
+  Area MFG2 (MFG) right                              2,474（mask）
+  Area 44 (IFG) right                                2,661（mask）
+  Area 45 (IFG) right                                5,267（mask）
+  Area 8v2 (MFG) right                                 550（mask）
+  Area 8v1 (MFG) right                               3,646（mask）
+  Area MFG4 (MFG) right                              4,646（mask）
+  Area MFG1 (MFG) right                              1,506（mask）
+  Area SFS2 (SFS) right                              1,585（mask）
+  Area 6d3 (SFS) right                               4,442（mask）
+  Area SFS1 (SFS) right                                848（mask）
+  Area SFG3 (SFG) right                              1,891（mask）
+  Area MFG5 (MFG, IFG) right                         2,557（mask）
+  Area SFG2 (SFG) right                              4,682（mask）
+  Area 8d2 (SFG) right                               3,085（mask）
+  Area 8d1 (SFG) right                               3,932（mask）
+  Area SFG4 (SFG) right                              2,178（mask）
+  Area Fo6 (OFC) right                               2,715（mask）
+  Area Fo5 (OFC) right                                 598（mask）
+  Area Fo7 (OFC) right                               1,165（mask）
+  Area Fo4 (OFC) right                               1,574（mask）
+  Area Ig3 (Insula) right                              517（mask）
+  Area Ig3 (Insula) left                               431（mask）
+  Area Ig1 (Insula) right                              359（mask）
+  Area Ig1 (Insula) left                               341（mask）
+  Area Ig2 (Insula) right                              579（mask）
+  Area Ig2 (Insula) left                               621（mask）
+  Area STS2 (STS) right                              6,573（mask）
+  Area STS1 (STS) right                              3,326（mask）
+  Area OTS1 (OTS) right                              1,042（mask）
+  Area Te 3 (STG) right                              4,309（mask）
+  Area Te 2.2 (STG) right                            1,974（mask）
+  Area Te 2.1 (STG) right                              485（mask）
+  Area Te 1.1 (HESCHL) right                         1,078（mask）
+  Area Te 1.2 (HESCHL) right                           523（mask）
+  Area Te 1.0 (HESCHL) right                           779（mask）
+  Area Ph1 (PhG) right                               1,859（mask）
+  Area Ph2 (PhG) right                               1,057（mask）
+  Area Ph3 (PhG) right                                 823（mask）
+  Area CoS1 (CoS) right                                317（mask）
+  Area TI (STG) right                                1,053（mask）
+  Area TeI (STG) right                               1,270（mask）
+  Area FG5 (FusG) right                              1,179（mask）
+  Area FG2 (FusG) right                              1,221（mask）
+  Area FG3 (FusG) right                              1,397（mask）
+  Area FG1 (FusG) right                              1,489（mask）
+  Area FG4 (FusG) right                              4,524（mask）
+  Area TPJ (STG, SMG) right                          1,465（mask）
+  Area hOc2 (V2, 18) right                           9,201（mask）
+  Area hOc1 (V1, 17, CalcS) right                   12,016（mask）
+  Area hOc6 (POS) right                                387（mask）
+  Area hOc4d (Cuneus) right                          2,156（mask）
+  Area hOc3d (Cuneus) right                          3,927（mask）
+  Area hOc3v (LingG) right                           3,804（mask）
+  Area hOc4v (LingG) right                           3,463（mask）
+  Area hOc4lp (LOC) right                            3,772（mask）
+  Area hOc5 (LOC) right                                549（mask）
+  Area hOc4la (LOC) right                            3,973（mask）
+[siibra:WARNING] Region Area p24c.pd24cd (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pd24cd (pACC) right                 ✗ mask: NoMapAvailableError Area p24c.pd24cd (pACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asym ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pd24cd (pACC) right' does not match to any structur
+[siibra:WARNING] Region Area p24c.pd24cv (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pd24cv (pACC) right                 ✗ mask: NoMapAvailableError Area p24c.pd24cv (pACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asym ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pd24cv (pACC) right' does not match to any structur
+[siibra:WARNING] Region Area p24c.pv24c (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pv24c (pACC) right                  ✗ mask: NoMapAvailableError Area p24c.pv24c (pACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymm ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pv24c (pACC) right' does not match to any structure
+[siibra:WARNING] Region Area 25.25a (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area 25.25a (sACC) right                      ✗ mask: NoMapAvailableError Area 25.25a (sACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetri ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area 25.25a (sACC) right' does not match to any structure map
+[siibra:WARNING] Region Area 25.25p (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area 25.25p (sACC) right                      ✗ mask: NoMapAvailableError Area 25.25p (sACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmetri ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area 25.25p (sACC) right' does not match to any structure map
+[siibra:WARNING] Region Area p24ab.p24a (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24ab.p24a (pACC) right                  ✗ mask: NoMapAvailableError Area p24ab.p24a (pACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymm ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24ab.p24a (pACC) right' does not match to any structure
+[siibra:WARNING] Region Area p24ab.p24b (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24ab.p24b (pACC) right                  ✗ mask: NoMapAvailableError Area p24ab.p24b (pACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymm ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24ab.p24b (pACC) right' does not match to any structure
+  Area s32 (sACC) right                              1,543（mask）
+  Area 33 (ACC) right                                1,873（mask）
+  Area p32 (pACC) right                              5,818（mask）
+[siibra:WARNING] Region Area s24.s24a (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area s24.s24a (sACC) right                    ✗ mask: NoMapAvailableError Area s24.s24a (sACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmet ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area s24.s24a (sACC) right' does not match to any structure m
+[siibra:WARNING] Region Area s24.s24b (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area s24.s24b (sACC) right                    ✗ mask: NoMapAvailableError Area s24.s24b (sACC) right is not mapped in MNI 152 ICBM 2009c Nonlinear Asymmet ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area s24.s24b (sACC) right' does not match to any structure m
+  HATA (Hippocampus) right                             266（mask）
+  CA3 (Hippocampus) right                              670（mask）
+  TrS (Hippocampus, Transsubiculum) right              470（mask）
+[siibra:WARNING] Region Subc.PaS (Hippocampus, Parasubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.PaS (Hippocampus, Parasubiculum) right   ✗ mask: NoMapAvailableError Subc.PaS (Hippocampus, Parasubiculum) right is not mapped in MNI 152 ICBM 2009c  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.PaS (Hippocampus, Parasubiculum) right' does not match t
+[siibra:WARNING] Region Subc.PreS (Hippocampus, Presubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.PreS (Hippocampus, Presubiculum) right   ✗ mask: NoMapAvailableError Subc.PreS (Hippocampus, Presubiculum) right is not mapped in MNI 152 ICBM 2009c  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.PreS (Hippocampus, Presubiculum) right' does not match t
+[siibra:WARNING] Region Subc.ProS (Hippocampus, Prosubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.ProS (Hippocampus, Prosubiculum) right   ✗ mask: NoMapAvailableError Subc.ProS (Hippocampus, Prosubiculum) right is not mapped in MNI 152 ICBM 2009c  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.ProS (Hippocampus, Prosubiculum) right' does not match t
+[siibra:WARNING] Region Subc.Sub (Hippocampus, Subiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.Sub (Hippocampus, Subiculum) right       ✗ mask: NoMapAvailableError Subc.Sub (Hippocampus, Subiculum) right is not mapped in MNI 152 ICBM 2009c Nonl ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.Sub (Hippocampus, Subiculum) right' does not match to an
+  DG (Hippocampus) right                               199（mask）
+  CA2 (Hippocampus) right                            1,279（mask）
+  Area EC (Hippocampal Region, Entorhinal Cortex) right      1,436（mask）
+  CA1 (Hippocampus) right                            1,723（mask）
+  TuTi (Basal Forebrain, Terminal islands) right        353（mask）
+  Tu (Basal Forebrain, Tuberculum) right                64（mask）
+  Ninterp (Cerebellum, Interposed Nucleus) right        289（mask）
+  Ndentv (Cerebellum, Ventral Dentate Nucleus) right        432（mask）
+  Ndentd (Cerebellum, Dorsal Dentate Nucleus) right      1,215（mask）
+  STN (Subthalamus) right                              341（mask）
+  Rt (Thalamus, reticular Nucleus) right             1,917（mask）
+  ZI (Thalamus, zona incerta) right                    239（mask）
+  CGM (Metathalamus) right                              82（mask）
+  CGL (Metathalamus) right                             130（mask）
+  MV (Thalamus, medioventral Nucleus) right            117（mask）
+  MD (Thalamus, mediodorsal Nucleus) right             816（mask）
+  Pv (Thalamus, paraventricular Nucleus) right          77（mask）
+  Po (Thalamus, posterior Nucleus) right                76（mask）
+  PUl (Thalamus, lateral pulvinar) right               475（mask）
+  Li (Thalamus, limitans Nucleus) right                217（mask）
+  Sg (Thalamus, suprageniculate Nucleus) right         203（mask）
+  LP (Thalamus, lateral posterior Nucleus) right        381（mask）
+  PUi (Thalamus, inferior pulvinar) right              109（mask）
+  PUa (Thalamus, anterior pulvinar) right              207（mask）
+  LD (Thalamus, lateral dorsal Nucleus) right          288（mask）
+  AV (Thalamus, anteroventral Nucleus) right           284（mask）
+  VPi (Thalamus, ventroposterior inferior Nucleus) right        112（mask）
+  VPL (Thalamus, ventral posterior lateral Nucleus) right        711（mask）
+  VLP (Thalamus, ventral lateral posterior Nucleus) right        595（mask）
+  VA (Thalamus, ventral anterior Nucleus (ventral)) right        887（mask）
+  VLA (Thalamus, ventral lateral anterior Nucleus) right         65（mask）
+  VAmc (Thalamus, ventral anterior Nucleus, magnocellular part) right        492（mask）
+  sPf (Thalamus, subparafascicular Nucleus) right        167（mask）
+  Pf (Thalamus, parafascicular Nucleus) right           89（mask）
+  CL (Thalamus, anterior intralaminar nuclei) right      1,204（mask）
+  Area PFop (IPL) left                               2,184（mask）
+  Area PFt (IPL) left                                4,065（mask）
+  Area PF (IPL) left                                 4,059（mask）
+  sPf (Thalamus, subparafascicular Nucleus) left        127（mask）
+  Pf (Thalamus, parafascicular Nucleus) left            84（mask）
+  Area PFcm (IPL) left                               2,915（mask）
+  Area 6v1 (PreCG) left                              4,266（mask）
+  Area 6v2 (PreCG) left                              3,246（mask）
+  Area 6r1 (PreCG) left                              1,615（mask）
+  Area Ph1 (PhG) left                                1,102（mask）
+  Area Ph2 (PhG) left                                1,323（mask）
+  Area Ph3 (PhG) left                                  654（mask）
+  ⇒ Te1（1.0＋1.1＋1.2、左右込み）2,380mm³（前に使った値 5,917）
+  ⇒ 補足運動野 6mp（左右込み）3,952mm³ ／ Te1 の 1.66倍
+  ⇒ 前補足運動野 6ma（左右込み）6,963mm³ ／ Te1 の 2.93倍
+
+座標 colin27（最大確率の印、mm³）
+  FuCd (Ventral Striatum, Fundus of Caudate Nucleus) right      1,146（mask）
+  FuCd (Ventral Striatum, Fundus of Caudate Nucleus) left        987（mask）
+  AcbM (Ventral Striatum, Medial Accumbens) right        159（mask）
+  AcbM (Ventral Striatum, Medial Accumbens) left        143（mask）
+  AcbL (Ventral Striatum, Lateral Accumbens) right        376（mask）
+  AcbL (Ventral Striatum, Lateral Accumbens) left        375（mask）
+  FuP (Ventral Striatum, Fundus of Putamen) right      1,904（mask）
+  FuP (Ventral Striatum, Fundus of Putamen) left      1,479（mask）
+  Area 6ma (preSMA, mesial SFG) right                2,600（mask）
+  Area 6ma (preSMA, mesial SFG) left                 2,749（mask）
+  Area 6mp (SMA, mesial SFG) right                   1,440（mask）
+  Area 6mp (SMA, mesial SFG) left                    1,498（mask）
+  Area Ia2 (Insula) right                              179（mask）
+  Area Ia2 (Insula) left                               222（mask）
+  Area Ia1 (Insula) right                              240（mask）
+  Area Ia1 (Insula) left                               246（mask）
+  Area Ia3 (Insula) right                              131（mask）
+  Area Ia3 (Insula) left                               301（mask）
+[siibra:WARNING] Region Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) right ✗ mask: NoMapAvailableError Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, 
+[siibra:WARNING] Region Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right ✗ mask: NoMapAvailableError Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) right is not  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, U
+[siibra:WARNING] Region Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis) left ✗ mask: NoMapAvailableError Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, Incisura temporalis ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tit (PiriformCortexMesial, Piriform temporal Area, 
+[siibra:WARNING] Region Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left ✗ mask: NoMapAvailableError Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, Uncus) left is not m ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirT.Tu (PiriformCortexMesial, Piriform temporal Area, U
+[siibra:WARNING] Region Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) right ✗ mask: NoMapAvailableError Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) r ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) right ✗ mask: NoMapAvailableError Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part)  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) left ✗ mask: NoMapAvailableError Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal Area, dorsal part) l ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBd (PiriformCortexMesial, Piriform temporobasal A
+[siibra:WARNING] Region Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) left not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part) left ✗ mask: NoMapAvailableError Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal Area, ventral part)  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area PirTB.TBv (PiriformCortexMesial, Piriform temporobasal A
+  SNC (Midbrain, Substantia Nigra pars compacta) right        457（mask）
+  SNC (Midbrain, Substantia Nigra pars compacta) left        290（mask）
+  SNR (Midbrain, Substantia Nigra pars reticulata) right        960（mask）
+  SNR (Midbrain, Substantia Nigra pars reticulata) left        797（mask）
+  Nfast (Cerebellum, Fastigial Nucleus) right          322（mask）
+  Nfast (Cerebellum, Fastigial Nucleus) left           148（mask）
+  PUm (Thalamus, medial pulvinar) right                662（mask）
+  PUm (Thalamus, medial pulvinar) left                 872（mask）
+  AM (Thalamus, anteromedial Nucleus) right            144（mask）
+  AM (Thalamus, anteromedial Nucleus) left             123（mask）
+  VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) right         27（mask）
+  VPMpc (Thalamus, ventral posterior medial Nucleus, parvocellular part) left         38（mask）
+  VIM (Thalamus, ventral intermediate Nucleus) right      1,189（mask）
+  VIM (Thalamus, ventral intermediate Nucleus) left      1,088（mask）
+  VM (Thalamus, ventral medial Nucleus) right           42（mask）
+  VM (Thalamus, ventral medial Nucleus) left            16（mask）
+  VPM (Thalamus, ventral posterior medial Nucleus) right         18（mask）
+  VPM (Thalamus, ventral posterior medial Nucleus) left         16（mask）
+  CM (Thalamus, centromedian Nucleus) right            227（mask）
+  CM (Thalamus, centromedian Nucleus) left             179（mask）
+  VP (Ventral Pallidum) right                          695（mask）
+  VP (Ventral Pallidum) left                           461（mask）
+  Area Id2 (Insula) right                              404（mask）
+  Area Id2 (Insula) left                               512（mask）
+  Area Id8 (Insula) right                              491（mask）
+  Area Id8 (Insula) left                               875（mask）
+  Area Id1 (Insula) right                              534（mask）
+  Area Id1 (Insula) left                               456（mask）
+  Area Id9 (Insula) right                              692（mask）
+  Area Id9 (Insula) left                             1,015（mask）
+  Area Id7 (Insula) right                              719（mask）
+  Area Id7 (Insula) left                               619（mask）
+  Area Id5 (Insula) right                            1,157（mask）
+  Area Id5 (Insula) left                               763（mask）
+  Area Id6 (Insula) right                            2,842（mask）
+  Area Id6 (Insula) left                             2,700（mask）
+  Area Id10 (Insula) right                           1,463（mask）
+  Area Id10 (Insula) left                            1,024（mask）
+  Area Id4 (Insula) right                              872（mask）
+  Area Id4 (Insula) left                               574（mask）
+  Area Id3 (Insula) right                            1,277（mask）
+  Area Id3 (Insula) left                             1,030（mask）
+  NRp (Midbrain, Nucleus Ruber, parvocellular part) right        350（mask）
+  NRp (Midbrain, Nucleus Ruber, parvocellular part) left        401（mask）
+  NRm (Midbrain, Nucleus Ruber, magnocellular part) right         98（mask）
+  NRm (Midbrain, Nucleus Ruber, magnocellular part) left        399（mask）
+  Ch 4 (Basal Forebrain) right                          95（mask）
+  BST (Basal Forebrain, Bed Nucleus) right             218（mask）
+  Ch 123 (Basal Forebrain) right                       230（mask）
+[siibra:WARNING] Region CM.AAA (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.AAA (Amygdala) right                       ✗ mask: NoMapAvailableError CM.AAA (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.AAA (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region CM.Ce (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.Ce (Amygdala) right                        ✗ mask: NoMapAvailableError CM.Ce (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.Ce (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region CM.Me (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  CM.Me (Amygdala) right                        ✗ mask: NoMapAvailableError CM.Me (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'CM.Me (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Bl (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Bl (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Bl (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Bl (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Bm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Bm (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Bm (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Bm (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.Pl (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.Pl (Amygdala) right                        ✗ mask: NoMapAvailableError LB.Pl (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.Pl (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region LB.La (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  LB.La (Amygdala) right                        ✗ mask: NoMapAvailableError LB.La (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'LB.La (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region SF.AHi (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.AHi (Amygdala) right                       ✗ mask: NoMapAvailableError SF.AHi (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.AHi (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region SF.APir (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.APir (Amygdala) right                      ✗ mask: NoMapAvailableError SF.APir (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.APir (Amygdala) right' does not match to any structure map
+[siibra:WARNING] Region SF.VCo (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  SF.VCo (Amygdala) right                       ✗ mask: NoMapAvailableError SF.VCo (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'SF.VCo (Amygdala) right' does not match to any structure mapp
+  Astr (Amygdala) right                                388（mask）
+  VTM (Amygdala) right                                 412（mask）
+[siibra:WARNING] Region IF.ice (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.ice (Amygdala) right                       ✗ mask: NoMapAvailableError IF.ice (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.ice (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region IF.iol (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.iol (Amygdala) right                       ✗ mask: NoMapAvailableError IF.iol (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.iol (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region IF.ld (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  IF.ld (Amygdala) right                        ✗ mask: NoMapAvailableError IF.ld (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'IF.ld (Amygdala) right' does not match to any structure mappe
+[siibra:WARNING] Region MF.icm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  MF.icm (Amygdala) right                       ✗ mask: NoMapAvailableError MF.icm (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map. ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'MF.icm (Amygdala) right' does not match to any structure mapp
+[siibra:WARNING] Region MF.lm (Amygdala) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  MF.lm (Amygdala) right                        ✗ mask: NoMapAvailableError MF.lm (Amygdala) right is not mapped in MNI Colin 27 as a MapType.LABELLED map.  ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'MF.lm (Amygdala) right' does not match to any structure mappe
+  Area 5L (SPL) right                                2,992（mask）
+  Area 7M (SPL) right                                  400（mask）
+  Area 7PC (SPL) right                               2,268（mask）
+  Area 5M (SPL) right                                2,064（mask）
+  Area 7P (SPL) right                                3,463（mask）
+  Area 5Ci (SPL) right                               1,225（mask）
+  Area 7A (SPL) right                                4,421（mask）
+  Area 3b (PostCG) right                               731（mask）
+  Area 1 (PostCG) right                              3,355（mask）
+  Area 2 (PostCS) right                              1,714（mask）
+  Area 3a (PostCG) right                             1,627（mask）
+  Area Op1 (POperc) right                            1,671（mask）
+  Area Op2 (POperc) right                              560（mask）
+  Area Op3 (POperc) right                              460（mask）
+  Area Op4 (POperc) right                            2,795（mask）
+  Area PF (IPL) right                                2,568（mask）
+  Area PFcm (IPL) right                              2,507（mask）
+  Area PGa (IPL) right                               3,823（mask）
+  Area PFt (IPL) right                               2,605（mask）
+  Area PFm (IPL) right                               4,655（mask）
+  Area PGp (IPL) right                               4,529（mask）
+  Area PFop (IPL) right                              2,441（mask）
+  Area hPO1 (POS) right                              1,634（mask）
+  Area hIP1 (IPS) right                              1,194（mask）
+  Area hIP7 (IPS) right                              2,398（mask）
+  Area hIP3 (IPS) right                              3,627（mask）
+  Area hIP2 (IPS) right                                688（mask）
+  Area hIP4 (IPS) right                              1,501（mask）
+  Area hIP5 (IPS) right                                594（mask）
+  Area hIP6 (IPS) right                              1,464（mask）
+  Area hIP8 (IPS) right                              1,710（mask）
+  Frontal-to-Occipital (GapMap) right               38,024（mask）
+  Temporal-to-Parietal (GapMap) right               75,011（mask）
+  Frontal-I.2 (GapMap) right                         4,672（mask）
+  Frontal-to-Temporal-II (GapMap) right              4,477（mask）
+  Frontal-I.1 (GapMap) right                         4,705（mask）
+  Frontal-to-Temporal-I (GapMap) right               2,643（mask）
+  Frontal-II (GapMap) right                          4,536（mask）
+  Area 6v3 (PreCG) right                             1,629（mask）
+  Area 6v2 (PreCG) right                             3,402（mask）
+  Area 6r1 (PreCG) right                             2,264（mask）
+  Area 6v1 (PreCG) right                             2,006（mask）
+  Area 6d2 (PreCG) right                             3,574（mask）
+  Area 6d1 (PreCG) right                             3,917（mask）
+  Area Fp1 (FPole) right                             6,703（mask）
+  Area Fp2 (FPole) right                             3,528（mask）
+  Area Fo1 (OFC) right                               2,497（mask）
+  Area Fo3 (OFC) right                               5,040（mask）
+  Area Fo2 (OFC) right                               1,616（mask）
+  Area 4p (PreCG) right                              1,521（mask）
+  Area 4a (PreCG) right                              9,411（mask）
+  Area Op10 (Frontal Operculum) right                   88（mask）
+  Area Op6 (Frontal Operculum) right                   835（mask）
+  Area Op5 (Frontal Operculum) right                 1,223（mask）
+  Area Op7 (Frontal Operculum) right                   139（mask）
+  Area Op9 (Frontal Operculum) right                 1,671（mask）
+  Area Op8 (Frontal Operculum) right                 1,182（mask）
+  Area IFS4 (IFS) right                                181（mask）
+  Area IFS2 (IFS) right                                287（mask）
+  Area IFS1 (IFS) right                                840（mask）
+  Area IFJ2 (IFS, PreCS) right                         619（mask）
+  Area IFS3 (IFS) right                                277（mask）
+  Area IFJ1 (IFS, PreCS) right                         617（mask）
+  Area MFG2 (MFG) right                              2,651（mask）
+  Area 44 (IFG) right                                2,378（mask）
+  Area 45 (IFG) right                                5,201（mask）
+  Area 8v2 (MFG) right                               1,044（mask）
+  Area 8v1 (MFG) right                               2,382（mask）
+  Area MFG4 (MFG) right                              3,913（mask）
+  Area MFG1 (MFG) right                                853（mask）
+  Area SFS2 (SFS) right                                918（mask）
+  Area 6d3 (SFS) right                               3,636（mask）
+  Area SFS1 (SFS) right                              1,118（mask）
+  Area SFG3 (SFG) right                              1,446（mask）
+  Area MFG5 (MFG, IFG) right                         1,560（mask）
+  Area SFG2 (SFG) right                              3,466（mask）
+  Area 8d2 (SFG) right                               3,608（mask）
+  Area 8d1 (SFG) right                               3,024（mask）
+  Area SFG4 (SFG) right                              2,137（mask）
+  Area Fo6 (OFC) right                               2,149（mask）
+  Area Fo5 (OFC) right                                 531（mask）
+  Area Fo7 (OFC) right                                 589（mask）
+  Area Fo4 (OFC) right                               1,025（mask）
+  Area Ig3 (Insula) right                              355（mask）
+  Area Ig3 (Insula) left                               324（mask）
+  Area Ig1 (Insula) right                              511（mask）
+  Area Ig1 (Insula) left                               236（mask）
+  Area Ig2 (Insula) right                              639（mask）
+  Area Ig2 (Insula) left                               534（mask）
+  Area STS2 (STS) right                              5,302（mask）
+  Area STS1 (STS) right                              3,092（mask）
+  Area OTS1 (OTS) right                                481（mask）
+  Area Te 3 (STG) right                              3,593（mask）
+  Area Te 2.2 (STG) right                            1,774（mask）
+  Area Te 2.1 (STG) right                              799（mask）
+  Area Te 1.1 (HESCHL) right                         1,107（mask）
+  Area Te 1.2 (HESCHL) right                           317（mask）
+  Area Te 1.0 (HESCHL) right                           558（mask）
+  Area Ph1 (PhG) right                               1,707（mask）
+  Area Ph2 (PhG) right                                 332（mask）
+  Area Ph3 (PhG) right                                 708（mask）
+  Area CoS1 (CoS) right                                 97（mask）
+  Area TI (STG) right                                  823（mask）
+  Area TeI (STG) right                                 853（mask）
+  Area FG5 (FusG) right                                879（mask）
+  Area FG2 (FusG) right                              1,143（mask）
+  Area FG3 (FusG) right                              1,858（mask）
+  Area FG1 (FusG) right                              1,413（mask）
+  Area FG4 (FusG) right                              6,029（mask）
+  Area TPJ (STG, SMG) right                          1,332（mask）
+  Area hOc2 (V2, 18) right                           3,473（mask）
+  Area hOc1 (V1, 17, CalcS) right                   12,865（mask）
+  Area hOc6 (POS) right                                215（mask）
+  Area hOc4d (Cuneus) right                          1,443（mask）
+  Area hOc3d (Cuneus) right                          3,446（mask）
+  Area hOc3v (LingG) right                           4,517（mask）
+  Area hOc4v (LingG) right                           3,561（mask）
+  Area hOc4lp (LOC) right                            3,547（mask）
+  Area hOc5 (LOC) right                                148（mask）
+  Area hOc4la (LOC) right                            1,954（mask）
+[siibra:WARNING] Region Area p24c.pd24cd (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pd24cd (pACC) right                 ✗ mask: NoMapAvailableError Area p24c.pd24cd (pACC) right is not mapped in MNI Colin 27 as a MapType.LABELLE ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pd24cd (pACC) right' does not match to any structur
+[siibra:WARNING] Region Area p24c.pd24cv (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pd24cv (pACC) right                 ✗ mask: NoMapAvailableError Area p24c.pd24cv (pACC) right is not mapped in MNI Colin 27 as a MapType.LABELLE ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pd24cv (pACC) right' does not match to any structur
+[siibra:WARNING] Region Area p24c.pv24c (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24c.pv24c (pACC) right                  ✗ mask: NoMapAvailableError Area p24c.pv24c (pACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24c.pv24c (pACC) right' does not match to any structure
+[siibra:WARNING] Region Area 25.25a (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area 25.25a (sACC) right                      ✗ mask: NoMapAvailableError Area 25.25a (sACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED map ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area 25.25a (sACC) right' does not match to any structure map
+[siibra:WARNING] Region Area 25.25p (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area 25.25p (sACC) right                      ✗ mask: NoMapAvailableError Area 25.25p (sACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED map ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area 25.25p (sACC) right' does not match to any structure map
+[siibra:WARNING] Region Area p24ab.p24a (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24ab.p24a (pACC) right                  ✗ mask: NoMapAvailableError Area p24ab.p24a (pACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24ab.p24a (pACC) right' does not match to any structure
+[siibra:WARNING] Region Area p24ab.p24b (pACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area p24ab.p24b (pACC) right                  ✗ mask: NoMapAvailableError Area p24ab.p24b (pACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area p24ab.p24b (pACC) right' does not match to any structure
+  Area s32 (sACC) right                              1,554（mask）
+  Area 33 (ACC) right                                2,082（mask）
+  Area p32 (pACC) right                              4,974（mask）
+[siibra:WARNING] Region Area s24.s24a (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area s24.s24a (sACC) right                    ✗ mask: NoMapAvailableError Area s24.s24a (sACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED m ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area s24.s24a (sACC) right' does not match to any structure m
+[siibra:WARNING] Region Area s24.s24b (sACC) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Area s24.s24b (sACC) right                    ✗ mask: NoMapAvailableError Area s24.s24b (sACC) right is not mapped in MNI Colin 27 as a MapType.LABELLED m ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Area s24.s24b (sACC) right' does not match to any structure m
+  HATA (Hippocampus) right                             193（mask）
+  CA3 (Hippocampus) right                              600（mask）
+  TrS (Hippocampus, Transsubiculum) right              538（mask）
+[siibra:WARNING] Region Subc.PaS (Hippocampus, Parasubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.PaS (Hippocampus, Parasubiculum) right   ✗ mask: NoMapAvailableError Subc.PaS (Hippocampus, Parasubiculum) right is not mapped in MNI Colin 27 as a M ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.PaS (Hippocampus, Parasubiculum) right' does not match t
+[siibra:WARNING] Region Subc.PreS (Hippocampus, Presubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.PreS (Hippocampus, Presubiculum) right   ✗ mask: NoMapAvailableError Subc.PreS (Hippocampus, Presubiculum) right is not mapped in MNI Colin 27 as a M ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.PreS (Hippocampus, Presubiculum) right' does not match t
+[siibra:WARNING] Region Subc.ProS (Hippocampus, Prosubiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.ProS (Hippocampus, Prosubiculum) right   ✗ mask: NoMapAvailableError Subc.ProS (Hippocampus, Prosubiculum) right is not mapped in MNI Colin 27 as a M ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.ProS (Hippocampus, Prosubiculum) right' does not match t
+[siibra:WARNING] Region Subc.Sub (Hippocampus, Subiculum) right not defined in Julich-Brain Atlas, cytoarchitectonic maps (v3.1)
+  Subc.Sub (Hippocampus, Subiculum) right       ✗ mask: NoMapAvailableError Subc.Sub (Hippocampus, Subiculum) right is not mapped in MNI Colin 27 as a MapTy ／ regional: AttributeError 'Region' object has no attribute 'fetch_regional_map' ／ map: NonUniqueIndexError The specification 'Subc.Sub (Hippocampus, Subiculum) right' does not match to an
+  DG (Hippocampus) right                               730（mask）
+  CA2 (Hippocampus) right                              383（mask）
+  Area EC (Hippocampal Region, Entorhinal Cortex) right      3,428（mask）
+  CA1 (Hippocampus) right                            2,456（mask）
+  TuTi (Basal Forebrain, Terminal islands) right        263（mask）
+  Tu (Basal Forebrain, Tuberculum) right                74（mask）
+  Ninterp (Cerebellum, Interposed Nucleus) right        389（mask）
+  Ndentv (Cerebellum, Ventral Dentate Nucleus) right        430（mask）
+  Ndentd (Cerebellum, Dorsal Dentate Nucleus) right      1,380（mask）
+  STN (Subthalamus) right                              401（mask）
+  Rt (Thalamus, reticular Nucleus) right             2,335（mask）
+  ZI (Thalamus, zona incerta) right                    265（mask）
+  CGM (Metathalamus) right                              95（mask）
+  CGL (Metathalamus) right                             176（mask）
+  MV (Thalamus, medioventral Nucleus) right            169（mask）
+  MD (Thalamus, mediodorsal Nucleus) right             769（mask）
+  Pv (Thalamus, paraventricular Nucleus) right          78（mask）
+  Po (Thalamus, posterior Nucleus) right               132（mask）
+  PUl (Thalamus, lateral pulvinar) right               571（mask）
+  Li (Thalamus, limitans Nucleus) right                226（mask）
+  Sg (Thalamus, suprageniculate Nucleus) right          92（mask）
+  LP (Thalamus, lateral posterior Nucleus) right        380（mask）
+  PUi (Thalamus, inferior pulvinar) right              171（mask）
+  PUa (Thalamus, anterior pulvinar) right              221（mask）
+  LD (Thalamus, lateral dorsal Nucleus) right          322（mask）
+  AV (Thalamus, anteroventral Nucleus) right           273（mask）
+  VPi (Thalamus, ventroposterior inferior Nucleus) right        155（mask）
+  VPL (Thalamus, ventral posterior lateral Nucleus) right        731（mask）
+  VLP (Thalamus, ventral lateral posterior Nucleus) right        599（mask）
+  VA (Thalamus, ventral anterior Nucleus (ventral)) right      1,024（mask）
+  VLA (Thalamus, ventral lateral anterior Nucleus) right        102（mask）
+  VAmc (Thalamus, ventral anterior Nucleus, magnocellular part) right        453（mask）
+  sPf (Thalamus, subparafascicular Nucleus) right        236（mask）
+  Pf (Thalamus, parafascicular Nucleus) right          129（mask）
+  CL (Thalamus, anterior intralaminar nuclei) right      1,199（mask）
+  Area PFop (IPL) left                               2,260（mask）
+  Area PFt (IPL) left                                4,169（mask）
+  Area PF (IPL) left                                 2,282（mask）
+  sPf (Thalamus, subparafascicular Nucleus) left        141（mask）
+  Pf (Thalamus, parafascicular Nucleus) left           108（mask）
+  Area PFcm (IPL) left                               1,169（mask）
+  Area 6v1 (PreCG) left                              3,359（mask）
+  Area 6v2 (PreCG) left                              1,979（mask）
+  Area 6r1 (PreCG) left                              1,651（mask）
+  Area Ph1 (PhG) left                                  591（mask）
+  Area Ph2 (PhG) left                                1,826（mask）
+  Area Ph3 (PhG) left                                  618（mask）
+  ⇒ Te1（1.0＋1.1＋1.2、左右込み）1,982mm³（前に使った値 5,917）
+  ⇒ 補足運動野 6mp（左右込み）2,938mm³ ／ Te1 の 1.48倍
+  ⇒ 前補足運動野 6ma（左右込み）5,349mm³ ／ Te1 の 2.70倍
