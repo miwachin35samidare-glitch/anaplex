@@ -22,7 +22,7 @@ NS = int(args[1]) if len(args) > 1 else 1100
 SHR = {nm: max(1, int(round(TB.N_NEW[nm] * RATIO))) for nm in ("前頭前野", "眼窩前頭", "前帯状") + TB.SYN}
 TB.N_NEW.update(SHR)                      # 版103 の体数 × 比
 n_assoc, n_high = max(1, int(round(112 * RATIO))), max(1, int(round(123 * RATIO)))   # 版103b の 112・123 が 1
-if B.VERSION not in (103,):
+if B.VERSION not in (103, 107):   # 版107：比 1 で測る（比は 前頭前野・眼窩前頭・前帯状・統語の皮質と連合・高次だけに掛かる）
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版103 の網のため")
 if TEST:
     B.DEV = "cpu"

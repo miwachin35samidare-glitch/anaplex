@@ -7,7 +7,7 @@ import sys, time, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T, life as L
 from torch_brain import Brain
 
-if B.VERSION not in (97, 98, 99, 100, 101, 102):
+if B.VERSION not in (97, 98, 99, 100, 101, 102, 103, 107):
     sys.exit(f"⚠️ babble.py が版97〜100 ではない（版 {B.VERSION}）")
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
