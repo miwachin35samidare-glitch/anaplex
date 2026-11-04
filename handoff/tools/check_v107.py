@@ -99,12 +99,15 @@ chk("側坐核" in vta_areas and "前頭前野" in vta_areas and "CA1" in vta_ar
     f"VTA の門の組 {len(vta_areas)} 領野（側坐核・皮質・海馬・扁桃体。線条体の背側・核は黒質）")
 run(b, 6)
 chk(tuple(b.gate.shape) == (2,) and tuple(b.g.third.reshape(-1).shape) == (2,), f"門は (黒質, VTA) ＝ {[round(float(v), 3) for v in b.gate]}")
-bz, be = build("zero"), build("eq")
-run(bz, 6); run(be, 6)
-bz.g.flush_all(); be.g.flush_all()
-d0 = float((bz.g.w - be.g.w).abs().max())
-chk(d0 == 0.0, f"組を全部 0 にした網と門を同じにした網の重さが同じ（最大の差 {d0}）")
-del bz, be
+if DEV == "cpu":
+    bz, be = build("zero"), build("eq")
+    run(bz, 6); run(be, 6)
+    bz.g.flush_all(); be.g.flush_all()
+    d0 = float((bz.g.w - be.g.w).abs().max())
+    chk(d0 == 0.0, f"組を全部 0 にした網と門を同じにした網の重さが同じ（最大の差 {d0}）")
+    del bz, be
+else:   # GPU は足し込みの順が揺れて同じ網でも重さがずれる（11-05 check_v107_gpu A）⇒ 核は check_v107_gpu の B で比べる
+    print("     （GPU：組 0 と門を同じの比べは check_v107_gpu で。同じ網を2回でも差 0.41 が出る）", flush=True)
 
 print("5 閾値の倍率", flush=True)
 tm = b.th_mod
