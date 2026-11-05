@@ -5,7 +5,7 @@
   終わりに領野ごとの 0番 → 終わりの比（scale・scale_up・入る辺の重さの和・辺の数）
 """
 import os, sys, numpy as np, torch
-os.environ.setdefault("ANAPLEX_GRAPH", "eager")
+# 版107h：グラフで回す（⟲ eager は取り置きが増えて 12〜15GB【測】11-05）。eager にするなら ANAPLEX_GRAPH=eager
 import babble as B, brainstem as BS, torch_area as T
 import torch_brain as TB
 from torch_brain import Brain, NAMES

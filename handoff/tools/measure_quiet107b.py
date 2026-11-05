@@ -7,7 +7,7 @@
   終わりに領野ごとの 0番 → 終わりの比（scale・scale_up・入る辺の重さの和・辺の数）
 """
 import os, sys, numpy as np, torch
-os.environ.setdefault("ANAPLEX_GRAPH", "eager")
+# 版107h：グラフで回す（⟲ eager は取り置きが増えて 12〜15GB【測】11-05）。eager にするなら ANAPLEX_GRAPH=eager
 import babble as B, brainstem as BS, torch_area as T
 import torch_brain as TB
 from torch_brain import Brain, NAMES
@@ -56,12 +56,15 @@ def per_area(steps=20):
         life.step()
         acc += g._any[0][:g.n_ch_all].double()
     g.flush_all()
-    live = (g.w > 0).float()
-    inh = g.e_inh.bool()
-    er = g.e_recv.long()
     z = lambda: torch.zeros(g.n_recv_all, device=dev)
-    we = z().index_add_(0, er[~inh], g.w[~inh].float()); wi = z().index_add_(0, er[inh], g.w[inh].float())
-    ne = z().index_add_(0, er[~inh], live[~inh]); ni = z().index_add_(0, er[inh], live[inh])
+    we, wi, ne, ni = z(), z(), z(), z()
+    E, st = len(g.w), 1 << 24                       # 版107h：辺の数の大きさの一時の置き場所を作らない（塊ごと）
+    for a0 in range(0, E, st):
+        sl = slice(a0, min(E, a0 + st))
+        er, w_, ih = g.e_recv[sl].long(), g.w[sl].float(), g.e_inh[sl].bool()
+        lv = (w_ > 0).float()
+        we.index_add_(0, er, torch.where(ih, 0.0, w_)); wi.index_add_(0, er, torch.where(ih, w_, 0.0))
+        ne.index_add_(0, er, torch.where(ih, 0.0, lv)); ni.index_add_(0, er, torch.where(ih, lv, 0.0))
     out = {}
     for i, nm in enumerate(NAMES):
         lo, hi = int(g.off_recv[i]), int(g.off_recv[i + 1])
@@ -91,12 +94,15 @@ done = 0
 while True:
     rc = rate_cx()
     g.flush_all()
-    live = g.w > 0
+    nl_, sw_ = 0, 0.0
+    for a0 in range(0, len(g.w), 1 << 24):         # 版107h：塊ごと
+        w_ = g.w[a0:a0 + (1 << 24)]
+        nl_ += int((w_ > 0).sum()); sw_ += float(w_.sum())
     st = "眠り" if getattr(g, "sleep_mode", False) else "起き"
     sc = "・".join(f"{float(g.scale[r].mean()):.3f}" for r in R.values())
     su = "・".join(f"{float(g.scale_up[r].mean()):.3f}" for r in R.values())
     print(f"{done:3d}番 {life.t:6d}歩 {st} 門 {float(b.gate[0]):.2f}・{float(b.gate[1]):.2f} 皮質 {rc:5.2f}Hz scale {sc} scale_up {su} "
-          f"辺 {int(live.sum()):,} 重さ {float(g.w[live].mean()):.4f} 下からの線の重さ {bu_area()[1]:.4f}", flush=True)
+          f"辺 {nl_:,} 重さ {sw_ / max(1, nl_):.4f} 下からの線の重さ {bu_area()[1]:.4f}", flush=True)
     if done >= NP:
         break
     life.run_plans(EV, learn=True)

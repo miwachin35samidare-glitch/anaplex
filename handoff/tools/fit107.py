@@ -11,7 +11,7 @@
     的からのずれ（対数の二乗の和）が一番小さかった回のノブを knobs.json に書く。人の値の無い領野・線条体の率は合わせない
 """
 import os, sys, json, math, numpy as np, torch
-os.environ.setdefault("ANAPLEX_GRAPH", "eager")
+# 版107h：グラフで回す（⟲ eager は取り置きが増えて 12〜15GB【測】11-05）。eager にするなら ANAPLEX_GRAPH=eager
 os.environ.setdefault("ANAPLEX_KNOBS", "none")             # 前の knobs.json に引きずられない（元の値から探す）
 import babble as B, brainstem as BS, torch_area as T
 import torch_brain as TB

@@ -5,7 +5,7 @@
   表現・誤差・来ない体の率（1歩に1回まで数える）。⚠️ 学ぶ前（0番）の 40歩。学んで育ったあとは別に見る
 """
 import os, sys, numpy as np, torch
-os.environ.setdefault("ANAPLEX_GRAPH", "eager")
+# 版107h：グラフで回す（⟲ eager は取り置きが増えて 12〜15GB【測】11-05）。eager にするなら ANAPLEX_GRAPH=eager
 import babble as B, brainstem as BS, torch_area as T
 import torch_brain as TB
 from torch_brain import Brain, NAMES
