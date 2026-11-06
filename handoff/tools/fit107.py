@@ -1,6 +1,7 @@
 """版107e：学ぶ前（0番）の率を人の値に合わせるノブを探して knobs.json に書く（arkhe の ~/anaplex で。網のファイルは変えない）
+  版107k：VTA へ入る抑制の線の重さ（vta_inh、的は黒質と同じ 4.56Hz＝門の分母 p0）を足した。組んだ直後の熱い所を捨てる（先に WARM 歩）・1回の歩 40 → 120（率の揺れが大きい：measure_sn107 で黒質は1番ごとに 1〜9Hz）
   【み】11-05 07:30「この回しの結果を読んだら、私に聞かずに調整できる範囲の数値は調整しておいて」
-  python3 fit107.py [回=14] [1回の歩=40]        （コンテナ：python3 fit107.py 2 3 --test）
+  python3 fit107.py [回=14] [1回の歩=120] [先に捨てる歩=200]        （コンテナ：python3 fit107.py 2 3 3 --test）
   合わせるノブ（30 §5 のノブ・10 の決めの中だけ）と的
     核の自分で撃つ分 i0（NUC_VINF は teacher_v95 の写し「合わせ直す」）：
       外節 65.7・内節 73.5【マカク】Galvan & Wichmann 2023 ／ 網様部 60.5【マカク】Elias 2008 ／ 視床下核 19.3【ヒト】Steigerwald 2008 ／
@@ -19,7 +20,8 @@ from torch_brain import Brain, NAMES
 
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NIT = int(args[0]) if args else 14
-NS = int(args[1]) if len(args) > 1 else 40
+NS = int(args[1]) if len(args) > 1 else 120
+WARM = int(args[2]) if len(args) > 2 else 200
 TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
@@ -33,7 +35,7 @@ b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 910
 b.bs.set_state(BS.WAKE)
 life = B.life_of(b, True, np.random.default_rng(0), np.random.default_rng(1))
 g = b.g
-kn = {"nuc_vinf": {k: 1.0 for k in T_NUC}, "sn_inh": 1.0, "xcx": float(os.environ.get("ANAPLEX_XCX", 1.7))}
+kn = {"nuc_vinf": {k: 1.0 for k in T_NUC}, "sn_inh": 1.0, "vta_inh": 1.0, "xcx": float(os.environ.get("ANAPLEX_XCX", 1.7))}
 os.environ.pop("ANAPLEX_XCX", None)
 
 
@@ -44,6 +46,9 @@ def rate(nm):
 
 
 best = (float("inf"), None, None)
+b._knobs107_apply(kn)
+for _ in range(WARM):                                        # 版107k：組んだ直後の熱い所を捨てる
+    life.step(learn=False)
 for it in range(NIT):
     b._knobs107_apply(kn)
     any_r = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
@@ -52,11 +57,12 @@ for it in range(NIT):
         any_r += g._any[0][:g.n_ch_all].double()
     r_nuc = {k: rate(k) for k in T_NUC}
     r_sn = rate("黒質")
+    r_vta = rate("VTA")
     r_cx = float(np.mean([rate(k) for k in TB.X_CX_AREAS]))
-    errs = [math.log(max(r_nuc[k], 0.1) / T_NUC[k]) for k in T_NUC] + [math.log(max(r_sn, 0.1) / T_SN), math.log(max(r_cx, 0.1) / T_CX)]
+    errs = [math.log(max(r_nuc[k], 0.1) / T_NUC[k]) for k in T_NUC] + [math.log(max(r_sn, 0.1) / T_SN), math.log(max(r_vta, 0.1) / T_SN), math.log(max(r_cx, 0.1) / T_CX)]
     err = sum(e * e for e in errs)
     ok = all(abs(e) < math.log(1.15) for e in errs)
-    print(f"\n回 {it}：ずれ {err:.3f}{' ✓ 全部 ±15%' if ok else ''} ／ 黒質 {r_sn:.1f}Hz（抑制 ×{kn['sn_inh']:.3f}）・皮質 {r_cx:.1f}Hz（盛り {kn['xcx']:.3f}）", flush=True)
+    print(f"\n回 {it}：ずれ {err:.3f}{' ✓ 全部 ±15%' if ok else ''} ／ 黒質 {r_sn:.1f}Hz（抑制 ×{kn['sn_inh']:.3f}）・VTA {r_vta:.1f}Hz（抑制 ×{kn['vta_inh']:.3f}）・皮質 {r_cx:.1f}Hz（盛り {kn['xcx']:.3f}）", flush=True)
     print("   " + "・".join(f"{k} {r_nuc[k]:.1f}（i0 ×{kn['nuc_vinf'][k]:.3f}）" for k in T_NUC), flush=True)
     if err < best[0]:
         best = (err, json.loads(json.dumps(kn)), it)
@@ -66,11 +72,12 @@ for it in range(NIT):
     for k in T_NUC:
         kn["nuc_vinf"][k] *= cl((T_NUC[k] / max(r_nuc[k], 0.5)) ** 0.5)
     kn["sn_inh"] = cl(kn["sn_inh"] * cl((max(r_sn, 0.1) / T_SN) ** 0.5), 0.25, 16.0)
+    kn["vta_inh"] = cl(kn["vta_inh"] * cl((max(r_vta, 0.1) / T_SN) ** 0.5), 0.25, 16.0)
     kn["xcx"] *= cl((T_CX / max(r_cx, 0.1)) ** 0.5, 0.7, 1.4)
 
 err, kb, it = best
-kb["note"] = f"fit107：学ぶ前（0番）・学びを止めて {NS}歩ずつ・{it}回目（ずれ {err:.3f}）"
+kb["note"] = f"fit107：学ぶ前（0番）・先に {WARM}歩捨てて・学びを止めて {NS}歩ずつ・{it}回目（ずれ {err:.3f}）"
 with open("knobs.json", "w") as f:
     json.dump(kb, f, ensure_ascii=False, indent=1)
-print(f"\n⇒ knobs.json に書いた（{it}回目・ずれ {err:.3f}）：黒質の抑制 ×{kb['sn_inh']:.3f}・盛り {kb['xcx']:.3f}・"
+print(f"\n⇒ knobs.json に書いた（{it}回目・ずれ {err:.3f}）：黒質の抑制 ×{kb['sn_inh']:.3f}・VTA の抑制 ×{kb['vta_inh']:.3f}・盛り {kb['xcx']:.3f}・"
       + "・".join(f"{k} ×{v:.3f}" for k, v in kb["nuc_vinf"].items()), flush=True)
