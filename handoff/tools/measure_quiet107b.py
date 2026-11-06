@@ -1,7 +1,8 @@
 """版107f：50番で網が静かになる元を分ける（その2：興奮・抑制の辺を分け、領野ごとの率も）
   ⟲ その1（measure_quiet107）：恒常性（scale・scale_up）は 50番まで 1.000 のまま・辺は皮質と海馬へ増え重さの和は CA1 で 3,952倍 ⇒ 抑制の辺が強まったかを見る
   元の説明：（arkhe の ~/anaplex で。保存しない・網は変えない）
-  python3 measure_quiet107b.py [番=50] [何番ごとに見る=5]
+  python3 measure_quiet107b.py [番=50] [何番ごとに見る=5] [--win=率を見る歩 20]
+  版107l：--win で率を見る歩を長くできる。皮質の率は 20歩ずつの塊の 一番低い〜一番高い も出す（107l で行は 0.03Hz・終わりの表は 2〜8Hz とずれた ⇒ 撃つ・黙るの波か、見る所の当たり外れか）
   knobs.json があればそれで（版107e）。5番ごとに 1行：歩・起きている／眠り・門（黒質・VTA）・皮質の表現の率・
     恒常性の下げ（scale、眠りで下げる）と上げ（scale_up、起きていて上げる）の皮質・核・線条体の平均・生きている辺の数・辺の重さの平均
   終わりに領野ごとの 0番 → 終わりの比（scale・scale_up・入る辺の重さの和・辺の数）
@@ -16,6 +17,7 @@ args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NP = int(args[0]) if args else 50
 EV = int(args[1]) if len(args) > 1 else 5
 TEST = "--test" in sys.argv
+WIN = int(next((a.split("=")[1] for a in sys.argv if a.startswith("--win=")), 20))
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
@@ -50,7 +52,8 @@ def bu_area():
 R = {"皮質": rows(CX), "核": rows(NUCS), "線条体": rows(STRS)}
 
 
-def per_area(steps=20):
+def per_area(steps=None):
+    steps = WIN if steps is None else steps
     acc = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
     for _ in range(steps):
         life.step()
@@ -74,17 +77,27 @@ def per_area(steps=20):
     return out
 
 
-def rate_cx(steps=20):
+CXI = torch.cat([torch.arange(int(b.off_ch[NAMES.index(nm)]), int(b.off_ch[NAMES.index(nm)]) + b.n[nm], device=dev) for nm in TB.X_CX_AREAS])
+
+
+def rate_cx(steps=None):
+    """盛りを振る皮質の表現の平均率（領野ごとの平均の平均）と、20歩ずつの塊の 一番低い・一番高い"""
+    steps = WIN if steps is None else steps
     acc = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
+    blk, cur, k = [], torch.zeros((), device=dev, dtype=torch.float64), 0
     for _ in range(steps):
         life.step()
-        acc += g._any[0][:g.n_ch_all].double()
+        a_ = g._any[0][:g.n_ch_all].double()
+        acc += a_
+        cur += a_[CXI].mean(); k += 1
+        if k == 20:
+            blk.append(float(cur) / 20 / 0.01067); cur.zero_(); k = 0
     rs = []
     for nm in TB.X_CX_AREAS:
         i = NAMES.index(nm)
         o, n = int(b.off_ch[i]), b.n[nm]
         rs.append(float(acc[o:o + n].mean()) / steps / 0.01067)
-    return float(np.mean(rs))
+    return float(np.mean(rs)), (min(blk) if blk else float("nan")), (max(blk) if blk else float("nan"))
 
 
 p0 = per_area()
@@ -92,7 +105,7 @@ bu0, _m = bu_area()
 print("番 ・ 歩 ・ 状態 ・ 門（黒質・VTA）・ 皮質の率 ・ scale（皮質・核・線条体）・ scale_up（皮質・核・線条体）・ 生きている辺 ・ 辺の重さの平均", flush=True)
 done = 0
 while True:
-    rc = rate_cx()
+    rc, rlo, rhi = rate_cx()
     g.flush_all()
     nl_, sw_ = 0, 0.0
     for a0 in range(0, len(g.w), 1 << 24):         # 版107h：塊ごと
@@ -101,7 +114,7 @@ while True:
     st = "眠り" if getattr(g, "sleep_mode", False) else "起き"
     sc = "・".join(f"{float(g.scale[r].mean()):.3f}" for r in R.values())
     su = "・".join(f"{float(g.scale_up[r].mean()):.3f}" for r in R.values())
-    print(f"{done:3d}番 {life.t:6d}歩 {st} 門 {float(b.gate[0]):.2f}・{float(b.gate[1]):.2f} 皮質 {rc:5.2f}Hz scale {sc} scale_up {su} "
+    print(f"{done:3d}番 {life.t:6d}歩 {st} 門 {float(b.gate[0]):.2f}・{float(b.gate[1]):.2f} 皮質 {rc:5.2f}Hz（20歩ずつ {rlo:.2f}〜{rhi:.2f}）scale {sc} scale_up {su} "
           f"辺 {nl_:,} 重さ {sw_ / max(1, nl_):.4f} 下からの線の重さ {bu_area()[1]:.4f}", flush=True)
     if done >= NP:
         break
