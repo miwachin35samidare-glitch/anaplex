@@ -53,10 +53,12 @@ _rx = torch.cat([torch.arange(int(g.off_recv[NAMES.index(k)]), int(g.off_recv[NA
 RCX = _rx[~g.is_inh_r[_rx]]                                   # 版107m：盛りを振る皮質の興奮の行
 best = (float("inf"), None, None)
 hist = []
+kn["nuc_vinf"]["黒質"] = kn["nuc_vinf"]["VTA"]
 b._knobs107_apply(kn)
 for _ in range(WARM):                                        # 版107k：組んだ直後の熱い所を捨てる
     life.step(learn=False)
 for it in range(NIT):
+    kn["nuc_vinf"]["黒質"] = kn["nuc_vinf"]["VTA"]             # 版107n：黒質の i0 は VTA と同じ倍率（同じ作り）
     b._knobs107_apply(kn)
     any_r = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
     tg = torch.zeros((), device=dev, dtype=torch.float64)
@@ -93,6 +95,7 @@ if not ok and len(hist) >= 4:                                 # 版107l：揺れ
     kb = {"nuc_vinf": {k: gm([h["nuc_vinf"][k] for h in hh]) for k in hh[0]["nuc_vinf"]},
           "sn_inh": gm([h["sn_inh"] for h in hh]), "vta_inh": gm([h["vta_inh"] for h in hh]), "xcx": gm([h["xcx"] for h in hh])}
     it = f"{len(hist) - len(hh)}〜{len(hist) - 1} の平均"
+kb["nuc_vinf"]["黒質"] = kb["nuc_vinf"]["VTA"]                 # 版107n
 kb["note"] = f"fit107：学ぶ前（0番）・先に {WARM}歩捨てて・学びを止めて {NS}歩ずつ・{it}回目（一番ずれの小さい回 {best[2]}：{err:.3f}）"
 with open("knobs.json", "w") as f:
     json.dump(kb, f, ensure_ascii=False, indent=1)

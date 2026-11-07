@@ -4,6 +4,8 @@
   measure_quiet107b --win=200（107l、11-07 00:18）：学びを止めて合わせた VTA 4.56Hz が、学びながらでは 2.9〜3.2Hz ⇒ VTA の門 0.58〜0.96（1 の少し下）
     ⇒ 皮質・海馬・扁桃体・側坐核は弱まる側に少しずつ残り、皮質が下がり続ける（50「合わせるのは落ち着いた所で」）
   動かすノブは 黒質の抑制 sn_inh と VTA の自分で撃つ分 nuc_vinf["VTA"] の 2つだけ（ほかは今の knobs.json のまま）
+  版107n：黒質の自分で撃つ分の倍率は VTA と同じにする（同じ作り。撃ち方 B＝自分のリズム＋入力【み】10-15、リズムの値は霊長類の生体が無ければノブ）。
+    ⟲ 107m までは黒質の i0 は ×1（入力なしの行き着く先 0.35 で閾値に届かず、入力だけで撃つ）⇒ 皮質 → 視床下核 → 黒質 の輪にそのまま引きずられた
   書く値は後ろ半分の回の幾何平均。今の knobs.json は knobs_fit107b_前.json に残す
 """
 import os, sys, json, math, shutil, numpy as np, torch
@@ -44,6 +46,7 @@ def rate(acc, nm):
 hist = []
 cl = lambda x, lo, hi: min(hi, max(lo, x))
 for it in range(NIT):
+    kn["nuc_vinf"]["黒質"] = kn["nuc_vinf"]["VTA"]                 # 版107n
     b._knobs107_apply(kn)
     acc = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
     for _ in range(NS):
@@ -60,9 +63,10 @@ for it in range(NIT):
 hh = hist[len(hist) // 2:]
 gm = lambda xs: float(math.exp(sum(math.log(x) for x in xs) / len(xs)))
 kn["sn_inh"], kn["nuc_vinf"]["VTA"] = gm([h[0] for h in hh]), gm([h[1] for h in hh])
+kn["nuc_vinf"]["黒質"] = kn["nuc_vinf"]["VTA"]                     # 版107n
 kn["note"] = f"fit107b：学びながら（先に {WARM}歩）・{NS}歩ずつ・回 {len(hist) - len(hh)}〜{len(hist) - 1} の平均（黒質の抑制・VTA の i0 だけ）"
 if os.path.exists("knobs.json"):
     shutil.copy("knobs.json", "knobs_fit107b_前.json")
 with open("knobs.json", "w") as f:
     json.dump(kn, f, ensure_ascii=False, indent=1)
-print(f"\n⇒ knobs.json に書いた：黒質の抑制 ×{kn['sn_inh']:.3f}・VTA の i0 ×{kn['nuc_vinf']['VTA']:.3f}（前の knobs.json は knobs_fit107b_前.json）", flush=True)
+print(f"\n⇒ knobs.json に書いた：黒質の抑制 ×{kn['sn_inh']:.3f}・VTA と黒質の i0 ×{kn['nuc_vinf']['VTA']:.3f}（前の knobs.json は knobs_fit107b_前.json）", flush=True)
