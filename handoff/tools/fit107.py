@@ -1,4 +1,6 @@
 """版107e：学ぶ前（0番）の率を人の値に合わせるノブを探して knobs.json に書く（arkhe の ~/anaplex で。網のファイルは変えない）
+  版107m：盛り xcx は「的」（下からの入力 × 盛りだけで閾値を越える率＝網の中の辺が学んで寄せる先）を 3.3Hz に合わせる。
+    ⟲ 前は表現の率に合わせたので、学びを止めた熱い網に合わせて盛りが 1.7 → 0.63 に下がり、的が 0.3〜0.5Hz になって皮質がそこへ下がった（quiet107l_tgt、11-07 17:01）
   版107l：VTA は自分で撃つ分の倍率（nuc_vinf["VTA"]）で合わせる（107k で抑制を 0.25倍まで下げても 1.2〜1.7Hz ⇒ 抑えられているのでなく駆動が無い）。
     書く値は後ろ半分の回のノブの幾何平均（黒質の率の揺れが大きく、一番ずれの小さい回は運の当たり：107k で 12.6倍を選び、回すと門 0.58）
   版107k：VTA へ入る抑制の線の重さ（vta_inh、的は黒質と同じ 4.56Hz＝門の分母 p0）を足した。組んだ直後の熱い所を捨てる（先に WARM 歩）・1回の歩 40 → 120（率の揺れが大きい：measure_sn107 で黒質は1番ごとに 1〜9Hz）
@@ -47,6 +49,8 @@ def rate(nm):
     return float(any_r[o:o + n].mean()) / NS / DT
 
 
+_rx = torch.cat([torch.arange(int(g.off_recv[NAMES.index(k)]), int(g.off_recv[NAMES.index(k) + 1]), device=dev) for k in TB.X_CX_AREAS])
+RCX = _rx[~g.is_inh_r[_rx]]                                   # 版107m：盛りを振る皮質の興奮の行
 best = (float("inf"), None, None)
 hist = []
 b._knobs107_apply(kn)
@@ -55,17 +59,20 @@ for _ in range(WARM):                                        # 版107k：組ん�
 for it in range(NIT):
     b._knobs107_apply(kn)
     any_r = torch.zeros(g.n_ch_all, device=dev, dtype=torch.float64)
+    tg = torch.zeros((), device=dev, dtype=torch.float64)
     for _ in range(NS):
         life.step(learn=False)
         any_r += g._any[0][:g.n_ch_all].double()
+        tg += g._tgt[RCX].double().mean()
+    r_tg = float(tg) / NS / DT                               # 版107m
     r_nuc = {k: rate(k) for k in T_NUC}
     r_sn = rate("黒質")
     r_vta = rate("VTA")
     r_cx = float(np.mean([rate(k) for k in TB.X_CX_AREAS]))
-    errs = [math.log(max(r_nuc[k], 0.1) / T_NUC[k]) for k in T_NUC] + [math.log(max(r_sn, 0.1) / T_SN), math.log(max(r_vta, 0.1) / T_SN), math.log(max(r_cx, 0.1) / T_CX)]
+    errs = [math.log(max(r_nuc[k], 0.1) / T_NUC[k]) for k in T_NUC] + [math.log(max(r_sn, 0.1) / T_SN), math.log(max(r_vta, 0.1) / T_SN), math.log(max(r_tg, 0.1) / T_CX)]
     err = sum(e * e for e in errs)
     ok = all(abs(e) < math.log(1.15) for e in errs)
-    print(f"\n回 {it}：ずれ {err:.3f}{' ✓ 全部 ±15%' if ok else ''} ／ 黒質 {r_sn:.1f}Hz（抑制 ×{kn['sn_inh']:.3f}）・VTA {r_vta:.1f}Hz（i0 ×{kn['nuc_vinf']['VTA']:.3f}）・皮質 {r_cx:.1f}Hz（盛り {kn['xcx']:.3f}）", flush=True)
+    print(f"\n回 {it}：ずれ {err:.3f}{' ✓ 全部 ±15%' if ok else ''} ／ 黒質 {r_sn:.1f}Hz（抑制 ×{kn['sn_inh']:.3f}）・VTA {r_vta:.1f}Hz（i0 ×{kn['nuc_vinf']['VTA']:.3f}）・皮質 {r_cx:.1f}Hz・的 {r_tg:.2f}Hz（盛り {kn['xcx']:.3f}）", flush=True)
     print("   " + "・".join(f"{k} {r_nuc[k]:.1f}（i0 ×{kn['nuc_vinf'][k]:.3f}）" for k in T_NUC), flush=True)
     if err < best[0]:
         best = (err, json.loads(json.dumps(kn)), it)
@@ -77,7 +84,7 @@ for it in range(NIT):
         kn["nuc_vinf"][k] *= cl((T_NUC[k] / max(r_nuc[k], 0.5)) ** 0.5)
     kn["sn_inh"] = cl(kn["sn_inh"] * cl((max(r_sn, 0.1) / T_SN) ** 0.5), 0.25, 16.0)
     kn["nuc_vinf"]["VTA"] = cl(kn["nuc_vinf"]["VTA"] * cl((T_SN / max(r_vta, 0.1)) ** 0.5), 0.1, 64.0)   # 版107l
-    kn["xcx"] *= cl((T_CX / max(r_cx, 0.1)) ** 0.5, 0.7, 1.4)
+    kn["xcx"] *= cl((T_CX / max(r_tg, 0.1)) ** 0.5, 0.7, 1.4)   # 版107m：的に合わせる
 
 err, kb, it = best
 if not ok and len(hist) >= 4:                                 # 版107l：揺れで当たった回でなく、後ろ半分の平均（幾何）
