@@ -6,7 +6,7 @@
   wgrow107y_cu60（11-09）：CA1 ← CA1 は 0番 560 → 10番 1,450万 → 60番 116万 → 100番 3,749万。最大 4,773。
   何番ごとに、領野ごと（表現・誤差の行＝抑制の体を除く受け手）：
     受け手1つあたりの w 和（平均）・scale の中央値・scale_up の中央値・効き（受け手1つあたり w 和 × scale × scale_up の平均）・rate_ema ÷ 目標 の中央値・的が 1 の割合
-  止め：1番ずつ回し、1歩あたりの時間が初めの5番の中央値の 2倍を越えたら、そこで止める（画面が固まる前に。--nostop で外す）
+  止め：1番ずつ回し、1歩あたりの時間が初めの5番の中央値の 2倍を越えたら、そこで止める（--stop のときだけ。既定は止めない【み】11-10）
     【測】11-09 23:35 wgrow107y_cu60：80〜90番で CA1 の重さが跳ね、画面が固まりかけた
   ⚠️ 表現・誤差の行への興奮の辺は 0 から始まる（開通は 0）。wgrow の「0番比」の 0番 の値は、抑制の体への辺の分だった【測】test 11-09
 """
@@ -18,7 +18,7 @@ args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NP = int(args[0]) if args else 100
 EV = int(args[1]) if len(args) > 1 else 10
 TEST = "--test" in sys.argv
-NOSTOP = "--nostop" in sys.argv
+NOSTOP = "--stop" not in sys.argv   # 11-10 01:05【み】「止まったら困る」⇒ 既定は止めない（--stop で入れる）
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
