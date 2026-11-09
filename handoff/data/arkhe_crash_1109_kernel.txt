@@ -1,0 +1,41 @@
+miwa@arkhe:~$ journalctl -k -b 27f31da85d05456189b248278f0be65e --no-pager | grep -i -e amdgpu -e gfx -e ring -e timeout -e hang -e reset -e "out of memory" -e oom | tail -40
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=33065481, emitted seq=33065483
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2601383 thread chrome:cs0 pid 2601410
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 07 13:51:57 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 07 17:14:55 arkhe kernel: workqueue: dm_handle_vmin_vmax_update [amdgpu] hogged CPU for >10000us 5 times, consider switching to WQ_UNBOUND
+11月 07 17:34:57 arkhe kernel: workqueue: svm_range_deferred_list_work [amdgpu] hogged CPU for >10000us 1027 times, consider switching to WQ_UNBOUND
+11月 08 22:29:27 arkhe kernel: workqueue: svm_range_deferred_list_work [amdgpu] hogged CPU for >10000us 2051 times, consider switching to WQ_UNBOUND
+11月 08 23:50:47 arkhe kernel: amdgpu 0000:03:00.0: Using 39-bit DMA addresses
+11月 09 01:30:15 arkhe kernel: workqueue: dm_handle_vmin_vmax_update [amdgpu] hogged CPU for >10000us 7 times, consider switching to WQ_UNBOUND
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=68066591, emitted seq=68066593
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2605376 thread chrome:cs0 pid 2605425
+11月 09 20:31:01 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 09 20:31:02 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 09 20:31:02 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=68066712, emitted seq=68066714
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 3849898 thread chrome:cs0 pid 3849903
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 09 20:31:05 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=68069213, emitted seq=68069215
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg pid 1496 thread Xorg:cs0 pid 1499
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 09 20:33:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
