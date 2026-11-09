@@ -6,9 +6,11 @@
   wgrow107y_cu60（11-09）：CA1 ← CA1 は 0番 560 → 10番 1,450万 → 60番 116万 → 100番 3,749万。最大 4,773。
   何番ごとに、領野ごと（表現・誤差の行＝抑制の体を除く受け手）：
     受け手1つあたりの w 和（平均）・scale の中央値・scale_up の中央値・効き（受け手1つあたり w 和 × scale × scale_up の平均）・rate_ema ÷ 目標 の中央値・的が 1 の割合
+  止め：1番ずつ回し、1歩あたりの時間が初めの5番の中央値の 2倍を越えたら、そこで止める（画面が固まる前に。--nostop で外す）
+    【測】11-09 23:35 wgrow107y_cu60：80〜90番で CA1 の重さが跳ね、画面が固まりかけた
   ⚠️ 表現・誤差の行への興奮の辺は 0 から始まる（開通は 0）。wgrow の「0番比」の 0番 の値は、抑制の体への辺の分だった【測】test 11-09
 """
-import sys, numpy as np, torch
+import sys, time, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T
 from torch_brain import Brain, NAMES
 
@@ -16,6 +18,7 @@ args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NP = int(args[0]) if args else 100
 EV = int(args[1]) if len(args) > 1 else 10
 TEST = "--test" in sys.argv
+NOSTOP = "--nostop" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
@@ -53,6 +56,7 @@ def snap():
 
 
 done = 0
+MS = []
 print(f"版 {B.VERSION} ／ {NP}番まで {EV}番ごと ／ 領野（表現・誤差の受け手）：受け手1つあたり w 和・scale・scale_up・効き（w 和×scale×scale_up）・率÷目標・的1の割合", flush=True)
 while True:
     S = snap()
@@ -62,5 +66,22 @@ while True:
         print(f"      {nm}：w {w_:.4g}・scale {sc:.3g}・scale_up {su:.3g}・効き {ef:.4g}・率÷目標 {q:.2f}・的1 {tg:.2f}", flush=True)
     if done >= NP:
         break
-    life.run_plans(EV, learn=True)
-    done += EV
+    for _ in range(EV):
+        if str(dev).startswith("cuda"):
+            torch.cuda.synchronize()
+        t0, s0 = time.time(), life.t
+        life.run_plans(1, learn=True)
+        if str(dev).startswith("cuda"):
+            torch.cuda.synchronize()
+        done += 1
+        ms = (time.time() - t0) * 1000.0 / max(life.t - s0, 1)
+        MS.append(ms)
+        base = float(np.median(MS[:5])) if len(MS) >= 5 else None
+        if base is not None and ms > 2.0 * base and not NOSTOP:
+            print(f"🛑 {done}番：1歩 {ms:.1f}ms ＞ 初めの {base:.1f}ms の 2倍。ここで止める", flush=True)
+            S = snap()
+            for nm, _ in AREAS:
+                w_, sc, su, ef, q, tg = S[nm]
+                print(f"      {nm}：w {w_:.4g}・scale {sc:.3g}・scale_up {su:.3g}・効き {ef:.4g}・率÷目標 {q:.2f}・的1 {tg:.2f}", flush=True)
+            sys.exit(0)
+    print(f"      （1歩 {ms:.1f}ms・初め {base if base is None else round(base, 1)}ms）", flush=True)
