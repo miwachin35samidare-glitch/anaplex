@@ -10,6 +10,7 @@
   2 1歩の中の周ごと（1〜10周目）：抑制の体の d_inh ÷ INH_TH・撃った割合・抑制の行の (1＋抑制)・表現の行の (1＋抑制)
      ⇒ 周の中で抑制が積もるか（周の中で撃った抑制の体は、その歩の残りの周にずっと足される作り【コード】）
   ⚠️ 平均で見る。1つの歩の中の流れは 2 で見る
+  ⟲ 11-11 00:55 arkhe：測る区間で値を毎回 CPU へ読んでいたので 1歩 33 → 88ms ⇒ life.py の止めで止まった。値は GPU の上で足し、終わりに1回だけ読む形に直した
 """
 import os, sys, collections, numpy as np, torch
 os.environ.setdefault("ANAPLEX_GRAPH", "eager")
@@ -95,10 +96,36 @@ for nm in AR:
     rep_rows[nm] = torch.nonzero((rep_i >= lo) & (rep_i < hi)).squeeze(1)
 
 NK = len(KIND)
-acc_push = {nm: torch.zeros(NK + 2, dtype=torch.float64) for nm in AR}   # 種類ごと（興奮）＋ 調整 ＋ 抑制の送り手
-acc_on = {nm: torch.zeros(NK + 1, dtype=torch.float64) for nm in AR}
+NB = NK + 2                      # 種類（興奮）＋ 調整 ＋ 抑制の送り手
+cat_e, cnt_e, nr_ = {}, {}, {}
+for nm in AR:
+    e = sub[nm]
+    se = g.e_src[e].long()
+    ie = g.e_inh[e].bool()
+    md = g.mod_send[se] & ~ie & ~g.mod_drive_inh[se]
+    c = kind[se].long()
+    c = torch.where(md, NK, c)
+    c = torch.where(ie, NK + 1, c)
+    cat_e[nm] = c
+    cnt_e[nm] = torch.zeros(NB, dtype=torch.float64, device=dev).index_add_(0, c, torch.ones(len(c), dtype=torch.float64, device=dev))
+    nr_[nm] = float(max(1, len(inh_rows[nm])))
+acc_push = {nm: torch.zeros(NB, dtype=torch.float64, device=dev) for nm in AR}
+acc_on = {nm: torch.zeros(NB, dtype=torch.float64, device=dev) for nm in AR}
 NP = g.recur if hasattr(g, "recur") else T.RECUR
-prof = {nm: torch.zeros(NP, 5, dtype=torch.float64) for nm in AR}   # d_inh/TH・撃った割合・抑制の行の 1＋抑制・表現の行の 1＋抑制・回数
+# 周ごと：測る領野の位置に組の番号を付け、周ごとに index_add（読み出さない）
+grp_inh = torch.full((len(inh_i),), -1, dtype=torch.long, device=dev)
+for j, nm in enumerate(AR):
+    grp_inh[pos_in[nm]] = j
+grp_rep = torch.full((len(rep_i),), -1, dtype=torch.long, device=dev)
+for j, nm in enumerate(AR):
+    grp_rep[rep_rows[nm]] = j
+m_inh = torch.nonzero(grp_inh >= 0).squeeze(1)   # 番号の並び（真偽値で切ると GPU が数を待つ）
+m_rep = torch.nonzero(grp_rep >= 0).squeeze(1)
+gi_, gr_ = grp_inh[m_inh], grp_rep[m_rep]
+n_inh_g = torch.zeros(len(AR), dtype=torch.float64, device=dev).index_add_(0, gi_, torch.ones(len(gi_), dtype=torch.float64, device=dev)).clamp(min=1)
+n_rep_g = torch.zeros(len(AR), dtype=torch.float64, device=dev).index_add_(0, gr_, torch.ones(len(gr_), dtype=torch.float64, device=dev)).clamp(min=1)
+prof = torch.zeros(NP, 4, len(AR), dtype=torch.float64, device=dev)   # d_inh/TH・撃った割合・抑制の行の 1＋抑制・表現の行の 1＋抑制（和）
+prof_n = [0] * NP
 on = [False]
 pidx = [0]
 nsteps = [0]
@@ -118,18 +145,9 @@ def fired_w(self):
             ie = g.e_inh[e].bool()
             act = bo[se].double()
             amp = torch.where(ie, 4.0, g.c_exc[g.e_recv[e].long()]).double() * g.w[e].double() * g.send_gain[se].double()
-            md = g.mod_send[se] & ~ie & ~g.mod_drive_inh[se]
-            kk = kind[se].long()
-            nr = max(1, len(inh_rows[nm]))
-            for j in range(NK):
-                mm = (kk == j) & ~ie & ~md
-                acc_push[nm][j] += float((amp[mm] * act[mm]).sum()) / nr / INH_TH
-            acc_push[nm][NK] += float((amp[md] * act[md]).sum()) / nr / INH_TH
-            acc_push[nm][NK + 1] += float((amp[ie] * act[ie]).sum()) / nr
-            for j in range(NK):
-                mm = kk == j
-                acc_on[nm][j] += float(act[mm].mean()) if mm.any() else 0.0
-            acc_on[nm][NK] += float(act[ie].mean()) if ie.any() else 0.0
+            c = cat_e[nm]
+            acc_push[nm].index_add_(0, c, amp * act)
+            acc_on[nm].index_add_(0, c, act)
     return out
 
 
@@ -148,17 +166,12 @@ def run(fn, *a):
         d_inh, rep, err, inh_spk = out[0], out[1], out[2], out[3]
         k = min(pidx[0], NP - 1)
         ihn = cur.get("ihn")
-        for nm in AR:
-            pi = pos_in[nm]
-            if len(pi) == 0:
-                continue
-            pr_ = prof[nm]
-            pr_[k, 0] += float(d_inh[pi].double().mean()) / INH_TH
-            pr_[k, 1] += float(inh_spk[pi].double().mean())
-            if ihn is not None:
-                pr_[k, 2] += float((1.0 + ihn[inh_i[pi]]).mean())
-                pr_[k, 3] += float((1.0 + ihn[rep_i[rep_rows[nm]]]).mean())
-            pr_[k, 4] += 1
+        prof[k, 0].index_add_(0, gi_, d_inh[m_inh].double() / INH_TH)
+        prof[k, 1].index_add_(0, gi_, inh_spk[m_inh].double())
+        if ihn is not None:
+            prof[k, 2].index_add_(0, gi_, 1.0 + ihn[inh_i[m_inh]])
+            prof[k, 3].index_add_(0, gr_, 1.0 + ihn[rep_i[m_rep]])
+        prof_n[k] += 1
         pidx[0] += 1
     return out
 
@@ -196,20 +209,24 @@ ns = max(1, nsteps[0])
 print(f"版 {B.VERSION} ／ 先に {WARM}番・測る {ns}歩（{t0}〜{life.t}歩）／ INH_TH {INH_TH:.3f} ／ 1歩 {NP}周", flush=True)
 print("\n■ 1 抑制の体の押し（歩の初めに撃っている送り手から。抑制の行1体あたり ÷ INH_TH）／［重さの和・本数（1体あたり）・撃っている割合］", flush=True)
 for nm in AR:
+    P = (acc_push[nm] / ns).cpu().numpy()
+    O = (acc_on[nm] / ns / cnt_e[nm].clamp(min=1)).cpu().numpy()
+    nr = nr_[nm]
     print(f"\n  {nm}（抑制の体 {len(inh_rows[nm])}）", flush=True)
     for j in range(NK):
         w_, n_ = W[nm][j]
-        print(f"    {KIND[j]:<14s} 押し {float(acc_push[nm][j]) / ns:8.3f}   ［重さ {w_:8.3f}・本数 {n_:7.1f}・撃っている {float(acc_on[nm][j]) / ns:6.2%}］", flush=True)
+        print(f"    {KIND[j]:<14s} 押し {P[j] / nr / INH_TH:8.3f}   ［重さ {w_:8.3f}・本数 {n_:7.1f}・撃っている {O[j]:6.2%}］", flush=True)
     w_, n_ = W[nm][NK]
-    print(f"    {'調整（引かれる側）':<14s} 押し {float(acc_push[nm][NK]) / ns:8.3f}   ［重さ {w_:8.3f}・本数 {n_:7.1f}］", flush=True)
+    print(f"    {'調整（引かれる側）':<14s} 押し {P[NK] / nr / INH_TH:8.3f}   ［重さ {w_:8.3f}・本数 {n_:7.1f}・撃っている {O[NK]:6.2%}］", flush=True)
     w_, n_ = W[nm][NK + 1]
-    print(f"    {'抑制の送り手':<14s} 届く {float(acc_push[nm][NK + 1]) / ns:8.3f}（割り算の側）［重さ {w_:8.3f}・本数 {n_:7.1f}・撃っている {float(acc_on[nm][NK]) / ns:6.2%}］", flush=True)
-print("\n■ 2 1歩の中の周ごと（抑制の体の d_inh ÷ INH_TH ／ 撃った割合 ／ 抑制の行の 1＋抑制 ／ 表現の行の 1＋抑制）", flush=True)
-for nm in AR:
-    pr_ = prof[nm]
+    print(f"    {'抑制の送り手':<14s} 届く {P[NK + 1] / nr:8.3f}（割り算の側）［重さ {w_:8.3f}・本数 {n_:7.1f}・撃っている {O[NK + 1]:6.2%}］", flush=True)
+print("\n■ 2 1歩の中の周ごと（抑制の体の d_inh ÷ INH_TH ／ 撃った割合 ／ 抑制の行の 1＋抑制 ／ 表现の行の 1＋抑制）".replace("表现", "表現"), flush=True)
+PR = prof.cpu().numpy()
+ni, nrp = n_inh_g.cpu().numpy(), n_rep_g.cpu().numpy()
+for j, nm in enumerate(AR):
     cells = []
     for k in range(NP):
-        c = max(1.0, float(pr_[k, 4]))
-        cells.append(f"{k + 1}:{float(pr_[k, 0]) / c:.2f}/{float(pr_[k, 1]) / c:.0%}/{float(pr_[k, 2]) / c:.1f}/{float(pr_[k, 3]) / c:.1f}")
+        c = max(1, prof_n[k])
+        cells.append(f"{k + 1}:{PR[k, 0, j] / c / ni[j]:.2f}/{PR[k, 1, j] / c / ni[j]:.0%}/{PR[k, 2, j] / c / ni[j]:.1f}/{PR[k, 3, j] / c / nrp[j]:.1f}")
     print(f"  {nm:<6s} " + "  ".join(cells), flush=True)
 print("\n（終わり）", flush=True)
