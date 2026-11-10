@@ -28,7 +28,7 @@ b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 910
 b.bs.set_state(BS.WAKE)
 life = B.life_of(b, True, np.random.default_rng(0), np.random.default_rng(1))
 g = b.g
-WANT = ["CA1", "眼窩前頭", "嗅内深", "前補足", "視床", "聴覚"]
+WANT = ["CA1", "眼窩前頭", "嗅内深", "前補足", "聴覚", "45", "前頭前野", "STS1"]   # 11-10：版108 の皮質も見る
 AREAS = [(nm, NAMES.index(nm)) for nm in WANT if nm in NAMES]
 rows = {}
 for nm, i in AREAS:
