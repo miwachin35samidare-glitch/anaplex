@@ -8,7 +8,11 @@
   5歩ごと（最大・最小だけを GPU の上で見て印を立て、20歩ごとに1回だけ読む）：下からの線の重さ・短期の状態・網の中の辺・持ち越し・率の平均・CL の重さ・核どうしの重さ が有限か
     ⇒ 最初に有限でなくなったら、その歩・どの線（道の名）／どの領野かを出して止める
   間隔ごと：領野ごとの表現の率（Hz・目標比）・ドーパミンの門（third）・重さの大きい下からの道 上位10・VRAM
-  止め：VRAM の取り置き 12.5GB を越えたら止める（画面を守る）・life.py の止めもそのまま
+  止め：VRAM の取り置き 14.0GB（2^30 バイト、vram_peak と同じ単位）を越えたら止める（画面を守る）・life.py の止めもそのまま
+    ⟲ 11-11 19:50：10^9 バイトで 12.5 にしていて、20歩目（取り置き 12.77 ＝ 13.71×10^9）で止まった
+  学びの2つの項（線ごと・歩の和、ln）：同じ歩（入力が先・送り手と受け手がそろう）の項 ／ 受け手が先の窓の項（境目のずれが無い）
+    ⟲ 11-11 19:30 の Claude の読み「門が開くと撃ちすぎでも強まる」は計算の誤り：ずれが頭打ち（0.197）でも同じ歩の項は門 1 まで 0 以下
+    ⇒ どちらの項が重さを伸ばしているかを測る
   ⚠️ 値を読むのは20歩ごとと間隔ごとだけ（重くしない。11-11 00:55 の止めの反省）
 """
 import os, sys, numpy as np, torch
@@ -23,9 +27,10 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION not in (107, 109):
+if B.VERSION not in (107, 109):   # 版109
     raise SystemExit(f"⚠️ 版 {B.VERSION}")
-VMAX = float(os.environ.get("ANAPLEX_VMAX_GB", "12.5"))
+VMAX = float(os.environ.get("ANAPLEX_VMAX_GB", "14.0"))   # 2^30 バイト（logs/vram_peak の「GB」と同じ単位）。全体 15.92 のうち画面の分を残す
+GIB = float(2 ** 30)
 torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)
 b.bs.set_state(BS.WAKE)
@@ -48,12 +53,56 @@ def named():
 
 
 NT = len(named())
+eo = list(but.eo) if not torch.is_tensor(but.eo) else but.eo.tolist()
+A_, C_ = TB._CL_LN_NODA, TB._CL_LN_DA
+NP_ = len(but.keys)
+pid_e = torch.repeat_interleave(torch.arange(NP_, device=dev), torch.tensor([eo[j + 1] - eo[j] for j in range(NP_)], device=dev))
+acc_co = torch.zeros(NP_, dtype=torch.float64, device=dev)    # 同じ歩の項の和（ln）
+acc_pf = torch.zeros(NP_, dtype=torch.float64, device=dev)    # 受け手が先の窓の項の和（ln）
+acc_n = torch.zeros(NP_, dtype=torch.float64, device=dev)     # 同じ歩でそろった回数
+L0 = but.learn
+
+
+def learn_w(anyr, cl_spk, d):
+    """_BUTable.learn と同じ式で、2つの項を線ごとに足す（重さは変えない。元の learn をそのあと呼ぶ）"""
+    src = anyr if cl_spk is None else torch.cat([anyr, cl_spk])
+    pidx = but._pidx if but._pidx is not None else torch.cat([(torch.arange(n, device=dev) + (c if c >= 0 else anyr.shape[0])) for c, n in zip(but.ch0, but.nt)])
+    post = src[pidx]
+    pre_now = but.pre_now
+    pre_e = pre_now | but.pre_prev
+    post_e = post[but.tgt] > 0
+    dd_ = torch.as_tensor(d, dtype=but.w.dtype, device=dev)
+    g_on = (2.0 * dd_ - 1.0).clamp(0.0, 1.0)
+    sh_ = but.sh if getattr(but, "sh", None) is not None else 0.0
+    ln_ctx = ((1.0 - TB._dd(dd_)) * A_ + TB._dd(dd_) * C_ - sh_) / TB.CL_PAIRS
+    ln_pp = torch.where(but.hippo, TB.LN_PRE_HIP * g_on, ln_ctx)
+    k = but.post_age.clamp(max=TB.WIN_MAXK + 1)[but.tgt]
+    pf = but.tab[but.hippo.long(), k] * (pre_now & ~post_e).float() * g_on
+    co_m = (pre_e & post_e)
+    acc_co.index_add_(0, pid_e, (ln_pp * co_m.float()).double())
+    acc_pf.index_add_(0, pid_e, pf.double())
+    acc_n.index_add_(0, pid_e, co_m.double())
+    return L0(anyr, cl_spk, d)
+
+
+but.learn = learn_w
+
+
+def terms(k=12):
+    co, pf, n = acc_co.cpu().numpy(), acc_pf.cpu().numpy(), acc_n.cpu().numpy()
+    cnt_e = np.array([eo[j + 1] - eo[j] for j in range(NP_)], dtype=float).clip(min=1)
+    tot = (co + pf) / cnt_e                 # 線1本あたりの ln の和（窓の間）
+    o = np.argsort(-tot)[:k]
+    s_ = "  ".join(f"{but.keys[j]} 計{tot[j]:+.3f}（同じ歩{co[j] / cnt_e[j]:+.3f}・受け手が先{pf[j] / cnt_e[j]:+.3f}・そろい{n[j] / cnt_e[j]:.0f}回）" for j in o)
+    acc_co.zero_(); acc_pf.zero_(); acc_n.zero_()
+    return s_
+
+
 flag = torch.zeros(NT, dtype=torch.bool, device=dev)
 rep_n = torch.zeros(n_all, device=dev)
 cnt = [0, 0]                    # 窓の歩・20歩ごとの数え
 cx = [n for n in NAMES if TB.PRIOR_TYPE.get(n) == "皮質"]
 SHOW = cx + [n for n in ("視床", "CA1", "CA3", "歯状回", "黒質", "VTA", "背内側視床", "視床前核", "VA", "CL", "扁桃体基底", "海馬支脚") if n in NAMES]
-eo = list(but.eo) if not torch.is_tensor(but.eo) else but.eo.tolist()
 
 
 def path_of(i):
@@ -96,10 +145,11 @@ def report(tag):
         lo, hi = int(g.off_recv[i]), int(g.off_recv[i + 1])
         cells.append(f"{nm} {float(hz[oc:oc + n].mean()):.1f}Hz（{float(q[lo:hi].median()):.2f}）")
     th = g.third.reshape(-1).float().cpu().numpy() if torch.is_tensor(g.third) else g.third
-    res = torch.cuda.memory_reserved() / 1e9 if str(dev).startswith("cuda") else 0.0
+    res = torch.cuda.memory_reserved() / GIB if str(dev).startswith("cuda") else 0.0
     print(f"\n── {tag}（{life.t}歩）── VRAM 取り置き {res:.2f}GB ／ 門 third {np.round(th, 3).tolist()}", flush=True)
     print("  率（窓の平均・括弧は 率の平均 ÷ 目標の中央）：" + " ／ ".join(cells), flush=True)
     print("  下からの道 重さの最大 上位10：" + top_paths(), flush=True)
+    print("  学びで伸びた道 上位12（窓の間の ln の和・線1本あたり ＝ 同じ歩の項 ＋ 受け手が先の窓の項）：" + terms(), flush=True)
     rep_n.zero_()
     cnt[0] = 0
     return res
@@ -126,7 +176,7 @@ def until(lf):
         if any(fl):
             stop[0] = fl
             return True
-        if str(dev).startswith("cuda") and torch.cuda.memory_reserved() / 1e9 > VMAX:   # 取り置きは CPU 側で読める（待たない）
+        if str(dev).startswith("cuda") and torch.cuda.memory_reserved() / GIB > VMAX:   # 取り置きは CPU 側で読める（待たない）
             vstop[0] = True
             return True
     return False
