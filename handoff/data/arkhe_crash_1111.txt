@@ -1,0 +1,66 @@
+miwa@arkhe:~$ journalctl --list-boots | tail -3; journalctl -k -b -1 --no-pager | grep -i -E "amdgpu|gfx|ring|timeout|reset|wedged|hang|fault|svm" | tail -40; echo "=== step"; tail -15 ~/anaplex/logs/step_ms.log; echo "=== vram"; tail -5 ~/anaplex/logs/vram_peak.log
+ -2 212bca2d305745678c9204463a80653d Mon 2026-11-09 22:50:12 JST Mon 2026-11-09 23:38:19 JST
+ -1 e79501a311724139bba99c649f447565 Mon 2026-11-09 23:37:42 JST Wed 2026-11-11 22:35:11 JST
+  0 ca4a21f77b5b45608931a07556eafc62 Wed 2026-11-11 22:34:56 JST Wed 2026-11-11 22:39:59 JST
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          WALKER_ERROR: 0x0
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          PERMISSION_FAULTS: 0x3
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          MAPPING_ERROR: 0x0
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          RW: 0x0
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=7977251, emitted seq=7977253
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 10 23:25:55 arkhe kernel: workqueue: svm_range_deferred_list_work [amdgpu] hogged CPU for >10000us 259 times, consider switching to WQ_UNBOUND
+11月 11 20:37:59 arkhe kernel: perf: interrupt took too long (3159 > 3126), lowering kernel.perf_event_max_sample_rate to 63000
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=13153169, emitted seq=13153171
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg pid 1504 thread Xorg:cs0 pid 1507
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
+11月 11 22:25:44 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
+11月 11 22:25:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
+11月 11 22:30:03 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc Discord(423135) task Discord:cs0(423091) is non-zero when fini
+=== step
+11-11 07:42:50 10400歩 中央 23.3ms 最大 38.0ms
+11-11 07:42:53 10500歩 中央 23.3ms 最大 36.6ms
+11-11 07:42:55 10600歩 中央 23.3ms 最大 36.3ms
+11-11 07:42:58 10700歩 中央 23.3ms 最大 36.4ms
+11-11 07:43:00 10800歩 中央 23.2ms 最大 37.3ms
+11-11 07:43:03 10900歩 中央 23.3ms 最大 36.3ms
+11-11 07:43:07 11000歩 中央 23.3ms 最大 1689.0ms
+11-11 07:43:10 11100歩 中央 23.3ms 最大 35.7ms
+11-11 07:43:12 11200歩 中央 23.2ms 最大 36.5ms
+11-11 07:43:15 11300歩 中央 23.1ms 最大 57.0ms
+11-11 07:43:17 11400歩 中央 23.3ms 最大 36.8ms
+11-11 07:43:20 11500歩 中央 23.3ms 最大 38.4ms
+11-11 07:43:22 11600歩 中央 23.2ms 最大 37.7ms
+11-11 07:43:26 11700歩 中央 30.3ms 最大 67.4ms
+11-11 22:34:39 100歩 中央 5762.9ms 最大 37434.9ms
+=== vram
+2026-11-10 23:31:28 measure_srccx107.py 1,10,30,60,100 100 ／ GPU 全体の山 11.44GB（1秒ごと・始めから 679秒）／ 山の下限 11.44GB（取り置きの山 10.68 ＋ 外の一番小さい値 0.25）／ 始めの使用 0.25GB ／ 全体 15.92GB
+2026-11-11 00:55:31 measure_inhcx107.py 10 100 ／ GPU 全体の山 11.58GB（1秒ごと・始めから 89秒）／ 山の下限 11.58GB（取り置きの山 10.84 ＋ 外の一番小さい値 0.25）／ 始めの使用 0.25GB ／ 全体 15.92GB
+2026-11-11 01:05:02 measure_inhcx107.py 10 100 ／ GPU 全体の山 12.31GB（1秒ごと・始めから 67秒）／ 山の下限 12.31GB（取り置きの山 11.57 ＋ 外の一番小さい値 0.25）／ 始めの使用 0.25GB ／ 全体 15.92GB
+2026-11-11 07:43:30 measure_srccx107.py 1,10,30,60,100 100 ／ GPU 全体の山 15.92GB（1秒ごと・始めから 50秒）／ 山の下限 15.92GB（取り置きの山 15.37 ＋ 外の一番小さい値 0.25）／ 始めの使用 0.25GB ／ 全体 15.92GB
+2026-11-11 19:37:15 measure_nan109.py 70 5 ／ GPU 全体の山 13.54GB（1秒ごと・始めから 53秒）／ 山の下限 13.54GB（取り置きの山 12.77 ＋ 外の一番小さい値 0.25）／ 始めの使用 0.25GB ／ 全体 15.92GB
