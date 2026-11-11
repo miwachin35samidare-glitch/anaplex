@@ -1,7 +1,7 @@
-miwa@arkhe:~/anaplex$ python3 apply_v101.py
+$ python3 apply_v101.py
 ✅ 版101 を当てた（来ないことに撃つ体）。⚠️ 網の形が変わるので state.pt は 0 から
    次：python3 check_v101.py → python3 measure_mem99.py（VRAM の山）→ python3 measure_life97.py（1歩）
-miwa@arkhe:~/anaplex$ python3 check_v101.py
+$ python3 check_v101.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 ⚠️ prior_v2_PAG.npz が無い ⇒ 型「PAG」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
 ⚠️ prior_v2_PPN.npz が無い ⇒ 型「PPN」は焼く前の素子（prior_v1）で。率を人に合わせてから録って焼く
@@ -108,7 +108,7 @@ E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapp
   辺：来ない体の行 458,600（コンテナ・相手 200）
   arkhe の見込み【計算】：来ない体 2323 × 相手 9,100 ＝ 21,139,300本（版100 の 8,462万 に +25%）
 ✅ 版101 の確かめ 全部通った
-miwa@arkhe:~/anaplex$ python3 measure_mem99.py
+$ python3 measure_mem99.py
 python3 measure_life97.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 版 101 ／ torch 2.14.1+rocm7.14 ／ AMD Radeon RX 9070 XT ／ 記録 なし

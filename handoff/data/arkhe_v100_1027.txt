@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 apply_v100.py
+$ cd ~/anaplex && python3 apply_v100.py
 python3 check_v100.py
 python3 measure_life97.py
 python3 measure_mem99.py 1100

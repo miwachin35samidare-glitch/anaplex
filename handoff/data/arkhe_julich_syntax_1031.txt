@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ ~/siibra-venv/bin/python julich_syntax.py
+$ ~/siibra-venv/bin/python julich_syntax.py
 [siibra:INFO] Version: 1.0.1-alpha.25
 Please file issues at https://github.com/FZJ-INM1-BDA/siibra-python.
 Loading preconfigured Parcellation instances: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 29/29 [00:00<00:00, 283.72Parcellation/s]

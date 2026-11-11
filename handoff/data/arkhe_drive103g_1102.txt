@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 measure_drive103g.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee drive103g.txt
+$ cd ~/anaplex && python3 measure_drive103g.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee drive103g.txt
 版 103 ／ 先に 50番（5575歩）・測る 40歩・周 10/歩 ／ 撃ったときの入力（閾値 ＝ 1 に対する割合の平均）
   網 ＝ 撃たせる側の網の辺（時間細胞は版103g で調整する側なので入らない）／ 持ち越し ＝ 前の周の足し合わせの残り（中身は前の周の網・下から・CL）
   領野            越えた/歩      体        率Hz      網    下から  CL・i0   持ち越し    自発だけ

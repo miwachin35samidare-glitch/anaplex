@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ ANAPLEX_GRAPH=eager python3 measure_drive103.py
+$ ANAPLEX_GRAPH=eager python3 measure_drive103.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 版 103 ／ 暮らし 40歩・周 10/歩 ／ 撃ったときの入力（閾値 ＝ 1 に対する割合の平均）
   領野            越えた/歩      体     越えた Hz      網    下から  CL・i0   持ち越し    自発だけ

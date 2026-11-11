@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 apply_v103f.py && python3 measure_life97.py && python3 measure_fire103.py
+$ python3 apply_v103f.py && python3 measure_life97.py && python3 measure_fire103.py
 ✅ 版103f を当てた（抑制の体の的を累積和の差で）。網は同じ
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 暮らしの1歩 39.7ms ／ 網だけ（無音）の1歩 47.9ms ／ 差 -8.2ms

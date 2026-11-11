@@ -1,6 +1,6 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && ~/siibra-venv/bin/python v107_subcort.py 2>&1 | tee data_v107_subcort_out.txt
-[fetch_atlas_harvard_oxford] Added README.md to /home/miwa/nilearn_data
-[fetch_atlas_harvard_oxford] Dataset created in /home/miwa/nilearn_data/fsl
+$ cd ~/anaplex && ~/siibra-venv/bin/python v107_subcort.py 2>&1 | tee data_v107_subcort_out.txt
+[fetch_atlas_harvard_oxford] Added README.md to ~/nilearn_data
+[fetch_atlas_harvard_oxford] Dataset created in ~/nilearn_data/fsl
 [fetch_atlas_harvard_oxford] Downloading data from https://www.nitrc.org/frs/download.php/9902/HarvardOxford.tgz ...
 Downloaded 573440 of 25716861 bytes (2.2%%, 00 HR 00 MIN 46 SEC remaining)
 Downloaded 2842624 of 25716861 bytes (11.1%%, 00 HR 00 MIN 17 SEC remaining)
@@ -12,10 +12,10 @@ Downloaded 21610496 of 25716861 bytes (84.0%%, 00 HR 00 MIN 01 SEC remaining)
 Downloaded 25526272 of 25716861 bytes (99.3%%, 00 HR 00 MIN 00 SEC remaining)
 [fetch_atlas_harvard_oxford]  ...done. (9 seconds, 0 min)
 
-[fetch_atlas_harvard_oxford] Extracting data from /home/miwa/nilearn_data/fsl/52fc6e9a44cb308dcf34a89091317d8b/HarvardOxford.tgz...
+[fetch_atlas_harvard_oxford] Extracting data from ~/nilearn_data/fsl/52fc6e9a44cb308dcf34a89091317d8b/HarvardOxford.tgz...
 [fetch_atlas_harvard_oxford] .. done.
 
-[fetch_atlas_harvard_oxford] Dataset directory found: /home/miwa/nilearn_data/fsl
+[fetch_atlas_harvard_oxford] Dataset directory found: ~/nilearn_data/fsl
 HarvardOxford：皮質の外 22 ／ 皮質 49 の札
 
 [References] Please cite the following papers if you are using this data:

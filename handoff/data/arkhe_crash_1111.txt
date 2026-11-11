@@ -1,4 +1,4 @@
-miwa@arkhe:~$ journalctl --list-boots | tail -3; journalctl -k -b -1 --no-pager | grep -i -E "amdgpu|gfx|ring|timeout|reset|wedged|hang|fault|svm" | tail -40; echo "=== step"; tail -15 ~/anaplex/logs/step_ms.log; echo "=== vram"; tail -5 ~/anaplex/logs/vram_peak.log
+$ journalctl --list-boots | tail -3; journalctl -k -b -1 --no-pager | grep -i -E "amdgpu|gfx|ring|timeout|reset|wedged|hang|fault|svm" | tail -40; echo "=== step"; tail -15 ~/anaplex/logs/step_ms.log; echo "=== vram"; tail -5 ~/anaplex/logs/vram_peak.log
  -2 212bca2d305745678c9204463a80653d Mon 2026-11-09 22:50:12 JST Mon 2026-11-09 23:38:19 JST
  -1 e79501a311724139bba99c649f447565 Mon 2026-11-09 23:37:42 JST Wed 2026-11-11 22:35:11 JST
   0 ca4a21f77b5b45608931a07556eafc62 Wed 2026-11-11 22:34:56 JST Wed 2026-11-11 22:39:59 JST
@@ -7,26 +7,26 @@ miwa@arkhe:~$ journalctl --list-boots | tail -3; journalctl -k -b -1 --no-pager 
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          MAPPING_ERROR: 0x0
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:          RW: 0x0
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
-11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
-11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
-11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
-11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0: [gfxhub] page fault (src_id:0 ring:24 vmid:6 pasid:17)
-11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:02 arkhe kernel: amdgpu 0000:03:00.0:   in page starting at address 0x0000000000000000 from client 10
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=7977251, emitted seq=7977253
-11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2927 thread chrome:cs0 pid 2943
+11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
 11月 10 23:07:04 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
@@ -37,11 +37,11 @@ miwa@arkhe:~$ journalctl --list-boots | tail -3; journalctl -k -b -1 --no-pager 
 11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
 11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
 11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=13153169, emitted seq=13153171
-11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg pid 1504 thread Xorg:cs0 pid 1507
+11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg
 11月 11 22:25:42 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
 11月 11 22:25:44 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
 11月 11 22:25:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
-11月 11 22:30:03 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc Discord(423135) task Discord:cs0(423091) is non-zero when fini
+11月 11 22:30:03 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc Discord is non-zero when fini
 === step
 11-11 07:42:50 10400歩 中央 23.3ms 最大 38.0ms
 11-11 07:42:53 10500歩 中央 23.3ms 最大 36.6ms

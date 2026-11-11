@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 measure_src104.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src104_0.txt && python3 measure_src104.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src104_50.txt
+$ cd ~/anaplex && python3 measure_src104.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src104_0.txt && python3 measure_src104.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src104_50.txt
 版 103（版104）／ 先に 0番（0歩）・測る 40歩 ／ 値は ÷(1＋抑制) の前・閾値 ＝ 1
 
 ■ 視床下核（256体）率 78.3Hz ／ x_gain 7.14・閾値 14.3 ／ 1＋抑制 3.52（核どうし 0.50・外から 0.00・領野の中 2.02）／ 足したもの 16.33（÷(1＋抑制) で 4.64）＋ 持ち越し 0.07

@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 apply_v102.py
+$ python3 apply_v102.py
 python3 check_v102.py
 python3 measure_mem99.py
 python3 measure_life97.py

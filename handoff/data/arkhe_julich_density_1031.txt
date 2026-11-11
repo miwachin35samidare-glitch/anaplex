@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ ~/siibra-venv/bin/python julich_density.py
+$ ~/siibra-venv/bin/python julich_density.py
 [siibra:INFO] Version: 1.0.1-alpha.25
 Please file issues at https://github.com/FZJ-INM1-BDA/siibra-python.
 siibra 1.0.1-alpha.25

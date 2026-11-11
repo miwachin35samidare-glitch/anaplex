@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 measure_speed98.py
+$ python3 measure_speed98.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 暮らしの1歩 68.5ms（部分ごとに待つので普段より少し遅い）
   1歩ぜんぶ            68.03ms
@@ -10,7 +10,7 @@ E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapp
   平行線維（学ぶ）          0.29ms
   核どうしの学び           0.25ms
 （顆粒の領野：体 191,472・平行線維 444,040本 ／ 版96 の内訳：網 12.56・足す 3.58・学ぶ 0.59・核どうし 0.20・外 1.53ms）
-miwa@arkhe:~/anaplex$ python3 measure_prof103.py
+$ python3 measure_prof103.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 USDT:2026-11-01 15:54:15 1570336:1570336 SyncActivityProfilerHandler.cpp:39] profiler_start
 USDT:2026-11-01 15:54:17 1570336:1570336 SyncActivityProfilerHandler.cpp:46] profiler_stop
@@ -50,5 +50,5 @@ USDT:2026-11-01 15:54:17 1570336:1570336 SyncActivityProfilerHandler.cpp:46] pro
 3 呼んだ所（自分のコードの行）ごとの GPU の時間（1歩あたり）
    105.28ms  (自分のコードの外)
 （data_prof103.txt に書いた）
-miwa@arkhe:~/anaplex$ 
+$ 
 

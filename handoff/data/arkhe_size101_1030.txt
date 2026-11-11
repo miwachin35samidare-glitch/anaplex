@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 measure_size101.py 0.85
+$ python3 measure_size101.py 0.85
 python3 measure_size101.py 0.8
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 版 101 ／ torch 2.14.1+rocm7.14 ／ AMD Radeon RX 9070 XT ／ 記録 なし

@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && (while true; do echo "$(date +%T) $(rocm-smi --showmeminfo vram --csv 2>/dev/null | tail -n 1)"; sync; sleep 5; done > vram103g.log &) ; python3 measure_track103.py 300 25 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee track103g.txt; pkill -f "rocm-smi --showmeminfo" ; pkill -f "sleep 5"; tail -n 3 vram103g.log
+$ cd ~/anaplex && (while true; do echo "$(date +%T) $(rocm-smi --showmeminfo vram --csv 2>/dev/null | tail -n 1)"; sync; sleep 5; done > vram103g.log &) ; python3 measure_track103.py 300 25 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee track103g.txt; pkill -f "rocm-smi --showmeminfo" ; pkill -f "sleep 5"; tail -n 3 vram103g.log
 版 103 ／ 0から 300番 ／ 区切り 25番（眠りなし）
     25番   2853歩   75.0ms/歩  声   8  言えた   0/20  圧 0.01  覚醒 0.88  th_gain 1.005  眠る時 いいえ
     50番   2879歩   64.4ms/歩  声   0  言えた   0/24  圧 0.03  覚醒 0.63  th_gain 1.015  眠る時 いいえ

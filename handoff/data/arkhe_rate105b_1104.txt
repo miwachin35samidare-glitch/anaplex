@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 apply_v105b.py && for x in 7.142857 5 3.5 2.5 1.7; do ANAPLEX_XCX=$x python3 measure_rate105.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_; done | tee rate105b.txt
+$ cd ~/anaplex && python3 apply_v105b.py && for x in 7.142857 5 3.5 2.5 1.7; do ANAPLEX_XCX=$x python3 measure_rate105.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_; done | tee rate105b.txt
 ✅ 版105b を当てた（ANAPLEX_XCX で皮質の盛りを振れる。無ければ 105 と同じ）
 
 === ANAPLEX_XCX=7.142857 ／ 先に 0番（0歩）・測る 40歩 ／ 率 Hz（表現・誤差・来ない）

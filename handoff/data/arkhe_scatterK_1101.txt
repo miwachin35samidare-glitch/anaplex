@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ ANAPLEX_SCATTER_K=32 python3 measure_life97.py
+$ ANAPLEX_SCATTER_K=32 python3 measure_life97.py
 ANAPLEX_SCATTER_K=16 python3 measure_life97.py
 ANAPLEX_SCATTER_K=8 python3 measure_life97.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48

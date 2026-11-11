@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 apply_v104.py && ANAPLEX_V88=0 python3 check_v104.py && python3 measure_life97.py   （11-03 22:46【み】貼った）
+$ python3 apply_v104.py && ANAPLEX_V88=0 python3 check_v104.py && python3 measure_life97.py   （11-03 22:46【み】貼った）
 ✅ 版104 を当てた（皮質のふさがり。ANAPLEX_OCC=0 で 103g）
 check_v104：全部 ✓（コンテナと同じ数：領野の中 1,332,240本・下から 68道 169,030本・刈り込みで生やした辺 12本）
 暮らしの1歩 29.7ms ／ 網だけ（無音）の1歩 36.4ms ／ 差 -6.7ms

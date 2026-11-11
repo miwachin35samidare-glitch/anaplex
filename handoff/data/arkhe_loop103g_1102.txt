@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 measure_loop103.py 0,50,200 （版103g、11-02 21:04〜21:26）
+$ python3 measure_loop103.py 0,50,200 （版103g、11-02 21:04〜21:26）
 
 [0番（0歩）]  閾値 14.3
   領野           体      相手     送り手     繋がる    自分     w中央    w90%     w最大     1本中央      全部の和    率Hz

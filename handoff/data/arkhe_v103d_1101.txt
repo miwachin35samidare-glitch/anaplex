@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 apply_v103d.py && python3 check_v103d.py && python3 measure_life97.py && python3 measure_speed98.py
+$ python3 apply_v103d.py && python3 check_v103d.py && python3 measure_life97.py && python3 measure_speed98.py
 ✅ 版103d を当てた（放出のくじを同じ分布の別の引き方に）。網は同じ
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
   ✓ 二項分布の確率との最大のずれ 0.00073（(32, 0.03)。揺らぎの目安 0.00035 の 6倍まで）

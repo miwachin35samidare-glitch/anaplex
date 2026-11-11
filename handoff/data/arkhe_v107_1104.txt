@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && ~/siibra-venv/bin/python v107_measure.py 2>&1 | tee data_v107_out.txt && ~/siibra-venv/bin/python julich_volume.py Ia Id Ig PFop PFt "PF " PFcm 6v1 6v2 6r1 Ph1 Ph2 Ph3 2>&1 | tee data_julich107.txt
+$ cd ~/anaplex && ~/siibra-venv/bin/python v107_measure.py 2>&1 | tee data_v107_out.txt && ~/siibra-venv/bin/python julich_volume.py Ia Id Ig PFop PFt "PF " PFcm 6v1 6v2 6r1 Ph1 Ph2 Ph3 2>&1 | tee data_julich107.txt
 1 体積（HCP、左＋右 mm³）と体数（高次 10,808 を 224 × 0.55 ＝ 123体として比で）
   島前（AAIC・AVI・MI）7,571 ⇒ 86体
   島後（Ig・PoI1・PoI2）7,693 ⇒ 88体

@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 measure_prof103.py && cp data_prof103.txt data_prof103_eager.txt && ANAPLEX_GRAPH=1 python3 measure_prof103.py
+$ python3 measure_prof103.py && cp data_prof103.txt data_prof103_eager.txt && ANAPLEX_GRAPH=1 python3 measure_prof103.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 USDT:2026-11-01 17:34:26 1621271:1621271 SyncActivityProfilerHandler.cpp:39] profiler_start
 USDT:2026-11-01 17:34:27 1621271:1621271 SyncActivityProfilerHandler.cpp:46] profiler_stop

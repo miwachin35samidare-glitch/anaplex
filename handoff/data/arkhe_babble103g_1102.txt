@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 apply_v103g.py && python3 check_v103g.py 2>&1 | grep -v rocSHMEM | tee chk103g.txt && python3 measure_babble103.py 2>&1 | grep -v rocSHMEM | tee babble103g.txt && ANAPLEX_CX_TC=drive python3 measure_babble103.py 2>&1 | grep -v rocSHMEM | tee babble103f.txt
+$ cd ~/anaplex && python3 apply_v103g.py && python3 check_v103g.py 2>&1 | grep -v rocSHMEM | tee chk103g.txt && python3 measure_babble103.py 2>&1 | grep -v rocSHMEM | tee babble103g.txt && ANAPLEX_CX_TC=drive python3 measure_babble103.py 2>&1 | grep -v rocSHMEM | tee babble103f.txt
 ✅ 版103g を当てた（皮質の時間細胞も調整する側に。ANAPLEX_CX_TC=drive で 103f）
 皮質の時間細胞：調整する側（103g）
   領野       時間細胞の調整の割合 抑制の体の興奮の相手のうち時間細胞

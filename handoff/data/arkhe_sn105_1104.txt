@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && for a in "0 40" "0 40 --silent" "50 40"; do ANAPLEX_XCX=1.7 python3 measure_sn105.py $a 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_; done | tee sn105.txt
+$ cd ~/anaplex && for a in "0 40" "0 40 --silent" "50 40"; do ANAPLEX_XCX=1.7 python3 measure_sn105.py $a 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_; done | tee sn105.txt
 
 === ANAPLEX_XCX=1.7 ／ 先に 0番（0歩）・測る 40歩 音あり（暮らし）
   聴覚       表現   10.1  誤差    0.1  来ない    0.3

@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 marmoset_hier.py
+$ cd ~/anaplex && python3 marmoset_hier.py
 注入 143 回を読む（細胞の表を1つずつ）
   20/143
   40/143

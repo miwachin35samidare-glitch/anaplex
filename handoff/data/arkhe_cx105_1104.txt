@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 measure_cx105.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee cx105_0.txt && python3 measure_cx105.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee cx105_50.txt
+$ cd ~/anaplex && python3 measure_cx105.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee cx105_0.txt && python3 measure_cx105.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee cx105_50.txt
 版 103 ／ 先に 0番（0歩）・測る 40歩 ／ 閾値 ＝ 1
 1 表現の体：撃ったときの内訳（÷(1＋抑制) のあと）と、下からの道（撃つかに依らない平均・÷(1＋抑制) の前 × x_gain ÷ 閾値）
 

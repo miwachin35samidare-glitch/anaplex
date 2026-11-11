@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 apply_v103e.py && python3 measure_life97.py && python3 measure_speed98.py
+$ python3 apply_v103e.py && python3 measure_life97.py && python3 measure_speed98.py
 ✅ 版103e を当てた（平行線維の足し込みを累積和の差で）。網は同じ
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 暮らしの1歩 45.8ms ／ 網だけ（無音）の1歩 53.5ms ／ 差 -7.7ms

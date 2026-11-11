@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 apply_v107v.py && python3 measure_quiet107b.py 100 10 --win=200 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee quiet107v.txt
+$ cd ~/anaplex && python3 apply_v107v.py && python3 measure_quiet107b.py 100 10 --win=200 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee quiet107v.txt
 ✅ 版107v を当てた
 ［ノブ］nuc_vinf {'外節': 5.666588440805726, '内節': 6.180058821168147, '網様部': 5.628803545301893, '視床下核': 1.3837854677670378, '境': 1.0265489909888927, '外側手綱核': 0.32091527886203364, '吻内側被蓋核': 0.058040760842317636, 'PPN': 2.814362964615959, 'VTA': 9.808425038009783, '黒質': 9.808425038009783}・sn_inh 2.7636856020258316・vta_inh 1.0・xcx 1.4428762017237706
 番 ・ 歩 ・ 状態 ・ 門（黒質・VTA）・ 皮質の率 ・ scale（皮質・核・線条体）・ scale_up（皮質・核・線条体）・ 生きている辺 ・ 辺の重さの平均

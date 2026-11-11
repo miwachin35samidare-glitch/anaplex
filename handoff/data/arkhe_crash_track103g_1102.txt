@@ -1,4 +1,4 @@
-miwa@arkhe:~$ cd ~/anaplex; echo "=== track103g.txt の最後 ==="; tail -n 30 track103g.txt 2>/dev/null; echo "=== 今の起動のカーネル（GPU・メモリ） ==="; journalctl -k -b 0 --since "-6 hours" --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 前の起動のカーネル（再起動していたら） ==="; journalctl -k -b -1 --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 起動の一覧 ==="; journalctl --list-boots --no-pager 2>/dev/null | tail -n 3
+$ cd ~/anaplex; echo "=== track103g.txt の最後 ==="; tail -n 30 track103g.txt 2>/dev/null; echo "=== 今の起動のカーネル（GPU・メモリ） ==="; journalctl -k -b 0 --since "-6 hours" --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 前の起動のカーネル（再起動していたら） ==="; journalctl -k -b -1 --no-pager 2>/dev/null | grep -iE "amdgpu|oom|killed process|gpu reset|ring .* timeout|page fault" | tail -n 30; echo "=== 起動の一覧 ==="; journalctl --list-boots --no-pager 2>/dev/null | tail -n 3
 === track103g.txt の最後 ===
 === 今の起動のカーネル（GPU・メモリ） ===
 11月 02 19:41:08 arkhe kernel: amdgpu 0000:03:00.0: SMU is initialized successfully!
@@ -42,23 +42,23 @@ miwa@arkhe:~$ cd ~/anaplex; echo "=== track103g.txt の最後 ==="; tail -n 30 t
 10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] Failed to setup vendor infoframe on connector HDMI-A-1: -22
 10月 29 22:32:44 arkhe kernel: fbcon: amdgpudrmfb (fb0) is primary device
 10月 29 22:32:44 arkhe kernel: amdgpu 0000:03:00.0: [drm] fb0: amdgpudrmfb frame buffer device
-11月 01 17:38:23 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome(3305) task chrome:cs0(3274) is non-zero when fini
+11月 01 17:38:23 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome is non-zero when fini
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=25314521, emitted seq=25314523
-11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome pid 2240015 thread chrome:cs0 pid 2240044
+11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0:  Process chrome
 11月 02 19:37:09 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
 11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
 11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset
-11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome(2240044) task chrome:cs0(2240015) is non-zero when fini
+11月 02 19:37:10 arkhe kernel: amdgpu 0000:03:00.0: VM memory stats for proc chrome is non-zero when fini
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Dumping IP State Completed
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: [drm] AMDGPU device coredump file has been created
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: [drm] Check your /sys/class/drm/card1/device/devcoredump/data
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: ring gfx_0.0.0 timeout, signaled seq=25314679, emitted seq=25314681
-11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg pid 1477 thread Xorg:cs0 pid 1480
+11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0:  Process Xorg
 11月 02 19:37:17 arkhe kernel: amdgpu 0000:03:00.0: Starting gfx_0.0.0 ring reset
 11月 02 19:37:18 arkhe kernel: amdgpu 0000:03:00.0: Ring gfx_0.0.0 reset succeeded
 11月 02 19:37:18 arkhe kernel: amdgpu 0000:03:00.0: [drm] device wedged, but recovered through reset

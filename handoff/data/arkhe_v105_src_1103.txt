@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ cd ~/anaplex && python3 apply_v105.py && ANAPLEX_V88=0 python3 check_v105.py 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ && python3 measure_src104.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src105_0.txt && python3 measure_src104.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src105_50.txt && python3 measure_life97.py 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_
+$ cd ~/anaplex && python3 apply_v105.py && ANAPLEX_V88=0 python3 check_v105.py 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ && python3 measure_src104.py 0 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src105_0.txt && python3 measure_src104.py 50 40 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_ | tee src105_50.txt && python3 measure_life97.py 2>&1 | grep --line-buffered -v -e rocSHMEM -e prior_v2_
 ✅ 版105 を当てた（線条体・側坐核・核の盛りを外した。ANAPLEX_X1=0 で 104）
 1 盛り（x_gain）
   ✓ 線条体・側坐核・核（13 領野）は 1

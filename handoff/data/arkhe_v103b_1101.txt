@@ -1,7 +1,7 @@
-miwa@arkhe:~/anaplex$ python3 apply_v103b.py
+$ python3 apply_v103b.py
 ✅ 版103b を当てた（縮める側 × 0.55）。⚠️ 網の形が変わるので state.pt は 0 から
    次：python3 check_v103.py → python3 measure_mem99.py → python3 measure_life97.py（速さ）
-miwa@arkhe:~/anaplex$ python3 check_v103.py
+$ python3 check_v103.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 1 組めた：体 2,456,296・網の辺 6,178,883・領野 58
   ✓ 44 99体（組み表 §1 99）
@@ -160,7 +160,7 @@ E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapp
   ✓ VERSION 103・SAME_NET なし（state.pt は 0 から）
   辺（コンテナ・相手 200）：網 6,178,883・下からの線 9,188,779
 ✅ 版103 の確かめ 全部通った
-miwa@arkhe:~/anaplex$ python3 measure_mem99.py
+$ python3 measure_mem99.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 版 103 ／ torch 2.14.1+rocm7.14 ／ AMD Radeon RX 9070 XT ／ 記録 なし
 体 2,456,296 ／ 網の辺 94,403,195 ／ 刈り込み 1000歩ごと
@@ -186,7 +186,7 @@ E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapp
    867歩目：取り置き 12.73 → 13.13GB（+0.40）／ 使用 5.50 ／ グラフを撮った 8回（この歩 +0）
 2 1100歩のあと：取り置き 12.04GB ／ 使用 5.60GB ／ 取り置きの山 13.13GB ／ 撮ったグラフ 1つ（10回）
   使っていない取り置きを返したあと：取り置き 6.43GB（返せた 5.61GB）／ 使用 5.60GB ⇒ グラフなどが持つ分 0.84GB
-miwa@arkhe:~/anaplex$ python3 measure_life97.py
+$ python3 measure_life97.py
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
 暮らしの1歩 68.3ms ／ 網だけ（無音）の1歩 85.5ms ／ 差 -17.2ms
 （650歩・合図 5・声 3・自発 3・返し手 1）

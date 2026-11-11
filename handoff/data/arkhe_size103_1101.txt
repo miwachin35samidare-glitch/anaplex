@@ -1,4 +1,4 @@
-miwa@arkhe:~/anaplex$ python3 measure_size103.py 0.65
+$ python3 measure_size103.py 0.65
 python3 measure_size103.py 0.6
 python3 measure_size103.py 0.55
 E-001h rocSHMEM Could not open libnuma. Returning	NUMAWrapper@src/gda/numa_wrapper.cpp:48
