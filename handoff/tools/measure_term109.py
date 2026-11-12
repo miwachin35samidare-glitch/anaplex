@@ -3,12 +3,17 @@
   条件（1回の起動で1つ。同じ種で 0 から組む）
     全部          ふだんの網
     学びなし      learn=False（下からの線・CL・網の中の辺・恒常性の学びが全部止まる）⇒ 学ぶ前のノブだけで撃ちすぎるかを見る
+    重さ全部なし   learn=True のまま、重さを変える学びを全部 0（網の中の辺 eta・抑制への弱まり・張り替え・核どうし・下からの線・CL・平行線維）
+                  ⇒ 学びなしとの差は「重さ以外で learn が変えるもの」（11-12 23:01：全部は最初の 50歩から高い・CA1 81 対 2.9Hz）
+    網の中なし     網の中の辺の学び（eta を 0・抑制の体への大きい辺の弱まり INH_LTD_F を 1・張り替え 0）
+    核どうしなし   核どうしの線の学び（NucNet.NUC_A_ETA を 0）
     受け手が先なし 下からの線の学びの「受け手が先」の項（窓 tab × 門の開き。滑る境目なし）を 0
     海馬の線なし   下からの線のうち海馬の線（入力が先 LN_PRE_HIP × 門・受け手が先）を学ばない
     同じ歩なし     下からの線のうち皮質の線の「同じ歩」の項（入力が先 ln_ctx・滑る境目あり）を 0
     CL受け手が先なし CL → 皮質 の学びの「受け手が先」の項（_CL_LN_POST・滑る境目なし・門なし）を 0
   ⚠️ 項を外すのは測るためだけ（人から外れた網で決めない。どの項が伸ばしているかの手がかり）
-  番ごとに（区切りで1回）：皮質の領野ごとに 表現Hz（区切りのあと 50歩で数える）・率÷目標（rate_ema・約21秒の遅れ）
+  起きているあいだの恒常性は、下げ（scaling_on は眠りだけ）も上げ（rate_long 1時間・2日で 2.5倍）もこの長さでは動かない作り【コード】⇒ 条件に入れない
+  番ごとに（区切りで1回）：皮質の領野ごとに 表現Hz・目標Hz（target_recv ÷ 1歩）（区切りのあと 50歩で数える）・率÷目標（rate_ema・約21秒の遅れ）
                          ・下からの線の重さの和（受け手1体あたり）・CL の重さの和（受け手1体あたり）
                          海馬（歯状回・CA3・CA1）も同じ列で（「海馬の線」＝ 受け手が海馬の下からの線。皮質へ入る線には無い）
                          ・門（third）・有限でない重さの本数
@@ -23,7 +28,7 @@ import babble as B, brainstem as BS, torch_area as T, torch_group2 as G
 import torch_brain as TB, life as L
 from torch_brain import Brain, NAMES
 
-CONDS = ("全部", "学びなし", "受け手が先なし", "海馬の線なし", "同じ歩なし", "CL受け手が先なし")
+CONDS = ("全部", "学びなし", "重さ全部なし", "網の中なし", "核どうしなし", "受け手が先なし", "海馬の線なし", "同じ歩なし", "CL受け手が先なし")
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 if not args or args[0] not in CONDS:
     sys.exit(f"条件を1つ：{' ・ '.join(CONDS)}")
@@ -42,6 +47,13 @@ NOPF = COND == "受け手が先なし"
 NOHIP = COND == "海馬の線なし"
 NOSAME = COND == "同じ歩なし"
 NOCLPF = COND == "CL受け手が先なし"
+NOW = COND == "重さ全部なし"
+NONET = COND in ("網の中なし", "重さ全部なし")
+NONUC = COND in ("核どうしなし", "重さ全部なし")
+if NONET:
+    G.INH_LTD_F = 1.0                     # 抑制の体への大きい辺の弱まり（学びの式に値で渡る・グラフに撮る前に）
+if NONUC:
+    G.NucNet.NUC_A_ETA = 0.0
 calls = collections.Counter()
 
 
@@ -62,6 +74,8 @@ def _bu_core(src, pidx, pre_now, pre_prev, tgt, hippo, tab, post_age, d, sh):
     if NOHIP:
         pf = torch.where(hippo, torch.zeros_like(pf), pf)
     fac = torch.exp(ln_pp * (pre_e & post_e).float() + pf)
+    if NOW:
+        fac = torch.ones_like(fac)
     return fac, torch.where(post > 0, torch.ones_like(post_age), post_age + 1)
 
 
@@ -73,6 +87,8 @@ def _cl_core(any0, cl_ch, cl_spk, cl_pre_prev, cl_src, cl_recv, cl_post_prev, th
     ln_pp = ((1.0 - TB._dd(d)) * TB._CL_LN_NODA + TB._dd(d) * TB._CL_LN_DA - sh) / TB.CL_PAIRS
     pf = (cl_post_prev[cl_recv] > 0) & ~post_e & (cl_spk[cl_src] > 0)
     post_term = TB._CL_LN_POST / TB.CL_PAIRS * pf.float() * (0.0 if NOCLPF else 1.0)
+    if NOW:
+        return cl_w * 1.0, post
     return cl_w * torch.exp(ln_pp * (pre_e & post_e).float() + post_term), post
 
 
@@ -98,6 +114,11 @@ b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 910
 b.bs.set_state(BS.WAKE)
 life = B.life_of(b, True, np.random.default_rng(0), np.random.default_rng(1))
 g = b.g
+if NONET:
+    g.eta = g.eta * 0.0
+    g.rewire_every = 0
+if NOW:
+    b._pf_learn = lambda *a, **k: None
 n_all = g.n_ch_all
 LEARN = COND != "学びなし"
 DT = 10.67 / 1000.0
@@ -123,6 +144,8 @@ if cl_on:
     kcl = len(b.cl_w) // nr
     assert kcl * nr == len(b.cl_w) and bool((b.cl_recv.long().view(nr, kcl) == torch.arange(nr, device=dev)[:, None]).all()), "CL の並びが思っていた形でない"
     cl_ch = b.cl_ch.long()
+print(f"［条件］網の中 eta {float(g.eta) if not torch.is_tensor(g.eta) else float(g.eta.max()):.3g}・抑制への弱まり {G.INH_LTD_F:.4f}"
+      f"・張り替え {g.rewire_every}・核どうし {G.NucNet.NUC_A_ETA:g}", flush=True)
 print(f"版 {B.VERSION} ／ 条件 {COND} ／ 番 {WIN}・数える窓 {NW}歩 ／ 皮質 {len(CX)} 領野 ／ 体 {n_all:,}"
       f" ／ 下からの線 {n_lines:,}（抑制の表 {n_inh_lines:,}）／ CL {len(b.cl_w) if cl_on else 0:,}", flush=True)
 
@@ -150,7 +173,7 @@ def check(label):
     L.beat()
     print(f"\n━━ {label}（{t0}〜{life.t}歩）門 third {np.round(th, 3).tolist()} ／ 有限でない重さ {bad}"
           f" ／ 差し替えた学びの呼び {dict(calls)} ━━", flush=True)
-    print(f"  {'領野':<8s}{'表現Hz':>8s}{'率÷目標':>8s}{'下から w和/体':>14s}{'CL w和/体':>11s}", flush=True)
+    print(f"  {'領野':<8s}{'表現Hz':>8s}{'目標Hz':>8s}{'率÷目標':>8s}{'下から w和/体':>14s}{'CL w和/体':>11s}", flush=True)
     for nm in CX + HIP:
         i = NAMES.index(nm)
         oc, n = int(b.off_ch[i]), b.n[nm]
@@ -158,7 +181,7 @@ def check(label):
         rr = torch.arange(lo, hi, device=dev)
         rr = rr[is_rep_r[rr]]
         wa = sum(float(tab.w[s].sum(dtype=torch.float64)) / nt for s, nt, _ in paths.get(nm, []))
-        print(f"  {nm:<8s}{float(rep_n[oc:oc + n].mean()) / ns / DT:8.2f}{float(q[rr].median()):8.2f}"
+        print(f"  {nm:<8s}{float(rep_n[oc:oc + n].mean()) / ns / DT:8.2f}{float(g.target_recv[rr].median()) / DT:8.2f}{float(q[rr].median()):8.2f}"
               f"{wa:14.3f}{cl_area.get(nm, float('nan')) if cl_on else float('nan'):11.3f}", flush=True)
     L.beat()
 
