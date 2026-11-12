@@ -73,7 +73,7 @@ def busy():
 
 
 def child(code, *args):
-    return subprocess.Popen([sys.executable, "-I", "-c", code, *map(str, args)], stdout=subprocess.PIPE, text=True)
+    return subprocess.Popen([sys.executable, "-c", code, *map(str, args)], stdout=subprocess.PIPE, text=True)
 
 
 def watch(sec):
