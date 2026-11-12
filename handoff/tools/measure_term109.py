@@ -1,4 +1,4 @@
-"""版109：皮質の撃ちすぎ（srccx109：1番 1.4〜3.8倍 ⇒ 10番 3〜12倍）を、学びの項を1つずつ外して比べる（arkhe の ~/anaplex で。保存しない・網は変えない）
+"""版109・版110：皮質の撃ちすぎ（srccx109：1番 1.4〜3.8倍 ⇒ 10番 3〜12倍）を、学びの項を1つずつ外して比べる（arkhe の ~/anaplex で。保存しない・網は変えない）
   python3 measure_term109.py 条件 [番の並び=1,3,10]
   条件（1回の起動で1つ。同じ種で 0 から組む）
     全部          ふだんの網
@@ -39,8 +39,8 @@ NW = 5 if TEST else 50
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION != 109:
-    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版109 の形で読む")
+if B.VERSION != 110:
+    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版110 の学びの式を写している（版110 で回す）")
 
 # ── 項を外した学びの式（torch_brain の式と同じ形。外す項だけ 0）──
 NOPF = COND == "受け手が先なし"
@@ -68,7 +68,7 @@ def _bu_core(src, pidx, pre_now, pre_prev, tgt, hippo, tab, post_age, d, sh):
     ln_hip = TB.LN_PRE_HIP * g_on * (0.0 if NOHIP else 1.0)
     ln_pp = torch.where(hippo, ln_hip, ln_ctx)
     k = post_age.clamp(max=TB.WIN_MAXK + 1)[tgt]
-    pf = tab[hippo.long(), k] * (pre_now & ~post_e).float() * g_on
+    pf = (tab[hippo.long(), k] * g_on - TB._pf_shift(sh, k)) * (pre_now & ~post_e).float()   # 版110 の式
     if NOPF:
         pf = pf * 0.0
     if NOHIP:
@@ -86,7 +86,7 @@ def _cl_core(any0, cl_ch, cl_spk, cl_pre_prev, cl_src, cl_recv, cl_post_prev, th
     d = (third / 2.0).clamp(0.0, 1.0)
     ln_pp = ((1.0 - TB._dd(d)) * TB._CL_LN_NODA + TB._dd(d) * TB._CL_LN_DA - sh) / TB.CL_PAIRS
     pf = (cl_post_prev[cl_recv] > 0) & ~post_e & (cl_spk[cl_src] > 0)
-    post_term = TB._CL_LN_POST / TB.CL_PAIRS * pf.float() * (0.0 if NOCLPF else 1.0)
+    post_term = (TB._CL_LN_POST - sh) / TB.CL_PAIRS * pf.float() * (0.0 if NOCLPF else 1.0)   # 版110 の式
     if NOW:
         return cl_w * 1.0, post
     return cl_w * torch.exp(ln_pp * (pre_e & post_e).float() + post_term), post
