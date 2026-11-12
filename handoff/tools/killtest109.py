@@ -83,14 +83,6 @@ def watch(sec):
     return out
 
 
-def high_until(samples, t_from):
-    """t_from より後で、働きが HIGH% 未満になった最初の見本の時刻（ずっと高いなら None）"""
-    for t, b in samples:
-        if t >= t_from and 0 <= b < HIGH:
-            return t
-    return None
-
-
 # 1 時計合わせ
 p = child(FAKE_CAL if FAKE else CAL); line = p.communicate(timeout=60)[0].split()
 if not line or line[0] != "RATE":
@@ -102,17 +94,29 @@ print(f"1 時計合わせ：{float(line[2]):.2f}秒 ⇒ 1.5秒の仕事 ＝ 数 
 s = watch(1.0); idle = [b for _, b in s if b >= 0]
 print(f"2 空のとき：GPU の働き {min(idle)}〜{max(idle)}%（見本 {len(idle)}）", flush=True)
 
+def frac_high(samples, t0, t1):
+    w = [b for t, b in samples if t0 <= t <= t1 and b >= 0]
+    return (sum(b >= HIGH for b in w) / len(w)) if w else None, len(w)
+
+
+def show(tag, samples, t_go):
+    print(f"   {tag} 見本（走り出してからの秒:働き%）：" + " ".join(f"{t - t_go:.1f}:{b}" for t, b in samples), flush=True)
+
+
+# 11-12 19:56 ⟲ 前は「HIGH% 未満の見本が 1つ出た時刻」で下がったと読んだ ⇒ 働きの値は揺れる（空でも 0〜43%・走っていても 8% は 50% 未満）ので読めなかった
+#   ⇒ 窓の中の「HIGH% 以上の見本の割合」で比べる。窓は 3・4 とも「止まらなければまだ走っているはずの時間」
+W_END = RUN_S - 0.2
+
 # 3 落とさない
 CHILD["p"] = p = child(FAKE_RUN if FAKE else RUN, n)
 assert p.stdout.readline().strip() == "GO"; t_go = time.monotonic()
 s = watch(RUN_S + 1.5); p.wait(timeout=30)
-hi = [b for t, b in s if t - t_go < RUN_S - 0.2 and b >= 0]
-end = high_until(s, t_go)
-frac = sum(b >= HIGH for b in hi) / max(len(hi), 1)
-print(f"3 落とさない：走っているあいだ 働き {HIGH}% 以上の見本 {frac:.0%}・下がったのは走り出して "
-      f"{'下がらない' if end is None else f'{end - t_go:.1f}秒'}（仕事は {RUN_S}秒）", flush=True)
-if frac < 0.8:
-    sys.exit(f"⚠️ この仕事で GPU の働きの値が上がらない ⇒ 4 の落とす試しは読めない（ここで止める）")
+f3, k3 = frac_high(s, t_go + KILL_AT, t_go + W_END)
+fa, ka = frac_high(s, t_go + RUN_S + 0.5, t_go + RUN_S + 1.5)
+print(f"3 落とさない：走り出して {KILL_AT}〜{W_END:.1f}秒の窓で 働き {HIGH}% 以上の見本 {f3:.0%}（{k3}）・終わったあと {fa:.0%}（{ka}）", flush=True)
+show("3", s, t_go)
+if f3 is None or f3 < 0.8:
+    sys.exit("⚠️ この仕事で GPU の働きの値が上がらない ⇒ 4 の落とす試しは読めない（ここで止める）")
 
 # 4 落とす
 CHILD["p"] = p = child(FAKE_RUN if FAKE else RUN, n)
@@ -121,15 +125,15 @@ s = watch(KILL_AT)
 p.send_signal(signal.SIGKILL); t_kill = time.monotonic(); p.wait(timeout=30)
 t_dead = time.monotonic()
 s += watch(RUN_S + 1.0)
-end = high_until(s, t_kill)
-if end is None:
-    v = "下がらない（見た 2.5秒のあいだずっと高い）"
+f4, k4 = frac_high(s, t_kill + 0.2, t_go + W_END)
+print(f"4 落とす：走り出して {t_kill - t_go:.1f}秒で SIGKILL・プロセスが消えるまで {t_dead - t_kill:.1f}秒"
+      f"・落として 0.2秒後〜走り出して {W_END:.1f}秒の窓で 働き {HIGH}% 以上の見本 {'?' if f4 is None else f'{f4:.0%}'}（{k4}）", flush=True)
+show("4", s, t_go)
+if f4 is None or k4 < 5:
+    print("⇒ 窓の見本が足りない（読めない）", flush=True)
+elif f4 <= 0.3:
+    print(f"⇒ 落とすと、走っている GPU の仕事も止まる（落とさないときの {f3:.0%} が {f4:.0%} に）", flush=True)
+elif f4 >= 0.7:
+    print(f"⇒ 落としても、走っている GPU の仕事は最後まで走る（{f4:.0%}）・見張りだけでは画面を守れない", flush=True)
 else:
-    v = f"{end - t_kill:.1f}秒（走り出して {end - t_go:.1f}秒）"
-print(f"4 落とす：走り出して {t_kill - t_go:.1f}秒で SIGKILL・プロセスが消えるまで {t_dead - t_kill:.1f}秒・働きが下がるまで {v}", flush=True)
-if end is not None and end - t_go < RUN_S - 0.5:
-    print("⇒ 落とすと、走っている GPU の仕事も止まる（見張りで画面を守れる）", flush=True)
-elif end is None or end - t_go >= RUN_S - 0.3:
-    print("⇒ 落としても、走っている GPU の仕事は最後まで走る（見張りだけでは画面を守れない・長い GPU の仕事を作らないことが守り）", flush=True)
-else:
-    print("⇒ どちらとも言い切れない（下がった時刻が仕事の終わりに近い）", flush=True)
+    print("⇒ どちらとも言い切れない（あいだの割合）", flush=True)
