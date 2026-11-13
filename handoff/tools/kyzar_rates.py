@@ -32,6 +32,8 @@ def s(x):
 def ragged(f, name):
     d = f[name][()]
     ix = f[name + "_index"][()] if name + "_index" in f else None
+    if ix is not None:
+        ix = np.rint(np.asarray(ix, dtype=float)).astype(np.int64)   # 11-13：MATLAB で書いた NWB は区切りが小数（double）
     if ix is None:
         return [np.atleast_1d(v) for v in d]
     st = np.concatenate([[0], ix[:-1]])
@@ -53,6 +55,7 @@ if not files:
 rate = collections.defaultdict(list)
 fix = collections.defaultdict(list)
 nses = collections.Counter()
+nunit = collections.Counter()
 for fn in files:
     with h5py.File(fn, "r") as f:
         if "units" not in f:
@@ -66,17 +69,26 @@ for fn in files:
         if "intervals/trials" in f and "timestamps_FixationCross" in f["intervals/trials"]:
             tsf = np.asarray(f["intervals/trials/timestamps_FixationCross"][()], dtype=float)
             tsf = tsf[np.isfinite(tsf)]
+        eidx = np.array([int(np.rint(float(np.atleast_1d(e)[0]))) for e in el])
+        base = 0
+        if len(eidx) and (eidx.max() >= len(locs) or eidx.min() < 0):
+            base = 1                                   # 11-13：番号が 1 から数えてある形なら 1 引く（表の外を指さないかの確かめ）
+            print(f"（{os.path.basename(fn)}：電極の番号が表の外 ⇒ 1 から数えた番号と読む）", flush=True)
+        if len(eidx) and (eidx - base).max() >= len(locs):
+            sys.exit(f"⚠️ {os.path.basename(fn)}：電極の番号 {eidx.max()} が表（{len(locs)}本）の外。部位を読めないので止める")
         kind = "Sternberg" if tsf is not None and len(tsf) else "見るだけ"
         nses[kind] += 1
-        for t, e in zip(spk, el):
+        for t, e in zip(spk, eidx):
             t = np.sort(np.asarray(t, dtype=float))
-            ar = area_of(locs[int(np.atleast_1d(e)[0])])
+            ar = area_of(locs[e - base])
+            nunit[ar] += 1
             if len(t) >= 2 and t[-1] > t[0]:
                 rate[ar].append(len(t) / (t[-1] - t[0]))
             if kind == "Sternberg":
                 n = np.searchsorted(t, tsf + FIX_S) - np.searchsorted(t, tsf)
                 fix[ar].append(n.sum() / (FIX_S * len(tsf)))
-print(f"ファイル {len(files)}（Sternberg の回 {nses['Sternberg']}・見るだけの回 {nses['見るだけ']}）", flush=True)
+print(f"ファイル {len(files)}（Sternberg の回 {nses['Sternberg']}・見るだけの回 {nses['見るだけ']}）・体 {sum(nunit.values())}（論文 1,809）", flush=True)
+print("部位の名ごとの体：" + "・".join(f"{NAME.get(k, k)} {v}" for k, v in sorted(nunit.items())), flush=True)
 
 
 def row(lab, v):
