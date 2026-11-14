@@ -110,6 +110,9 @@ def report(label, st0):
         m = r[MS]
         print(f"  {nm_:<10s}{n:8d}{n / tot:7.1%} ｜      {float(m.mean()):7.2f}{float(m.median()):7.2f}{float((m < 1).float().mean()):8.0%} ｜ "
               + "".join(f"{float(r[SL[x]].mean()):7.2f}" for x in AREAS[1:]), flush=True)
+    if str(dev).startswith("cuda"):                      # 11-14：区切りごとに山を出す（守りが止めても、そこまでの山が出力に残る）
+        import vram_peak as VP
+        print(f"  ［VRAM］ここまでの GPU 全体の山（1秒ごと）{VP.peak():.2f}GB・PyTorch の取り置きの山 {torch.cuda.max_memory_reserved() / 1024 ** 3:.2f}GB", flush=True)
     if cmd_n[0] > 0:
         print(f"  言う番で指令の入っている歩（声 ＋ 準備・指令）：指令の体 {float(cmd_f[0]) / cmd_n[0] / DT:.2f}Hz"
               f"（1歩あたり {cmd_n[0] / max(1, n_st[0] + n_st[1]):.0f} 体）・それ以外の体 {float(cmd_f[1]) / max(cmd_n[1], 1) / DT:.2f}Hz", flush=True)
