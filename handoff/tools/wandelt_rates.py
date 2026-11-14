@@ -43,20 +43,37 @@ for s in ("s2", "s3"):
     cues = np.array([str(unwrap(x).ravel()[0]) for x in df["cueType"]])
     print(f"\n==== {s}：試行 {len(df)}・記録の日 {len(set(dates))}・合図 {dict(zip(*np.unique(cues, return_counts=True)))}")
     per_unit = {p: [] for p in PH}          # 「日 × 体」ごとの相の平均の率
+    nan_tr = {p: 0 for p in PH}             # NaN の入った試行の数（相ごと）
     for d in sorted(set(dates)):
         rows = np.where(dates == d)[0]
-        lab = unwrap(df["time_phase_labels"].iloc[rows[0]]).ravel().astype(int)
-        keep = {}
+        acc = {p: [] for p in PH}
+        for r in rows:                       # 相の札は試行ごとに読む（試行で長さが違いうる）
+            lab = unwrap(df["time_phase_labels"].iloc[r]).ravel()
+            X = unwrap(df["SMG_Go"].iloc[r]).astype(float)          # [157, 体]
+            for p in PH:
+                idx = np.where(lab == p)[0]
+                idx = idx[EDGE:len(idx) - EDGE] if len(idx) > 2 * EDGE + 2 else idx
+                seg = X[idx]
+                if seg.size == 0 or np.isnan(seg).any():
+                    nan_tr[p] += 1
+                with np.errstate(all="ignore"):
+                    acc[p].append(np.nanmean(seg, axis=0) if seg.size else np.full(X.shape[1], np.nan))
         for p in PH:
-            idx = np.where(lab == p)[0]
-            keep[p] = idx[EDGE:len(idx) - EDGE] if len(idx) > 2 * EDGE + 2 else idx
-        X = np.stack([unwrap(df["SMG_Go"].iloc[r]).astype(float) for r in rows])   # [試行, 157, 体]
-        for p in PH:
-            per_unit[p].append(X[:, keep[p], :].mean(axis=(0, 1)))
+            with np.errstate(all="ignore"):
+                per_unit[p].append(np.nanmean(np.stack(acc[p]), axis=0))   # NaN の区切り・試行は除いて平均
         if d == sorted(set(dates))[0]:
+            lab = unwrap(df["time_phase_labels"].iloc[rows[0]]).ravel()
             print("  1試行の相の区切りの数：" + "・".join(f"{PH[p]} {int((lab == p).sum())}（{(lab == p).sum() * 50} ms）" for p in PH))
+    print("  NaN の入った試行（相ごと。NaN の区切りは除いて平均した）：" + "・".join(f"{PH[p]} {nan_tr[p]}" for p in PH))
     U = {p: np.concatenate(v) for p, v in per_unit.items()}
     n = len(U[1])
+    bad = np.zeros(n, bool)
+    for p in PH:
+        bad |= np.isnan(U[p])
+    if bad.any():
+        print(f"  どれかの相が全部 NaN の体 {int(bad.sum())} を除く")
+        U = {p: v[~bad] for p, v in U.items()}
+        n = len(U[1])
     print(f"  日 × 体 ＝ {n}（端 {EDGE} 区切りを除いた相の平均、Hz）")
     for p in PH:
         print(f"  {PH[p]:9s} {q(U[p])}")
