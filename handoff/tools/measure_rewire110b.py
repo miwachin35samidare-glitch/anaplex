@@ -50,15 +50,19 @@ MARKS = [
     ("        self.e_src[cuts] = new.to(self.e_src.dtype)\n", "H 差し込みの並び（_order_after_cut）"),
     ("        if self._amp_buf is not None and len(self._amp_buf) == len(self.w):\n", "I 5つの配列を新しい並びへ写す"),
     ("        pos = torch.empty_like(o)\n", "J 抑制の辺の印を作り直す（index_select）ほか"),
-    ("        self.w[cuts] = 0.0 ", "K 新しい位置の表（pos）"),
+    ("        cuts = pos[cuts].long()\n", "K1 新しい位置の表を作る（pos[o] = 番号）"),
+    ("        self.w[cuts] = 0.0 ", "K2 切った辺の新しい位置を読む（pos[cuts]）"),
     ("        self.elig[cuts] = 0.0\n", "L 開通の重さ（切った辺 0・抑制の辺に W_INH・抑制の体へ）"),
-    ("        self.start.copy_(self._starts())", "M 学びの跡 0・短期の並べ直しと引き直し"),
+    ("        if self.stp is not None:\n", "M1 切った辺の学びの跡を 0（elig[cuts]）"),
+    ("            self.stp.redraw(cuts,", "M2 短期の並べ直し（stp.reorder、5本）"),
+    ("        self.start.copy_(self._starts())", "M3 短期の引き直し（stp.redraw）"),
 ]
 src = textwrap.dedent(inspect.getsource(G.Group2.rewire))
 src = src.replace("@torch.no_grad()\n", "", 1)
 ind = "    "
 for anchor, label in MARKS:
     a = anchor[4:]                                       # dedent で 4 つ減っている
+    ind = a[:len(a) - len(a.lstrip())]                   # 差し込む文と同じ字下げ
     if src.count(a) != 1:
         raise SystemExit(f"⚠️ 差し込む場所が {src.count(a)} 個：{a.strip()[:60]}（何も測っていない）")
     src = src.replace(a, f'{ind}_tk("{label}")\n{a}')
@@ -95,4 +99,20 @@ for k in range(N):
     print(f"  {'区切り':<44s}{'秒':>8s}{'使用の山の増え':>10s}{'取り置きの山':>9s}", flush=True)
     for label, dt, pk, rs in rows:
         print(f"  {label:<44s}{dt:8.3f}{pk:10.2f}{rs:11.2f}", flush=True)
+# 小さな試し：900 か所へ値を書くだけの時間（重さ w と学びの跡 elig で。値は書き戻す）
+idx = torch.randint(0, len(g.w), (900,), device=dev, generator=g.gen if False else None)
+for nm in ("w", "elig"):
+    t_ = getattr(g, nm)
+    old = t_[idx].clone()
+    if CUDA:
+        torch.cuda.synchronize()
+    t0 = time.perf_counter()
+    t_[idx] = 0.0
+    if CUDA:
+        torch.cuda.synchronize()
+    dt = time.perf_counter() - t0
+    t_[idx] = old
+    print(f"［試し］{nm}[900 か所] = 0.0：{dt * 1000:.1f} ms（型 {t_.dtype}・形 {tuple(t_.shape)}・続いた置き場所 {t_.is_contiguous()}）", flush=True)
+if g.stp is not None:
+    print("［短期の表］" + "・".join(f"{nm} {tuple(getattr(g.stp, nm).shape)} {getattr(g.stp, nm).dtype}" for nm in ("row", "state", "fac", "last", "deplete")), flush=True)
 print("\n（終わり）", flush=True)
