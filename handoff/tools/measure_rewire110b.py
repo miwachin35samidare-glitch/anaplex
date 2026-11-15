@@ -113,6 +113,71 @@ for nm in ("w", "elig"):
     dt = time.perf_counter() - t0
     t_[idx] = old
     print(f"［試し］{nm}[900 か所] = 0.0：{dt * 1000:.1f} ms（型 {t_.dtype}・形 {tuple(t_.shape)}・続いた置き場所 {t_.is_contiguous()}）", flush=True)
+# 試し2：刈り込みの外で、同じ形の文を1つずつ（値は変えない：同じ並び o ＝ 0,1,2,… で写し、同じ値を書き戻す）
+#   K2（pos[cuts] を読む 0.47秒）・M1（elig[cuts] = 0 0.67秒）が、その文そのものの時間か、前の大きな仕事の持ち越しかを分ける
+
+
+def _t(label, fn, twice=True):
+    if CUDA:
+        torch.cuda.synchronize()
+    t0 = time.perf_counter()
+    r = fn()
+    t1 = time.perf_counter()                 # 文を出し終えた（GPU は待っていない）
+    if CUDA:
+        torch.cuda.synchronize()
+    t2 = time.perf_counter()                 # GPU を待ち終えた
+    if CUDA and twice:
+        torch.cuda.synchronize()
+    t3 = time.perf_counter()                 # もう1回待った（0 に近いはず）
+    print(f"［試し2］{label:<46s} 出す {1000 * (t1 - t0):7.1f} ms・待つ {1000 * (t2 - t1):7.1f} ms・もう1回待つ {1000 * (t3 - t2):6.1f} ms", flush=True)
+    return r
+
+
+E_ = len(g.w)
+L.beat()
+o_ = _t("並び o を作る（0,1,2,…・32bit）", lambda: torch.arange(E_, dtype=torch.int32, device=dev))
+pos_ = _t("pos を置く（empty）", lambda: torch.empty_like(o_))
+
+
+def _scat():
+    pos_[o_] = torch.arange(E_, device=dev, dtype=o_.dtype)
+
+
+_t("pos[o] = 番号（刈り込みの K1 と同じ文）", _scat)
+c_ = _t("pos[900 か所] を読む（K2 の文）", lambda: pos_[idx])
+c_ = _t(".long()", lambda: c_.long())
+L.beat()
+
+
+def _del():
+    global pos_
+    del pos_
+
+
+_t("del pos", _del)
+old_e = g.elig[idx].clone()
+_t("elig を並び o で写す（I の文・値は同じ）", lambda: g.elig.copy_(g.elig[o_]))
+
+
+def _wr():
+    g.elig[idx] = old_e
+
+
+_t("elig[900 か所] に書く（M1 の文・同じ値）", _wr)
+_t("もう一度 elig[900 か所] に書く", _wr)
+L.beat()
+old_w = g.w[idx].clone()
+_t("w を並び o で写す", lambda: g.w.copy_(g.w[o_]))
+
+
+def _ww():
+    g.w[idx] = old_w
+
+
+_t("w[900 か所] に書く（L の文・同じ値）", _ww)
+_t("始まりの表 _starts（N の文）", lambda: g._starts())
+del o_
+L.beat()
 if g.stp is not None:
     print("［短期の表］" + "・".join(f"{nm} {tuple(getattr(g.stp, nm).shape)} {getattr(g.stp, nm).dtype}" for nm in ("row", "state", "fac", "last", "deplete")), flush=True)
 print("\n（終わり）", flush=True)
