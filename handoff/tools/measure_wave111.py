@@ -21,8 +21,8 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION != 111:
-    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版111 で確かめた（版111 で回す）")
+if B.VERSION not in (110, 111):                       # 11-16：版110b でも回す（揺れが版111 からか、前からかを比べる）
+    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版110・111 で回す")
 
 torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)
