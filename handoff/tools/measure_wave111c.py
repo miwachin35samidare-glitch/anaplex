@@ -1,5 +1,6 @@
 """版110・111：揺れを「波」として見る —— 全部の領野・核の表現の発火を1歩ごとに取り、速い揺れ・領野どうしの先後を出す（arkhe の ~/anaplex で。網は変えない）
-  python3 measure_wave111c.py [歩=15000]
+  python3 measure_wave111c.py [歩=15000] [CLの体数]
+    CLの体数を書くと、版111 の上で CL の体数と CL → 皮質 の線（受け手1体の 40本を別々の体から）だけ差し替える（measure_cl112 と同じ差し替え）。表は wave111c_cl体数.npz
   何のため：【み】11-16 22:37「波が出ているのかも見逃さないようにしてね」（10 §1：波・渦は外せない／波は伝達とシナプスの経路の変化が立ち上げるもの）
     wave111・111b は刻み 200歩（2.1秒）の平均なので、見えたのは約40秒の揺れだけ。その中の速い揺れ（歩の刻み 10.67ms ⇒ 約47Hz まで）と、
     領野から領野へ伝わる先後（領野どうしは1歩に1回伝わる、10 §4）は見えていない ⇒ 揺れを直す前に、波かどうか・何を崩すかを見る
@@ -21,6 +22,8 @@ from torch_brain import Brain, NAMES
 
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 NS = int(args[0]) if args else 15000
+NCL = int(args[1]) if len(args) > 1 else None
+OUT = f"wave111c_cl{NCL}.npz" if NCL else "wave111c.npz"
 TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
@@ -28,11 +31,25 @@ dev = B.DEV
 if B.VERSION not in (110, 111):
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版110・111 で回す")
 
+if NCL:
+    assert B.VERSION == 111 and TB.N_CL == 5 and TB.N_NEW["CL"] == 5, "CL の差し替えは版111（N_CL 5）の上で"
+    TB.N_CL = NCL
+    TB.N_NEW["CL"] = NCL
 torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)
 b.bs.set_state(BS.WAKE)
 life = B.life_of(b, True, np.random.default_rng(0), np.random.default_rng(1))
 g = b.g
+if NCL:
+    nr_ = len(b.cl_ch)
+    K = len(b.cl_w) // nr_
+    assert b.n["CL"] == NCL and NCL >= K
+    gc_ = torch.Generator(device="cpu"); gc_.manual_seed(112)
+    src = torch.empty(nr_, K, dtype=torch.long)
+    for a0 in range(0, nr_, 512):
+        src[a0:a0 + 512] = torch.rand(min(512, nr_ - a0), NCL, generator=gc_).argsort(1)[:, :K]
+    b.cl_src = src.reshape(-1).to(device=b.cl_src.device, dtype=b.cl_src.dtype)
+    print(f"CL {NCL} 体・CL → 皮質 は受け手1体 {K} 本を別々の体から", flush=True)
 n_all = g.n_ch_all
 DT = 10.67 / 1000.0
 off = [int(x) for x in b.off_ch]
@@ -53,7 +70,7 @@ for i in range(NS):
         print(f"  {i + 1} 歩", flush=True)
 L.beat()
 X = R.cpu().numpy().astype(np.float64) / np.maximum(size, 1.0)[None, :]     # 歩 × 領野：撃った体の割合
-np.savez_compressed("wave111c.npz", rate=X.astype(np.float32), names=np.array(NAMES), dt=DT, version=B.VERSION)
+np.savez_compressed(OUT, rate=X.astype(np.float32), names=np.array(NAMES), dt=DT, version=B.VERSION)
 L.beat()
 
 SKIP = min(3000, NS // 5)
@@ -143,4 +160,4 @@ if ups:
 if str(dev).startswith("cuda"):
     import vram_peak as VP
     print(f"\n  ［VRAM］GPU 全体の山（1秒ごと）{VP.peak():.2f}GB・PyTorch の取り置きの山 {torch.cuda.max_memory_reserved() / 1024 ** 3:.2f}GB", flush=True)
-print("\n（終わり）wave111c.npz に 歩 × 領野 の表を書いた", flush=True)
+print(f"\n（終わり）{OUT} に 歩 × 領野 の表を書いた", flush=True)

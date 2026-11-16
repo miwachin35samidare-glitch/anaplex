@@ -25,11 +25,16 @@ ncl = int(round(1.0 / cl[cl > 0].min())) if (cl > 0).any() else 0
 k = np.rint(cl * ncl).astype(int)
 print(f"\n① CL（{ncl} 体）がその歩に撃った体の数ごと ⇒ 次の歩の皮質")
 print(f"  {'CL の数':>6s}{'歩の割合':>8s}{'次の歩の皮質の割合':>14s}{'皮質が黙った':>10s}")
-for v in range(ncl + 1):
-    m = k[:-1] == v
+if ncl <= 8:
+    bins = [(v, v) for v in range(ncl + 1)]
+else:                                                    # 体が多いとき：撃った数を 8つの帯に（歩の数がほぼ同じになる切り方）
+    qs = np.unique(np.quantile(k, np.linspace(0, 1, 9)).astype(int))
+    bins = [(int(qs[i]) + (1 if i else 0), int(qs[i + 1])) for i in range(len(qs) - 1)]
+for lo_, hi_ in bins:
+    m = (k[:-1] >= lo_) & (k[:-1] <= hi_)
     if m.any():
         nx = cx[1:][m]
-        print(f"  {v:6d}{m.mean():8.1%}{nx.mean():14.4f}{float((nx == 0).mean()):10.0%}")
+        print(f"  {(str(lo_) if lo_ == hi_ else f'{lo_}〜{hi_}'):>6s}{m.mean():8.1%}{nx.mean():14.4f}{float((nx == 0).mean()):10.0%}")
 on = cx[1:] > 0
 print(f"\n② 皮質が撃った歩 {on.mean():.0%} のうち、前の歩に CL が1体以上 {float((k[:-1][on] > 0).mean()):.0%} ／ 皮質が黙った歩のうち、前の歩に CL が 0体 {float((k[:-1][~on] == 0).mean()):.0%}")
 print(f"   前の歩の CL の数 と 次の歩の皮質の割合 の合い方 {np.corrcoef(k[:-1], cx[1:])[0, 1]:.2f} ／ 同じ歩 {np.corrcoef(k, cx)[0, 1]:.2f}")
@@ -47,3 +52,19 @@ ed = [0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.4, 1.0001]
 h = np.histogram(v, ed)[0] / max(1, len(v))
 print("  " + " ・ ".join(f"{ed[i]:.0%}〜{min(ed[i + 1], 1):.0%}：{h[i]:.0%}" for i in range(len(h))))
 print(f"  中央 {np.median(v):.3f}・平均 {v.mean():.3f}・一番多い歩 {v.max():.3f}")
+
+# ⑤ 皮質の 20% 以上が同じ歩に撃った歩（一度に撃つ歩）の前：各領野・核の撃った割合を、ふだんの平均と比べる
+big = np.nonzero(cx >= 0.2)[0]
+big = big[big >= 3]
+print(f"\n⑤ 一度に撃つ歩（皮質の 20% 以上）{len(big)} 歩 ＝ {len(big) / n:.1%}・皮質の発火のうちそこに入る分 {cx[big].sum() / max(cx.sum(), 1e-12):.0%}")
+if len(big):
+    gap = np.diff(big)
+    print(f"   間（歩）：中央 {np.median(gap):.0f}・1歩おき（間 2）の割合 {float((gap == 2).mean()):.0%}・続き（間 1）{float((gap == 1).mean()):.0%}")
+    print("   その 1歩前・2歩前・3歩前に撃った体の割合 ÷ ふだんの平均（大きい順に 14）")
+    rows = []
+    for j, nm in enumerate(names):
+        mu = X[:, j].mean()
+        if mu > 0:
+            rows.append((X[big - 1, j].mean() / mu, X[big - 2, j].mean() / mu, X[big - 3, j].mean() / mu, nm, mu))
+    for r1, r2, r3, nm, mu in sorted(rows, reverse=True)[:14]:
+        print(f"   {nm:<8s} 1歩前 {r1:6.2f}倍・2歩前 {r2:6.2f}倍・3歩前 {r3:6.2f}倍（ふだん {mu:.4f}）")
