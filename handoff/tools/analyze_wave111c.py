@@ -68,3 +68,25 @@ if len(big):
             rows.append((X[big - 1, j].mean() / mu, X[big - 2, j].mean() / mu, X[big - 3, j].mean() / mu, nm, mu))
     for r1, r2, r3, nm, mu in sorted(rows, reverse=True)[:14]:
         print(f"   {nm:<8s} 1歩前 {r1:6.2f}倍・2歩前 {r2:6.2f}倍・3歩前 {r3:6.2f}倍（ふだん {mu:.4f}）")
+
+# ⑥ 上流：自分で撃つ核（i0 が体ごとに同じ値）が同じ歩にそろって撃つか。その歩に撃った体の割合の分布と、次の歩の CL
+print("\n⑥ 核がその歩に撃った体の割合の分布（歩の割合）と、PPN → 次の歩の CL")
+ed6 = [0, 1e-9, 0.05, 0.2, 0.5, 0.8, 1.0001]
+lab6 = ["0体", "〜5%", "5〜20%", "20〜50%", "50〜80%", "80%〜"]
+print(f"  {'核':<8s}{'平均':>7s} ｜ " + "".join(f"{x:>8s}" for x in lab6) + " ｜ 一度に撃つ分（体の 50% 以上の歩に入る発火）")
+for nm in ("PPN", "CL", "視床下核", "外節", "内節", "網様部", "境", "外側手綱核", "吻内側被蓋核", "黒質", "VTA", "プルキンエ", "Ch4", "背側縫線", "視床", "CA1", "運動"):
+    if nm in names:
+        v = X[:, names.index(nm)]
+        h6 = [float(((v >= ed6[i]) & (v < ed6[i + 1])).mean()) for i in range(len(lab6))]
+        print(f"  {nm:<8s}{v.mean():7.3f} ｜ " + "".join(f"{x:8.0%}" for x in h6) + f" ｜ {v[v >= 0.5].sum() / max(v.sum(), 1e-12):.0%}")
+if "PPN" in names:
+    pp = X[:, names.index("PPN")]
+    print("  PPN がその歩に撃った体の割合 ⇒ 次の歩の CL の撃った割合・その次（2歩あと）の皮質の割合")
+    for i in range(len(lab6)):
+        m = (pp[:-2] >= ed6[i]) & (pp[:-2] < ed6[i + 1])
+        if m.any():
+            print(f"   {lab6[i]:>8s}（歩の {m.mean():5.1%}）⇒ CL {cl[1:-1][m].mean():.3f}・皮質 {cx[2:][m].mean():.4f}")
+    print(f"  合い方：PPN（その歩）と CL（次の歩）{np.corrcoef(pp[:-1], cl[1:])[0, 1]:.2f} ／ PPN と 皮質（2歩あと）{np.corrcoef(pp[:-2], cx[2:])[0, 1]:.2f}")
+    b2 = big[big >= 3]
+    if len(b2):
+        print(f"  一度に撃つ歩の 2歩前の PPN：ふだんの {pp[b2 - 2].mean() / max(pp.mean(), 1e-12):.2f} 倍（1歩前 {pp[b2 - 1].mean() / max(pp.mean(), 1e-12):.2f}・3歩前 {pp[b2 - 3].mean() / max(pp.mean(), 1e-12):.2f}）")
