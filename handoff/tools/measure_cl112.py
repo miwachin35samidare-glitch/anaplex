@@ -1,0 +1,135 @@
+"""版111 の上で、CL の体数と CL → 皮質 の線の引き方だけを変えて測る（arkhe の ~/anaplex で。保存しない・網のファイルは変えない。版112 を作る前の確かめ）
+  python3 measure_cl112.py CLの体数 [歩=15000] [刻み=200]      （CLの体数 5 ＝ 今の網そのまま）
+  python3 measure_cl112.py CLの体数 --count                    （網を組んで辺・線の数を出して終わる。VRAM の見込み用）
+  何のため：analyze111c（data/arkhe_analyze111c_1117.txt）：皮質が同じ歩にそろって撃つのは、CL が 5体で、皮質の表現の体がどれも同じ 5体から
+    40本（重なりあり ＝ 1体から約8本）受けるから。10 §7【み】10-23「（CL 5 ほか）ちゃんと動かなかったら増やす」
+  変えるもの（組む前に torch_brain の N_CL を差し替え、組んだあと cl_src を引き直す。ほかは版111 のまま）
+    ・CL の体数 N_CL（5 → 指定の数）
+    ・CL → 皮質 の線：受け手1体の 40本を、別々の CL の体から引く（重なりなし。体数が 40 より少ないときは今の引き方のまま）
+    K_CL 40・重さ・閾値・PPN → CL 8本・CL の目標 11Hz は変えない（K_CL のコードの注は「CL だけ・抑制 0 で 3.3Hz【計算】」）
+  出すもの：刻みごとに wave111b の列 ＋ そろい（その刻みで皮質が黙った歩の割合・皮質の発火のうち「皮質の 20% 以上が同じ歩に撃った歩」に入る割合）
+    ＋ CL の率 ＋ 声・自発・言えた
+  毎歩に足す仕事：表現の発火（体の数）を1本の数えへ足す 1回・皮質の発火の平均 1回（数 1つを読む）。線・辺には触らない・少ない箱への足し込みなし
+  刻みごと（200歩に1回）：下からの線の道ごとの切り出しの和・CL の和（wave111b と同じ）
+"""
+import sys, numpy as np, torch
+import babble as B, brainstem as BS, torch_area as T
+import torch_brain as TB, life as L
+from torch_brain import Brain, NAMES
+
+args = [a for a in sys.argv[1:] if not a.startswith("--")]
+if not args:
+    sys.exit("CL の体数を1つ（5 ＝ 今のまま）")
+NCL = int(args[0])
+NS = int(args[1]) if len(args) > 1 else 15000
+EV = int(args[2]) if len(args) > 2 else 200
+COUNT = "--count" in sys.argv
+NP_TEST = 200
+for a_ in sys.argv[1:]:
+    if a_.startswith("--np="):
+        NP_TEST = int(a_[5:])
+TEST = "--test" in sys.argv
+if TEST:
+    B.DEV = "cpu"
+dev = B.DEV
+if B.VERSION != 111:                       # 11-16：版110b でも回す（揺れが版111 からか、前からかを比べる）
+    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版111 の上で回す")
+
+assert TB.N_CL == 5 and TB.N_NEW["CL"] == 5, "N_CL が思っていた値でない"
+TB.N_CL = NCL
+TB.N_NEW["CL"] = NCL
+torch.manual_seed(0)
+b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(NP_TEST if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)
+b.bs.set_state(BS.WAKE)
+life = B.life_of(b, True, np.random.default_rng(0), np.random.default_rng(1))
+g = b.g
+assert b.n["CL"] == NCL and len(b.cl_spk) == NCL, "CL の体数が入っていない"
+nr_ = len(b.cl_ch)
+K = len(b.cl_w) // nr_
+DISTINCT = NCL >= K
+if DISTINCT:                                             # 受け手ごとに別々の CL の体から K 本（重なりなし）
+    gc_ = torch.Generator(device="cpu"); gc_.manual_seed(112)
+    src = torch.empty(nr_, K, dtype=torch.long)
+    for a0 in range(0, nr_, 512):
+        src[a0:a0 + 512] = torch.rand(min(512, nr_ - a0), NCL, generator=gc_).argsort(1)[:, :K]
+    assert bool((src.sort(1).values[:, 1:] != src.sort(1).values[:, :-1]).all()), "重なりが残っている"
+    b.cl_src = src.reshape(-1).to(device=b.cl_src.device, dtype=b.cl_src.dtype)
+print(f"CL {NCL} 体 ／ CL → 皮質 受け手 {nr_}・1体 {K} 本・{'別々の体から' if DISTINCT else '重なりあり（今の引き方）'}"
+      f" ／ 網の中の辺 {len(g.e_src):,}・下からの線 {len(b.but.w):,}・CL の線 {len(b.cl_w):,}・体 {g.n_ch_all:,}・受け手の行 {g.n_recv_all:,}", flush=True)
+if COUNT:
+    sys.exit(0)
+n_all = g.n_ch_all
+DT = 10.67 / 1000.0
+CX = [n for n in NAMES if TB.PRIOR_TYPE.get(n) == "皮質" and n != "運動"]
+HIP = [n for n in ("歯状回", "CA3", "CA1") if n in NAMES]
+SL = {nm: slice(int(b.off_ch[NAMES.index(nm)]), int(b.off_ch[NAMES.index(nm)]) + b.n[nm]) for nm in CX + ["運動"] + HIP}
+
+ALL = CX + ["運動"]
+ch0_name = {int(b.off_ch[NAMES.index(nm)]): nm for nm in NAMES}
+is_rep_r = torch.zeros(g.n_recv_all, dtype=torch.bool, device=dev)
+is_rep_r[g.rep_i.long()] = True
+RR = {}
+for nm in ALL:
+    i = NAMES.index(nm)
+    rr = torch.arange(int(g.off_recv[i]), int(g.off_recv[i + 1]), device=dev)
+    RR[nm] = rr[is_rep_r[rr]]
+tab = b.but
+paths = {nm: [] for nm in ALL}                           # 領野 → [(切り出し, 受け手の数)]
+for i, k in enumerate(tab.keys):
+    nm = ch0_name.get(int(b.bu[k].ch0), "?")
+    if nm in paths:
+        paths[nm].append((slice(int(tab.eo[i]), int(tab.eo[i + 1])), max(1, tab.nt[i])))
+cl_on = bool(getattr(b, "cl_on", False))
+if cl_on:
+    nr = len(b.cl_ch)
+    kcl = len(b.cl_w) // nr
+    assert kcl * nr == len(b.cl_w) and bool((b.cl_recv.long().view(nr, kcl) == torch.arange(nr, device=dev)[:, None]).all()), "CL の並びが思っていた形でない"
+    cl_ch = b.cl_ch.long()
+    CLM = {nm: (cl_ch >= SL[nm].start) & (cl_ch < SL[nm].stop) for nm in ALL}
+
+
+def weights():
+    q = g.rate_ema / g.target_recv.clamp(min=1e-9)
+    clw = b.cl_w.view(nr, kcl).sum(1, dtype=torch.float64) if cl_on else None
+    out = {}
+    for nm in ALL:
+        wa = sum(float(tab.w[s].sum(dtype=torch.float64)) / nt for s, nt in paths[nm])
+        cw = float(clw[CLM[nm]].mean()) if cl_on and bool(CLM[nm].any()) else float("nan")
+        out[nm] = (float(q[RR[nm]].median()), wa, cw)
+    return out
+
+
+cx_mask = torch.zeros(n_all, dtype=torch.bool, device=dev)
+for nm in CX:
+    cx_mask[SL[nm]] = True
+CLS = slice(int(b.off_ch[NAMES.index("CL")]), int(b.off_ch[NAMES.index("CL")]) + NCL)
+quiet, big, tot = 0, 0.0, 0.0
+st0 = dict(life.stats)
+acc = torch.zeros(n_all, device=dev)
+print(f"版 {B.VERSION} ／ {NS} 歩・刻み {EV} 歩（{EV * DT:.1f} 秒）／ 皮質（運動の外）{len(CX)} 領野 ／ 体 {n_all:,}", flush=True)
+print(f"  {'歩':>6s} ｜ 皮質 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ 運動 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ {'CA1':>5s}{'CL':>6s} ｜ 黙った歩・一度に撃つ分 ｜ 門 ｜ 声・自発・言えた", flush=True)
+for i in range(1, NS + 1):
+    life.step(learn=True)
+    f = g._any[0][:n_all].float()
+    acc.add_(f)
+    fr = float(f[cx_mask].mean())                        # この歩に皮質（運動の外）で撃った体の割合
+    quiet += int(fr == 0.0)
+    tot += fr
+    if fr >= 0.2:
+        big += fr
+    if i % EV == 0:
+        L.beat()
+        r = acc / EV / DT
+        W = weights()
+        L.beat()
+        cx = np.array([[float(r[SL[nm]].mean()), *W[nm]] for nm in CX]).mean(0)
+        mo = [float(r[SL["運動"]].mean()), *W["運動"]]
+        th = g.third.reshape(-1).tolist() if torch.is_tensor(g.third) else list(g.third)
+        print(f"  {life.t:6d} ｜      {cx[0]:6.2f}{cx[1]:6.2f}{cx[2]:8.3f}{cx[3]:7.3f} ｜      {mo[0]:6.2f}{mo[1]:6.2f}{mo[2]:8.3f}{mo[3]:7.3f} ｜ "
+              f"{float(r[SL['CA1']].mean()):5.2f}{float(r[CLS].mean()):6.2f} ｜ {quiet / EV:5.0%}・{(big / tot if tot > 0 else 0.0):5.0%} ｜ "
+              f"{'・'.join(f'{x:.2f}' for x in th)} ｜ {life.stats['voices'] - st0['voices']}・{life.stats['spont'] - st0['spont']}・{life.stats['ok'] - st0['ok']}/{life.stats['tried'] - st0['tried']}", flush=True)
+        acc.zero_(); quiet, big, tot = 0, 0.0, 0.0; st0 = dict(life.stats)
+if str(dev).startswith("cuda"):
+    import vram_peak as VP
+    print(f"  ［VRAM］GPU 全体の山（1秒ごと）{VP.peak():.2f}GB・PyTorch の取り置きの山 {torch.cuda.max_memory_reserved() / 1024 ** 3:.2f}GB", flush=True)
+print("\n（終わり）", flush=True)
