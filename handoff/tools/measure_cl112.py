@@ -13,6 +13,12 @@
     ⇒ 体ごとの率を、平均 23.2・SD 15.6 の対数正規【C】から引き、i0 に「その率で自分で撃つ行き着く先 ÷ 23.2Hz の行き着く先」を掛ける
       （行き着く先 ＝ 1 ÷ (1 − e^(−間隔/40ms))、torch_brain の NUC_VINF["PPN"] と同じ式。ノブの倍率はそのまま掛かる）
     ⚠️ 抑制（内節・網様部）の下での実際の率は式どおりにならない ⇒ PPN の率の列で見る。変えるのは PPN だけ
+  --ppn-free（11-17）：--ppn では PPN のそろいが取れなかった（data/arkhe_cl112_256_ppn_1117.txt：PPN の一度に撃つ分 60〜76% のまま）。
+    【コード】PPN へ入るのは 内節 → PPN・網様部 → PPN の抑制 各64本だけ（torch_brain 802行）⇒ PPN の体はどれもほぼ同じ抑制の波を受ける
+    ⇒ 測るためだけに PPN を入力から切り離す：内節・網様部 → PPN の線の重さを 0・--ppn のばらしを掛ける（i0 のノブの倍率 2.81 はそのまま。--ppn-k=値 で変えられる）
+       ＝ PPN の体がそれぞれ人の率（23.2 ± 15.6Hz）でばらばらに自分で撃つだけの形
+    見ること：PPN がばらばらに撃てば、CL と皮質の「一度に撃つ」は消えるか（消えれば元は 基底核 → PPN の波・消えなければ別にもある）
+    ⚠️ 人から外れた形（内節・網様部 → PPN は人・霊長類にある線）。測るためだけで、版にはしない
   出すもの：刻みごとに wave111b の列 ＋ そろい（その刻みで皮質が黙った歩の割合・皮質の発火のうち「皮質の 20% 以上が同じ歩に撃った歩」に入る割合）
     ＋ CL の率 ＋ 声・自発・言えた
   毎歩に足す仕事：表現の発火（体の数）を1本の数えへ足す 1回・皮質の発火の平均 1回（数 1つを読む）。線・辺には触らない・少ない箱への足し込みなし
@@ -30,7 +36,8 @@ NCL = int(args[0])
 NS = int(args[1]) if len(args) > 1 else 15000
 EV = int(args[2]) if len(args) > 2 else 200
 COUNT = "--count" in sys.argv
-PPN_SPREAD = "--ppn" in sys.argv
+PPN_FREE = "--ppn-free" in sys.argv
+PPN_SPREAD = "--ppn" in sys.argv or PPN_FREE
 NP_TEST = 200
 for a_ in sys.argv[1:]:
     if a_.startswith("--np="):
@@ -77,6 +84,21 @@ if PPN_SPREAD:
     v_ = b.nuc_i0[o_:o_ + npp]
     assert o_ + npp <= len(b.nuc_i0) and float(v_.max() - v_.min()) <= 1e-6 * float(v_.max()), "PPN の i0 の場所が思っていた形でない"
     print(f"PPN の i0（ばらす前・ノブ込み）{float(v_[0]):.5f}", flush=True)
+    if PPN_FREE:
+        kn_ = float(TB.KNOBS.get("nuc_vinf", {}).get("PPN", 1.0))
+        KF = kn_                                         # 既定：ノブの倍率はそのまま（容器で切り離した PPN：倍率 1 で 約5.5Hz・1.5 で 約9Hz【測】⇒ 2.81 で 約18Hz の見込み【計算】）
+        for a_ in sys.argv[1:]:
+            if a_.startswith("--ppn-k="):
+                KF = float(a_[8:])
+        b.nuc_i0[o_:o_ + npp] *= KF / kn_                # ノブの倍率を外し、切り離した PPN が約 23Hz になる倍率 KF を掛ける（容器で合わせた値を渡す）
+        nn_ = g.nucnet
+        _s, d_, sg_, _dl = nn_.flat()
+        op_ = int(b.off_ch[NAMES.index("PPN")])
+        msk = (d_ >= op_) & (d_ < op_ + npp)
+        assert int(msk.sum()) > 0 and bool((sg_[msk] < 0).all()), "PPN へ入る線が思っていた形でない（抑制だけのはず）"
+        nn_.w[msk] = 0.0
+        nn_.w0[msk] = 0.0
+        print(f"PPN を入力から切り離した：PPN へ入る抑制の線 {int(msk.sum()):,} 本の重さを 0・i0 のノブの倍率 {kn_:.3f} を外して {KF:.3f} を掛けた", flush=True)
     M, SD = 23.2, 15.6                                   # 【ヒト】JNNP 2010（32体）
     sg2 = math.log(1.0 + (SD / M) ** 2)
     gp_ = torch.Generator(device="cpu"); gp_.manual_seed(113)
