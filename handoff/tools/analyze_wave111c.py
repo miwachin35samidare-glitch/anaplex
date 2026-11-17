@@ -21,7 +21,10 @@ n = len(X)
 cx = X[:, [names.index(k) for k in CXN]].mean(1)       # 皮質（運動の外）：領野の平均
 print(f"{f} ／ 版 {int(z['version'])} ／ 残り {n} 歩 ／ 皮質の撃った体の割合 平均 {cx.mean():.4f}・1体も撃たない歩 {float((cx == 0).mean()):.0%}")
 cl = X[:, names.index("CL")]
-ncl = int(round(1.0 / cl[cl > 0].min())) if (cl > 0).any() else 0
+ncl = 0
+if (cl > 0).any():                                   # 体の数：全部の値が整数 ÷ n になる一番小さい n（11-17 直し：1 ÷ 一番小さい値 だと 256体を 64体と読んだ）
+    u_ = np.unique(cl[cl > 0])
+    ncl = next((n_ for n_ in range(1, 4097) if np.allclose(u_ * n_, np.rint(u_ * n_), atol=1e-3)), int(round(1.0 / u_.min())))
 k = np.rint(cl * ncl).astype(int)
 print(f"\n① CL（{ncl} 体）がその歩に撃った体の数ごと ⇒ 次の歩の皮質")
 print(f"  {'CL の数':>6s}{'歩の割合':>8s}{'次の歩の皮質の割合':>14s}{'皮質が黙った':>10s}")

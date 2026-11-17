@@ -25,6 +25,8 @@
     ⇒ 512体がみな同じ 98体の抑制を受ける輪（体が撃つ → 抑制の体 → 全体を抑える）がそろえている疑い
     ⇒ 測るためだけに、PPN の中の 抑制の体 → 体 の辺の重さを 0（刈り込みで 1000歩ごとに少し生え直る）
     ⚠️ 人から外れた形。版にはしない
+  --table（11-17）：毎歩、領野・核ごとの「撃った体の割合」を表にして cl112_table.npz に書く（measure_wave111c と同じ形 ⇒ analyze_wave111c で読める）
+    毎歩の仕事が1つ増える（体の数の累積和 1回・領野の端の読み）
   出すもの：刻みごとに wave111b の列 ＋ そろい（その刻みで皮質が黙った歩の割合・皮質の発火のうち「皮質の 20% 以上が同じ歩に撃った歩」に入る割合）
     ＋ CL の率 ＋ 声・自発・言えた
   毎歩に足す仕事：表現の発火（体の数）を1本の数えへ足す 1回・皮質の発火の平均 1回（数 1つを読む）。線・辺には触らない・少ない箱への足し込みなし
@@ -44,6 +46,7 @@ EV = int(args[2]) if len(args) > 2 else 200
 COUNT = "--count" in sys.argv
 PPN_FREE = "--ppn-free" in sys.argv
 PPN_NOI = "--ppn-noi" in sys.argv
+TABLE = "--table" in sys.argv
 PPN_SPREAD = "--ppn" in sys.argv or PPN_FREE
 NP_TEST = 200
 for a_ in sys.argv[1:]:
@@ -175,6 +178,12 @@ CLS = slice(int(b.off_ch[NAMES.index("CL")]), int(b.off_ch[NAMES.index("CL")]) +
 quiet, big, tot = 0, 0.0, 0.0
 pp_big, pp_tot, cl_big, cl_tot = 0.0, 0.0, 0.0, 0.0
 st0 = dict(life.stats)
+if TABLE:
+    off_ = [int(x) for x in b.off_ch]
+    lo_t = torch.tensor(off_[:-1], device=dev); hi_t = torch.tensor(off_[1:], device=dev)
+    size_t = np.array([off_[i + 1] - off_[i] for i in range(len(NAMES))], dtype=np.float64)
+    RT = torch.zeros(NS, len(NAMES), device=dev)
+    z1 = torch.zeros(1, device=dev)
 acc = torch.zeros(n_all, device=dev)
 print(f"版 {B.VERSION} ／ {NS} 歩・刻み {EV} 歩（{EV * DT:.1f} 秒）／ 皮質（運動の外）{len(CX)} 領野 ／ 体 {n_all:,}", flush=True)
 print(f"  {'歩':>6s} ｜ 皮質 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ 運動 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ {'CA1':>5s}{'CL':>6s} ｜ 黙った歩・一度に撃つ分 ｜ PPN Hz・一度・CL 一度 ｜ 門 ｜ 声・自発・言えた", flush=True)
@@ -182,6 +191,9 @@ for i in range(1, NS + 1):
     life.step(learn=True)
     f = g._any[0][:n_all].float()
     acc.add_(f)
+    if TABLE:
+        c_ = torch.cat([z1, f.cumsum(0)])
+        RT[i - 1] = c_[hi_t] - c_[lo_t]
     fr = float(f[cx_mask].mean())                        # この歩に皮質（運動の外）で撃った体の割合
     quiet += int(fr == 0.0)
     tot += fr
@@ -208,4 +220,9 @@ for i in range(1, NS + 1):
 if str(dev).startswith("cuda"):
     import vram_peak as VP
     print(f"  ［VRAM］GPU 全体の山（1秒ごと）{VP.peak():.2f}GB・PyTorch の取り置きの山 {torch.cuda.max_memory_reserved() / 1024 ** 3:.2f}GB", flush=True)
+if TABLE:
+    L.beat()
+    Xt = RT.cpu().numpy().astype(np.float64) / np.maximum(size_t, 1.0)[None, :]
+    np.savez_compressed("cl112_table.npz", rate=Xt.astype(np.float32), names=np.array(NAMES), dt=DT, version=B.VERSION)
+    print("cl112_table.npz に 歩 × 領野 の表を書いた", flush=True)
 print("\n（終わり）", flush=True)
