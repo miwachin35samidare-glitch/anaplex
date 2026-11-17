@@ -19,6 +19,12 @@
        ＝ PPN の体がそれぞれ人の率（23.2 ± 15.6Hz）でばらばらに自分で撃つだけの形
     見ること：PPN がばらばらに撃てば、CL と皮質の「一度に撃つ」は消えるか（消えれば元は 基底核 → PPN の波・消えなければ別にもある）
     ⚠️ 人から外れた形（内節・網様部 → PPN は人・霊長類にある線）。測るためだけで、版にはしない
+  --ppn-noi（11-17、--ppn-free と一緒に使う）：--ppn-free でも PPN の一度に撃つ分は 89〜96%（data/arkhe_cl112_256_ppnfree_1117.txt）⇒ PPN の中でそろう。
+    【コード 版111、容器で数えた】PPN の領野は 体 512・中の抑制の体 98。辺は 体 → 抑制の体 の興奮 17,640本（98 × 180【C】30 §4）と
+    抑制の体 → 体 の抑制 36,100本。体どうしの興奮は無い（10 §10・20_今の網「中の興奮の横なし」のとおり）。
+    ⇒ 512体がみな同じ 98体の抑制を受ける輪（体が撃つ → 抑制の体 → 全体を抑える）がそろえている疑い
+    ⇒ 測るためだけに、PPN の中の 抑制の体 → 体 の辺の重さを 0（刈り込みで 1000歩ごとに少し生え直る）
+    ⚠️ 人から外れた形。版にはしない
   出すもの：刻みごとに wave111b の列 ＋ そろい（その刻みで皮質が黙った歩の割合・皮質の発火のうち「皮質の 20% 以上が同じ歩に撃った歩」に入る割合）
     ＋ CL の率 ＋ 声・自発・言えた
   毎歩に足す仕事：表現の発火（体の数）を1本の数えへ足す 1回・皮質の発火の平均 1回（数 1つを読む）。線・辺には触らない・少ない箱への足し込みなし
@@ -37,6 +43,7 @@ NS = int(args[1]) if len(args) > 1 else 15000
 EV = int(args[2]) if len(args) > 2 else 200
 COUNT = "--count" in sys.argv
 PPN_FREE = "--ppn-free" in sys.argv
+PPN_NOI = "--ppn-noi" in sys.argv
 PPN_SPREAD = "--ppn" in sys.argv or PPN_FREE
 NP_TEST = 200
 for a_ in sys.argv[1:]:
@@ -99,6 +106,18 @@ if PPN_SPREAD:
         nn_.w[msk] = 0.0
         nn_.w0[msk] = 0.0
         print(f"PPN を入力から切り離した：PPN へ入る抑制の線 {int(msk.sum()):,} 本の重さを 0・i0 のノブの倍率 {kn_:.3f} を外して {KF:.3f} を掛けた", flush=True)
+    if PPN_NOI:
+        ip_ = NAMES.index("PPN")
+        lo_, hi_ = int(g.off_recv[ip_]), int(g.off_recv[ip_ + 1])
+        ri_ = torch.zeros(g.n_recv_all, dtype=torch.bool, device=dev)
+        ri_[g.rep_i.long()] = True                      # 表現の行（撃つ体の行）
+        n0 = 0
+        for a0 in range(0, len(g.e_recv), 1 << 24):
+            r_ = g.e_recv[a0:a0 + (1 << 24)].long()
+            m_ = (r_ >= lo_) & (r_ < hi_) & g.e_inh[a0:a0 + (1 << 24)]
+            n0 += int(m_.sum())
+            g.w[a0:a0 + (1 << 24)][m_] = 0.0
+        print(f"PPN の中の 抑制の体 → 体（全部の行）の辺 {n0:,} 本の重さを 0", flush=True)
     M, SD = 23.2, 15.6                                   # 【ヒト】JNNP 2010（32体）
     sg2 = math.log(1.0 + (SD / M) ** 2)
     gp_ = torch.Generator(device="cpu"); gp_.manual_seed(113)
