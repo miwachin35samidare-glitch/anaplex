@@ -112,15 +112,17 @@ if PPN_SPREAD:
     if PPN_NOI:
         ip_ = NAMES.index("PPN")
         lo_, hi_ = int(g.off_recv[ip_]), int(g.off_recv[ip_ + 1])
-        ri_ = torch.zeros(g.n_recv_all, dtype=torch.bool, device=dev)
-        ri_[g.rep_i.long()] = True                      # 表現の行（撃つ体の行）
-        n0 = 0
-        for a0 in range(0, len(g.e_recv), 1 << 24):
-            r_ = g.e_recv[a0:a0 + (1 << 24)].long()
-            m_ = (r_ >= lo_) & (r_ < hi_) & g.e_inh[a0:a0 + (1 << 24)]
-            n0 += int(m_.sum())
-            g.w[a0:a0 + (1 << 24)][m_] = 0.0
-        print(f"PPN の中の 抑制の体 → 体（全部の行）の辺 {n0:,} 本の重さを 0", flush=True)
+
+        def ppn_noi():                                   # PPN の中の 抑制の体 → 体 の辺の重さを 0（刈り込みのあとにも当て直す：11-17 23:23 の回で 1000歩から率が 25 → 7Hz）
+            n0 = 0
+            for a0 in range(0, len(g.e_recv), 1 << 24):
+                r_ = g.e_recv[a0:a0 + (1 << 24)].long()
+                m_ = (r_ >= lo_) & (r_ < hi_) & g.e_inh[a0:a0 + (1 << 24)] & (g.w[a0:a0 + (1 << 24)] != 0)
+                n0 += int(m_.sum())
+                g.w[a0:a0 + (1 << 24)][m_] = 0.0
+            return n0
+        n0 = ppn_noi()
+        print(f"PPN の中の 抑制の体 → 体（全部の行）の辺 {n0:,} 本の重さを 0（刈り込みの歩のあとにも当て直す）", flush=True)
     M, SD = 23.2, 15.6                                   # 【ヒト】JNNP 2010（32体）
     sg2 = math.log(1.0 + (SD / M) ** 2)
     gp_ = torch.Generator(device="cpu"); gp_.manual_seed(113)
@@ -175,6 +177,11 @@ cx_mask = torch.zeros(n_all, dtype=torch.bool, device=dev)
 for nm in CX:
     cx_mask[SL[nm]] = True
 CLS = slice(int(b.off_ch[NAMES.index("CL")]), int(b.off_ch[NAMES.index("CL")]) + NCL)
+for a_ in sys.argv[1:]:
+    if TEST and a_.startswith("--rw="):                 # 容器の確かめだけ：刈り込みの間隔を縮める
+        g.rewire_every = int(a_[5:])
+noi_log = []
+rw_last = [g.t // max(1, g.rewire_every)]
 quiet, big, tot = 0, 0.0, 0.0
 pp_big, pp_tot, cl_big, cl_tot = 0.0, 0.0, 0.0, 0.0
 st0 = dict(life.stats)
@@ -189,6 +196,11 @@ print(f"版 {B.VERSION} ／ {NS} 歩・刻み {EV} 歩（{EV * DT:.1f} 秒）／
 print(f"  {'歩':>6s} ｜ 皮質 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ 運動 {'率Hz':>6s}{'q':>6s}{'下からw':>8s}{'CLw':>7s} ｜ {'CA1':>5s}{'CL':>6s} ｜ 黙った歩・一度に撃つ分 ｜ PPN Hz・一度・CL 一度 ｜ 門 ｜ 声・自発・言えた", flush=True)
 for i in range(1, NS + 1):
     life.step(learn=True)
+    if PPN_NOI and g.t // g.rewire_every != rw_last[0]:     # 刈り込みの区切りを越えた歩のあと
+        rw_last[0] = g.t // g.rewire_every
+        nz_ = ppn_noi()
+        if nz_:
+            noi_log.append((life.t, nz_))
     f = g._any[0][:n_all].float()
     acc.add_(f)
     if TABLE:
@@ -220,6 +232,8 @@ for i in range(1, NS + 1):
 if str(dev).startswith("cuda"):
     import vram_peak as VP
     print(f"  ［VRAM］GPU 全体の山（1秒ごと）{VP.peak():.2f}GB・PyTorch の取り置きの山 {torch.cuda.max_memory_reserved() / 1024 ** 3:.2f}GB", flush=True)
+if PPN_NOI:
+    print(f"刈り込みのあとに 0 に当て直した辺（歩, 本）：{noi_log}", flush=True)
 if TABLE:
     L.beat()
     Xt = RT.cpu().numpy().astype(np.float64) / np.maximum(size_t, 1.0)[None, :]
