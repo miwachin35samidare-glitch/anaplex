@@ -24,8 +24,9 @@ print("\n① 表と列（要るものだけ）")
 for t in ("pair", "cell", "experiment", "slice", "subject", "cortical_location", "cortical_cell_location"):
     if t in cols:
         print(f"  {t}: {', '.join(cols[t])}")
-need = ("pair", "cell", "experiment", "slice", "subject")
+need = ("pair", "cell", "experiment", "slice")
 miss = [t for t in need if t not in cols]
+SP = "su.species" if "subject" in cols and "species" in cols.get("subject", []) else "sl.species"   # 11-18：r2.1_small は species が slice にある
 if miss:
     sys.exit(f"表が無い：{miss}（上の一覧を Claude に渡す）")
 pc = cols["pair"]
@@ -38,9 +39,11 @@ q = f"""select pre.{cls}, post.{cls}, pr.has_synapse, pr.{dist},
          {'pr.n_ex_test_spikes' if 'n_ex_test_spikes' in pc else 'NULL'}, {'pr.n_in_test_spikes' if 'n_in_test_spikes' in pc else 'NULL'},
          {'lpre.cortical_layer, lpost.cortical_layer' if lay_t else 'NULL, NULL'}
   from pair pr join cell pre on pr.pre_cell_id = pre.id join cell post on pr.post_cell_id = post.id
-  join experiment ex on pr.experiment_id = ex.id join slice sl on ex.slice_id = sl.id join subject su on sl.subject_id = su.id
+  join experiment ex on pr.experiment_id = ex.id join slice sl on ex.slice_id = sl.id {'join subject su on sl.subject_id = su.id' if SP.startswith('su.') else ''}
   {f'left join {lay_t} lpre on lpre.cell_id = pre.id left join {lay_t} lpost on lpost.cell_id = post.id' if lay_t else ''}
-  where su.species = 'human' and pr.pre_cell_id != pr.post_cell_id"""
+  where (lower({SP}) like '%human%' or lower({SP}) like '%homo%') and pr.pre_cell_id != pr.post_cell_id"""
+print("  species の値：", [r[0] for r in cur.execute(f"select distinct {SP.replace('su.', 'subject.').replace('sl.', 'slice.')} from {'subject' if SP.startswith('su.') else 'slice'}")])
+print("  cell_class の値：", [r[0] for r in cur.execute(f"select distinct {cls} from cell")])
 rows = cur.execute(q).fetchall()
 print(f"\n人の組：{len(rows):,}")
 BINS = ((0, 50e-6), (50e-6, 100e-6), (100e-6, 150e-6), (150e-6, 250e-6), (0, 1.0))
