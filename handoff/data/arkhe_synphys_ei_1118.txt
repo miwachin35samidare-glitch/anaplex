@@ -1,0 +1,64 @@
+（arkhe 11-18 22:56。synphys_ei.py：Allen synphys_r2.1_small.sqlite の人の組。割合は 繋がった組/試した組 の生の値で、切片で切れた分・見落としの補正なし）
+読む：synphys_r2.1_small.sqlite（0.18GB）
+
+① 表と列（要るものだけ）
+  pair: id, experiment_id, pre_cell_id, post_cell_id, has_synapse, has_polysynapse, has_electrical, crosstalk_artifact, n_ex_test_spikes, n_in_test_spikes, distance, lateral_distance, vertical_distance, reciprocal_id, meta
+  cell: id, experiment_id, ext_id, electrode_id, cre_type, target_layer, position, depth, cell_class, cell_class_nonsynaptic, meta
+  experiment: id, ext_id, slice_id, project_name, date, target_region, internal, acsf, target_temperature, rig_name, operator_name, storage_path, ephys_file, acq_timestamp, meta
+  slice: id, ext_id, acq_timestamp, species, date_of_birth, age, sex, weight, genotype, orientation, surface, hemisphere, quality, slice_time, slice_conditions, lims_specimen_name, storage_path, meta
+  cortical_cell_location: id, cell_id, cortical_site_id, cortical_layer, distance_to_pia, distance_to_wm, fractional_depth, layer_depth, layer_thickness, fractional_layer_depth, position, meta
+  species の値： ['mouse', 'human']
+  cell_class の値： [None, 'ex', 'in', 'mixed']
+
+人の組：17,490
+
+② 送り手の型 × 受け手の型：繋がった組/試した組・割合（細胞体の横の距離ごと）
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex     85/823     10%  54/594      9%  21/344      6%   6/179      3% 167/1969     8%
+  ex → in     26/111     23%  13/67      19%   4/30      13%   3/20      15%  46/231     20%
+  in → ex     14/94      15%   7/57      12%   2/26       8%   3/19      16%  26/199     13%
+  in → in      2/31       6%   1/30       3%   0/6        0%   1/11       9%   4/80       5%
+
+③ 同じ層の中：1
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex      0/0      nan%   0/0      nan%   0/0      nan%   0/0      nan%   0/0      nan%
+  ex → in      0/1        0%   0/0      nan%   0/0      nan%   0/0      nan%   0/1        0%
+  in → ex      0/1        0%   0/0      nan%   0/0      nan%   0/0      nan%   0/1        0%
+  in → in      0/0      nan%   0/0      nan%   0/0      nan%   0/0      nan%   0/0      nan%
+
+③ 同じ層の中：2
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex     38/266     14%  18/175     10%   4/57       7%   2/36       6%  62/534     12%
+  ex → in     12/36      33%   1/18       6%   0/7        0%   1/1      100%  14/62      23%
+  in → ex      1/31       3%   1/17       6%   0/7        0%   1/1      100%   3/56       5%
+  in → in      0/12       0%   0/12       0%   0/4        0%   0/6        0%   0/34       0%
+
+③ 同じ層の中：3
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex     31/190     16%  22/176     12%  13/116     11%   4/67       6%  71/555     13%
+  ex → in      7/25      28%   8/25      32%   4/14      29%   0/7        0%  19/71      27%
+  in → ex      3/20      15%   6/18      33%   2/11      18%   2/6       33%  13/55      24%
+  in → in      0/6        0%   1/12       8%   0/2        0%   0/2        0%   1/22       5%
+
+③ 同じ層の中：4
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex      3/72       4%   0/48       0%   0/30       0%   0/4        0%   3/154      2%
+  ex → in      2/8       25%   0/1        0%   0/0      nan%   0/0      nan%   2/9       22%
+  in → ex      3/8       38%   0/1        0%   0/0      nan%   0/0      nan%   3/9       33%
+  in → in      2/4       50%   0/0      nan%   0/0      nan%   0/0      nan%   2/4       50%
+
+③ 同じ層の中：5
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex      1/51       2%   6/34      18%   2/18      11%   0/6        0%   9/109      8%
+  ex → in      3/12      25%   1/6       17%   0/0      nan%   1/1      100%   5/19      26%
+  in → ex      5/12      42%   0/6        0%   0/0      nan%   0/1        0%   5/19      26%
+  in → in      0/0      nan%   0/2        0%   0/0      nan%   1/1      100%   1/3       33%
+
+③ 同じ層の中：6
+  送り → 受け             0〜50µm        50〜100µm       100〜150µm       150〜250µm              全部
+  ex → ex      1/18       6%   0/10       0%   0/20       0%   0/4        0%   1/52       2%
+  ex → in      0/2        0%   1/4       25%   0/3        0%   0/0      nan%   1/9       11%
+  in → ex      0/2        0%   0/4        0%   0/3        0%   0/0      nan%   0/9        0%
+  in → in      0/2        0%   0/2        0%   0/0      nan%   0/2        0%   0/8        0%
+
+（終わり）
