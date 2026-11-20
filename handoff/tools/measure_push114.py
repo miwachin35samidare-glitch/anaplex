@@ -8,7 +8,7 @@
     CL       cl_drive（その歩に届いた CL の線）
     下から   x_all × x_gain（下からの線の和）
     rr       表現 → 表現 の辺：Σ 接触 × w × 送り手が前の歩に撃ったか（⚠️ 短期の減りを入れない ⇒ 上の側。誤差の行の分は入れない）
-    持越     v_carry（歩に入るときの値）
+    持越     v_carry（歩に入るときの値）÷閾値
     ⚠️ 網の中の辺のうち rr 以外（外から入る遅れの列）は入れない（§12 の測りで w 和 0〜1.3）。時間細胞は調整の側で撃たせない
   毎歩に足す仕事：3,256体の小さい足し算と、rr の辺 約11.6万本の index_add（受け手 3,256 の箱）。読むのは区間の終わりだけ
 """
@@ -96,7 +96,7 @@ for i in range(1, NS + 1):
     if TB.RR_ON:
         idx = g._rr_idx
         comp[2] = torch.zeros(nL, device=Lc.device).index_add_(0, g._rr_rp, C_EXC * g.w[idx] * a1[g._rr_sp]) / th
-    comp[3] = cap["vc"]
+    comp[3] = cap["vc"] / th          # ⟲ 11-21 01:3x の回は ÷閾値 を落としていた（持越だけ 約14倍に出た）
     fsum = fired.sum()
     sy = (fsum >= 0.2 * nL).double()
     NSY += sy
