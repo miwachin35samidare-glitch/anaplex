@@ -1,0 +1,88 @@
+✅ 版115 を当てた（駆動 x を番号の表1回で。ANAPLEX_V115=0 で版114 の組み立て）
+版115 の GPU の確かめ：100 歩 × 3
+  版114の組み立て 済み
+  版114の組み立て・もう1回 済み
+  版115 済み
+
+使った組み立て：版114 False・False ／ 版115 True（版115 だけ True のはず）
+                             発火の違う歩     初め       網の重さ        下から         CL          率
+  版114 同士（丸めの目安）                 98      3   1.62e+00   6.03e-01   1.35e-01   3.05e-02
+  版114 と 版115                    98      3   1.62e+00   4.62e-01   1.18e-01   2.61e-02
+✓ 版115 の差は 版114 同士の揺れと同じくらいか（違う歩が多いときは 初めに違った歩 を並べて読む）
+［ノブ］nuc_vinf {'外節': 5.666588440805726, '内節': 6.180058821168147, '網様部': 5.628803545301893, '視床下核': 1.3837854677670378, '境': 1.0265489909888927, '外側手綱核': 0.32091527886203364, '吻内側被蓋核': 0.058040760842317636, 'PPN': 2.814362964615959, 'VTA': 9.808425038009783, '黒質': 9.808425038009783}・sn_inh 2.7636856020258316・vta_inh 1.0・xcx 1.4428762017237706
+版 115 ／ 温め 6000 歩・記録 1000 歩・見る 30 歩 ／ 網の中の辺 102,409,894・体 110,657
+［守り］VRAM 12GB まで・1歩 0.5秒 で止める・2秒 進まなければ別のプロセスが落とす（GPU の働き：読める）
+  温め 1000 歩（132.2ms/歩）
+  温め 2000 歩（101.1ms/歩）
+  温め 3000 歩（82.9ms/歩）
+  温め 4000 歩（70.5ms/歩）
+  温め 5000 歩（62.5ms/歩）
+  温め 6000 歩（57.6ms/歩）
+
+R 歩ごと（1000 歩・刈り込みの歩 1 を除く 999 歩）：撃った辺 平均 8,557,896・幅 4,986,834〜13,235,566（5〜95%）・グラフで回った歩 998
+  部分                 平均ms     固定ms    傾き ms/100万本     辺の分ms    合い方R²
+  暮らしの1歩            35.97    25.25          1.253     10.72     0.33
+  1歩ぜんぶ             33.56    23.39          1.188     10.17     0.33
+  網の領野              22.51    12.48          1.172     10.03     0.57
+  撃った辺を作る            2.72     2.31          0.048      0.41     0.57
+  見込み（焼いた網）          0.18     0.17          0.001      0.01     0.02
+  放出                 2.85     0.23          0.306      2.62     1.00
+  グラフの再生            14.28     7.79          0.759      6.50     0.67
+  周回（グラフでない歩）        0.06     0.20         -0.017     -0.15     0.00
+  周回の続き（グラフ）         0.04     0.12         -0.010     -0.09     0.00
+  下からの線（足す）          2.17     2.20         -0.004     -0.03     0.00
+  下からの線（学ぶ）          0.78     0.78          0.000      0.00     0.00
+  （刈り込みの歩：刈り込み 353ms・暮らしの1歩 409ms）
+  網の領野のうち上の部分の外：2.38ms ／ 1歩ぜんぶのうち 網の領野・下からの線の外：8.10ms ／ 暮らしの1歩のうち 1歩ぜんぶの外：2.41ms
+  撃った辺の少ない 1割の歩：辺 4,774,009・暮らしの1歩 30.8ms ／ 多い 1割：辺 13,713,814・42.9ms
+USDT:2026-11-23 00:04:50 314031:314031 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-23 00:04:52 314031:314031 SyncActivityProfilerHandler.cpp:46] profiler_stop
+
+P 見る歩（30 歩・torch.profiler。見ているあいだは遅い）：GPU の核 1歩 3,989 回・核の時間の和 1歩 32.18ms
+  GPU の核の時間の多い順（1歩あたり）
+      2.525ms      1.0回  _p1_learn_k.kd
+      2.484ms      1.0回  _p1_flush_k.kd
+      1.898ms    185.0回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_inde
+      1.507ms     71.0回  aten::index
+      0.904ms      9.0回  _pass_edges_k.kd
+      0.772ms     40.1回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_inde
+      0.721ms     22.1回  aten::_index_put_impl_
+      0.700ms    163.7回  void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFu
+      0.695ms    237.6回  __amd_rocclr_copyBuffer.kd
+      0.687ms      2.5回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub
+      0.687ms      2.5回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub
+      0.615ms     74.0回  aten::copy_
+      0.602ms    133.9回  void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunc
+      0.588ms     87.1回  aten::mul
+      0.581ms     22.0回  void at::native::reduce_kernel<128, 4, at::native::ReduceOp<float, at:
+      0.532ms     15.1回  aten::where
+      0.479ms     46.1回  aten::sub
+      0.469ms     26.3回  aten::clamp
+      0.467ms     25.3回  void at::native::vectorized_elementwise_kernel<4, at::native::(anonymo
+      0.436ms    130.8回  void at::native::indexFuncLargeIndex<float, long, unsigned int, 1, 1, 
+  CPU の手間の多い順（1歩あたり。呼び出しの数（入れ子込み） 合わせて 5,753 回）
+     15.520ms      3.3回  hipStreamSynchronize
+      3.461ms    700.5回  hipLaunchKernel
+      1.638ms      1.0回  ## Call CompiledFxGraph fndisfpzdeo7vp4f7d3rcw6uilax7hct4is7w73nxe54zq
+      0.833ms    146.1回  hipModuleLaunchKernel
+      0.679ms     71.0回  aten::index
+      0.595ms     20.6回  TorchDynamo Cache Lookup
+      0.582ms     87.1回  aten::mul
+      0.572ms      2.0回  hipDeviceSynchronize
+      0.565ms     76.5回  aten::cat
+      0.531ms    172.9回  aten::uniform_
+      0.520ms      1.0回  hipGraphLaunch
+      0.426ms    380.6回  aten::slice
+      0.366ms     74.0回  aten::copy_
+      0.364ms      3.4回  hipMemcpyWithStream
+      0.319ms     46.1回  aten::sub
+      0.316ms     20.6回  Pregraph bytecode
+      0.293ms    248.8回  aten::empty
+      0.265ms     44.5回  aten::add
+      0.249ms    941.0回  aten::as_strided
+      0.237ms     38.2回  hipMemcpyAsync
+
+  ［VRAM］GPU 全体の山（1秒ごと）12.61GB・PyTorch の取り置きの山 11.99GB
+
+（終わり）
+［VRAM］この回の GPU 全体の山は少なくとも 12.61GB（PyTorch の取り置きの山 11.99 ＋ 外の一番小さい値 0.25）・1秒ごとに見た山 12.61GB（始めから 69秒）・網を組む前 0.25GB・全体 15.92GB）⇒ logs/vram_peak.log
