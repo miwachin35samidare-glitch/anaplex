@@ -1,0 +1,307 @@
+=== グラフあり ===
+［ノブ］nuc_vinf {'外節': 5.666588440805726, '内節': 6.180058821168147, '網様部': 5.628803545301893, '視床下核': 1.3837854677670378, '境': 1.0265489909888927, '外側手綱核': 0.32091527886203364, '吻内側被蓋核': 0.058040760842317636, 'PPN': 2.814362964615959, 'VTA': 9.808425038009783, '黒質': 9.808425038009783}・sn_inh 2.7636856020258316・vta_inh 1.0・xcx 1.4428762017237706
+版 114 ／ ANAPLEX_GRAPH=1 ／ 温め 6000 歩・行を測る 50 歩・見る 5 歩
+［守り］VRAM 12GB まで・1歩 0.5秒 で止める・2秒 進まなければ別のプロセスが落とす（GPU の働き：読める）
+  温め 1000 歩（128.9ms/歩）
+  温め 2000 歩（97.8ms/歩）
+  温め 3000 歩（81.5ms/歩）
+  温め 4000 歩（70.2ms/歩）
+  温め 5000 歩（62.6ms/歩）
+  温め 6000 歩（57.7ms/歩）
+  測る前の 50歩：1歩 中央 36.0ms
+
+L 行ごとの時間（50 歩・行ごとに待つので遅い：この間の暮らしの1歩 120.8ms）。呼ばれた回数：{'Brain.step': 50, 'Group2.step': 50, '_fast_step': 50, '_advance_tail': 50}
+
+  Brain.step：1歩あたり 合わせて 112.44ms（行の多い順・上位 25）
+     68.360ms   2561  outs = self.g.step(x, e, learn)
+      3.525ms   2400  self._bo = dict(zip(g1, self.but.drive(1, [vin[k] for k in g1])))
+      1.723ms   2388  vin[k_] = self.up[k_.split("→")[0]] if (k_, t_) in P103_CX else self._rep103(k_.split("→")[0])
+      1.642ms   2394  vin[k_] = torch.cat([self.up[s_], self.om[s_]])
+      1.599ms   2586  self.but.sh = self._bcm107("bu")                      # 版107i：滑る境目（受け手の最近の率）
+      1.228ms   2597  for nm, v in zip(NAMES, torch.split(err, self.cut_len)):
+      1.196ms   2553  parts_.append(e[o_:o_ + w_]); o_ += w_
+      1.158ms   2598  if nm in OMIT:                                    # 版101：誤差 ｜ 来ない
+      1.113ms   2554  parts_.extend(self._rep103(s_) for s_ in EXT107_POST.get(nm_, ()))
+      1.061ms   2551  for nm_ in NAMES:
+      1.054ms   2472  for key, d in zip(ks_, self.but_inh.drive(0, [self.nuc[INH_TO_AREA[k_][0]] for k_ in ks_])):
+      1.037ms   2552  w_ = self.ext_old[nm_]
+      1.037ms   2601  self.up[nm] = v
+      0.939ms   2468  x[o_:o_ + self.n[nm_]] = x[o_:o_ + self.n[nm_]] + self._s103(nm_)
+      0.909ms   2655  self.occ.tick()
+      0.885ms   2533  *[t_ for nm_ in SYN + PUL for t_ in self._e103(nm_)],
+      0.883ms   2321  drive = self.but.drive(0, [ec2])[0]                    # 版70・75（表の1回目）
+      0.878ms   2587  self.but.learn(anyr, None, d_bu)   # 版75：表で1回 ／ 版94d：PPN → CL の受け手も網の発火
+      0.865ms   2387  for k_, t_ in P103_ALL:                              # 版103：皮質どうしは誤差（上り・横の細胞体の側）／ 視床・皮質 → 視床・線条
+      0.746ms   2473  self.g.ext_ihn.index_add_(0, self.bu_inh[key][1], torch.cat([d, d]))
+      0.635ms   2516  e = torch.cat([self.motor_rep, pc,                     # 聴覚（視床は ext を持たない）
+      0.602ms   2403  self._bo[PF_KEY] = self.bu[PF_KEY].drive(self.nuc["顆粒"])   # 版98：平行線維（表の外）
+      0.564ms   2543  amp = self.cl_w[ce] * self.cl_stp.release_at(ce, self.cl_t)
+      0.506ms   2457  *[self._s103(nm_) for nm_ in SYN + PUL],
+      0.478ms   2431  *[sum((self._bo[k_] for k_ in NUC_BU.get(nm_, ())), torch.zeros(self.n[nm_], device=self.dev)) 
+
+  Group2.step：1歩あたり 合わせて 68.30ms（行の多い順・上位 25）
+     68.275ms   1244  out = self._fast_step(x_all, ext_all, learn) if self._fast_ok(learn) else None   # 版90：1つのグラフで
+      0.006ms   1253  if learn and self.rewire_every and self.t % self.rewire_every == 0:
+      0.006ms   1242  self._within = None                  # 周回の中の発火（1歩の中だけ。歩はまたがない）
+      0.006ms   1245  if out is None:
+      0.006ms   1243  self._pre2 = None                    # 版80：1周目の学びと一緒に作った2周目の頭の足し込み
+      0.005ms   1255  return out
+
+  _fast_step：1歩あたり 合わせて 67.93ms（行の多い順・上位 25）
+     40.663ms   1304  e = self._fired_edges()
+     15.501ms   1433  self._fast_run(key, e)
+      3.499ms   1318  self._amp_buf[e] = self.stp.release_at(e, self.t)
+      2.659ms   1451  rep, err = self._advance_tail(ext_all)
+      0.612ms   1450  a.pred_rep = pr[int(self.off_ch[i]):int(self.off_ch[i]) + a.n_ch]
+      0.582ms   1338  torch.rand(self.n_ch_all, device=self.dev, generator=self.gen, out=sp[i])
+      0.401ms   1449  for i, a in enumerate(self.areas):
+      0.296ms   1411  b.copy_(v)
+      0.292ms   1446  self._rate_obs()
+      0.275ms   1322  prior_l = self._prior_now()
+      0.261ms   1317  self._amp_buf.index_fill_(0, self._amp_prev, 1.0)
+      0.252ms   1354  F["E"][:ne].copy_(e)
+      0.169ms   1310  self.hist_n += now.to(torch.int16) - self.hist[self.hist_i].to(torch.int16)
+      0.136ms   1309  now = (self._base > 0).to(torch.uint8)
+      0.126ms   1424  pins = (self.w, self.e_recv, self.e_src, self.e_inh, self.c_exc, self.k_start, self.elig, self.
+      0.093ms   1382  for k_, v in vin.items():
+      0.090ms   1350  self.A[k] = self.A[k - 1] + (self.third * (1.0 - self.elig_decay)).double().reshape(-1).expand(
+      0.086ms   1383  if v is None:
+      0.081ms   1386  if k_ in ("scale", "scale_up"):            # グラフが中身を書き換える ⇒ 網の置き場所を直に
+      0.079ms   1452  return rep * self.gate, err * self.gate_err, S["perr"].clone()
+      0.078ms   1373  vin = dict(base_on=self._base_on, prior_l=prior_l, x_all=x_all, scale=self._own("scale"),
+      0.072ms   1392  if k_ in AL:
+      0.071ms   1336  torch.rand(self.n_ch_all, device=self.dev, generator=self.gen, out=F["spont1"])
+      0.058ms   1311  self.hist[self.hist_i] = now
+      0.055ms   1337  for i in range(self.recur - 1):
+
+  _advance_tail：1歩あたり 合わせて 2.50ms（行の多い順・上位 25）
+      0.830ms   1905  or [tuple(b.shape) for b in self.bufs] != [(n, d) for _, n, d in self._buf_shapes]:
+      0.661ms   1911  self.bufs = [new[o:o + n * d].view(n, d) for o, n, d in self._buf_shapes]
+      0.274ms   1908  self.ch.step(src)
+      0.126ms   1900  self.tb = self.tb * self.decay + now.unsqueeze(1) * (1 - self.decay)
+      0.088ms   1910  new = torch.cat([src, self._buf_flat_get()])[self._buf_idx]
+      0.087ms   1907  src = torch.cat([rep.float(), ext_all.float(), inh_spk.float()])[self._src_idx]
+      0.085ms   1891  self.v_carry = self.v_decay * self._drive_last * (1.0 - rep)
+      0.070ms   1897  now[self.err_i] = rep[self.x_index[self.err_i]]
+      0.061ms   1898  now[self.rep_i] = rep[self.x_index[self.rep_i]]
+      0.053ms   1892  self.v_carry_inh = self.v_decay_inh * self._dinh_last * (1.0 - inh_spk)
+      0.044ms   1896  now = torch.zeros(self.n_recv_all, device=self.dev)
+      0.040ms   1899  now[self.inh_i] = inh_spk
+      0.025ms   1912  self._buf_flat, self._buf_refs = new, tuple(self.bufs)
+      0.012ms   1903  nn = (len(rep), len(ext_all), len(inh_spk))
+      0.006ms   1901  self._prior_l = None      # 版54
+      0.006ms   1904  if getattr(self, "_src_idx", None) is None or self._tail_n != nn \
+      0.005ms   1889  rep, err, inh_spk = self._any     # 版59：最後の周ではなく、この歩のどこかで撃ったか
+      0.005ms   1917  return rep, err
+      0.005ms   1916  self._within = None      # 歩をまたいだら、周回の中の発火は消える
+      0.005ms   1890  if getattr(self, "v_carry", None) is not None:   # 版72：撃たなかった体だけ残りを次の歩へ（撃ったら 0）
+      0.005ms   1913  self.t += 1
+      0.005ms   1914  self._e_cache = None
+      0.005ms   1915  self._base = None        # 時間細胞と buf が進んだので作り直す
+USDT:2026-11-22 22:16:44 279697:279697 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-22 22:16:44 279697:279697 SyncActivityProfilerHandler.cpp:46] profiler_stop
+
+P 5 歩：GPU の時間を出した命令 1歩 1,192 回・14.86ms（呼び出し元が網のファイルに無いもの 0 回）
+  関数 ← 呼んだ関数（回数の多い順・1歩あたり。行の数字は関数の頭）
+      387.8回   1.970ms  torch_brain.py(2315): step  ←  life.py(251): step
+      213.0回   0.614ms  torch_brain.py(2250): _s103  ←  torch_brain.py(2315): step
+      114.0回   0.859ms  torch_group2.py(170): _tc_core  ←  torch_group2.py(58): _run
+       60.0回   0.184ms  torch_group2.py(207): spikes  ←  torch_group2.py(994): _fired_edges
+       59.0回   1.004ms  torch_brain.py(1158): _drive_compact  ←  torch_brain.py(1119): drive
+       45.0回   1.341ms  torch_group2.py(1301): _fast_step  ←  torch_group2.py(1239): step
+       27.8回   0.143ms  torch_brain.py(2282): _pf_learn  ←  torch_brain.py(2315): step
+       26.0回   0.051ms  brainstem.py(202): observe  ←  torch_brain.py(2315): step
+       24.0回   0.173ms  torch_group2.py(2226): learn  ←  torch_brain.py(2315): step
+       22.0回   0.162ms  torch_group2.py(1887): _advance_tail  ←  torch_group2.py(1301): _fast_step
+       20.0回   0.111ms  torch_brain.py(1047): _segsum  ←  torch_brain.py(1119): drive
+       15.0回   0.068ms  torch_brain.py(1119): drive  ←  torch_brain.py(2315): step
+       13.0回   0.045ms  torch_brain.py(2193): _rr_learn  ←  torch_brain.py(2315): step
+       12.0回   0.993ms  torch_brain.py(2213): _bcm107  ←  torch_brain.py(2315): step
+       12.0回   0.544ms  torch_brain.py(586): _bcm_shift  ←  torch_brain.py(2213): _bcm107
+       12.0回   0.040ms  torch_brain.py(954): see  ←  torch_brain.py(2315): step
+       11.0回   0.035ms  life.py(163): step  ←  life.py(313): _mouth
+       10.0回   0.079ms  torch_brain.py(1047): _segsum  ←  torch_brain.py(1158): _drive_compact
+       10.0回   0.189ms  torch_group2.py(225): step  ←  torch_group2.py(1887): _advance_tail
+        8.0回   0.031ms  torch_brain.py(2276): _pm_in  ←  torch_brain.py(2315): step
+        8.0回   0.095ms  torch_brain.py(991): drive  ←  torch_brain.py(2315): step
+        8.0回   0.039ms  torch_brain.py(1047): _segsum  ←  torch_brain.py(991): drive
+        6.0回   0.010ms  torch_brain.py(586): _bcm_shift  ←  torch_brain.py(2193): _rr_learn
+        5.6回   0.905ms  torch_area.py(73): _binom_core  ←  torch_group2.py(58): _run
+        5.2回   0.816ms  torch_area.py(142): _rel_post  ←  torch_group2.py(58): _run
+        5.0回   0.024ms  torch_group2.py(464): _rate_core  ←  torch_group2.py(58): _run
+        5.0回   0.023ms  torch_brain.py(1297): _cl_learn_core  ←  torch_group2.py(58): _run
+        5.0回   0.022ms  life.py(313): _mouth  ←  life.py(251): step
+        4.0回   0.018ms  torch_brain.py(1054): _bu_post_v  ←  torch_group2.py(58): _run
+        4.0回   0.271ms  torch_group2.py(951): _expand_mask  ←  torch_group2.py(994): _fired_edges
+
+  ［VRAM］GPU 全体の山（1秒ごと）12.67GB・PyTorch の取り置きの山 11.99GB
+
+（終わり）
+［VRAM］この回の GPU 全体の山は少なくとも 12.67GB（PyTorch の取り置きの山 11.99 ＋ 外の一番小さい値 0.25）・1秒ごとに見た山 12.67GB（始めから 209秒）・網を組む前 0.25GB・全体 15.92GB）⇒ logs/vram_peak.log
+=== eager ===
+［ノブ］nuc_vinf {'外節': 5.666588440805726, '内節': 6.180058821168147, '網様部': 5.628803545301893, '視床下核': 1.3837854677670378, '境': 1.0265489909888927, '外側手綱核': 0.32091527886203364, '吻内側被蓋核': 0.058040760842317636, 'PPN': 2.814362964615959, 'VTA': 9.808425038009783, '黒質': 9.808425038009783}・sn_inh 2.7636856020258316・vta_inh 1.0・xcx 1.4428762017237706
+版 114 ／ ANAPLEX_GRAPH=eager ／ 温め 6000 歩・行を測る 50 歩・見る 5 歩
+［守り］VRAM 12GB まで・1歩 0.5秒 で止める・2秒 進まなければ別のプロセスが落とす（GPU の働き：読める）
+  温め 1000 歩（130.0ms/歩）
+  温め 2000 歩（99.4ms/歩）
+  温め 3000 歩（81.8ms/歩）
+  温め 4000 歩（70.5ms/歩）
+  温め 5000 歩（63.0ms/歩）
+  温め 6000 歩（58.3ms/歩）
+  測る前の 50歩：1歩 中央 37.0ms
+
+L 行ごとの時間（50 歩・行ごとに待つので遅い：この間の暮らしの1歩 126.7ms）。呼ばれた回数：{'Brain.step': 50, 'Group2.step': 50, '_fast_step': 50, '_fast_body': 50, '_advance_tail': 50}
+
+  Brain.step：1歩あたり 合わせて 118.26ms（行の多い順・上位 25）
+     75.676ms   2561  outs = self.g.step(x, e, learn)
+      3.139ms   2400  self._bo = dict(zip(g1, self.but.drive(1, [vin[k] for k in g1])))
+      1.644ms   2586  self.but.sh = self._bcm107("bu")                      # 版107i：滑る境目（受け手の最近の率）
+      1.599ms   2394  vin[k_] = torch.cat([self.up[s_], self.om[s_]])
+      1.599ms   2388  vin[k_] = self.up[k_.split("→")[0]] if (k_, t_) in P103_CX else self._rep103(k_.split("→")[0])
+      1.190ms   2597  for nm, v in zip(NAMES, torch.split(err, self.cut_len)):
+      1.172ms   2553  parts_.append(e[o_:o_ + w_]); o_ += w_
+      1.124ms   2598  if nm in OMIT:                                    # 版101：誤差 ｜ 来ない
+      1.086ms   2554  parts_.extend(self._rep103(s_) for s_ in EXT107_POST.get(nm_, ()))
+      1.028ms   2551  for nm_ in NAMES:
+      1.018ms   2472  for key, d in zip(ks_, self.but_inh.drive(0, [self.nuc[INH_TO_AREA[k_][0]] for k_ in ks_])):
+      1.011ms   2601  self.up[nm] = v
+      1.008ms   2552  w_ = self.ext_old[nm_]
+      0.898ms   2655  self.occ.tick()
+      0.887ms   2587  self.but.learn(anyr, None, d_bu)   # 版75：表で1回 ／ 版94d：PPN → CL の受け手も網の発火
+      0.882ms   2321  drive = self.but.drive(0, [ec2])[0]                    # 版70・75（表の1回目）
+      0.881ms   2468  x[o_:o_ + self.n[nm_]] = x[o_:o_ + self.n[nm_]] + self._s103(nm_)
+      0.872ms   2533  *[t_ for nm_ in SYN + PUL for t_ in self._e103(nm_)],
+      0.788ms   2387  for k_, t_ in P103_ALL:                              # 版103：皮質どうしは誤差（上り・横の細胞体の側）／ 視床・皮質 → 視床・線条
+      0.728ms   2473  self.g.ext_ihn.index_add_(0, self.bu_inh[key][1], torch.cat([d, d]))
+      0.616ms   2516  e = torch.cat([self.motor_rep, pc,                     # 聴覚（視床は ext を持たない）
+      0.615ms   2403  self._bo[PF_KEY] = self.bu[PF_KEY].drive(self.nuc["顆粒"])   # 版98：平行線維（表の外）
+      0.525ms   2543  amp = self.cl_w[ce] * self.cl_stp.release_at(ce, self.cl_t)
+      0.488ms   2457  *[self._s103(nm_) for nm_ in SYN + PUL],
+      0.461ms   2431  *[sum((self._bo[k_] for k_ in NUC_BU.get(nm_, ())), torch.zeros(self.n[nm_], device=self.dev)) 
+
+  Group2.step：1歩あたり 合わせて 75.62ms（行の多い順・上位 25）
+     75.595ms   1244  out = self._fast_step(x_all, ext_all, learn) if self._fast_ok(learn) else None   # 版90：1つのグラフで
+      0.006ms   1253  if learn and self.rewire_every and self.t % self.rewire_every == 0:
+      0.006ms   1245  if out is None:
+      0.005ms   1242  self._within = None                  # 周回の中の発火（1歩の中だけ。歩はまたがない）
+      0.005ms   1243  self._pre2 = None                    # 版80：1周目の学びと一緒に作った2周目の頭の足し込み
+      0.005ms   1255  return out
+
+  _fast_step：1歩あたり 合わせて 75.26ms（行の多い順・上位 25）
+     40.669ms   1304  e = self._fired_edges()
+     23.453ms   1433  self._fast_run(key, e)
+      3.175ms   1318  self._amp_buf[e] = self.stp.release_at(e, self.t)
+      2.617ms   1451  rep, err = self._advance_tail(ext_all)
+      0.585ms   1450  a.pred_rep = pr[int(self.off_ch[i]):int(self.off_ch[i]) + a.n_ch]
+      0.562ms   1338  torch.rand(self.n_ch_all, device=self.dev, generator=self.gen, out=sp[i])
+      0.375ms   1449  for i, a in enumerate(self.areas):
+      0.292ms   1411  b.copy_(v)
+      0.274ms   1446  self._rate_obs()
+      0.268ms   1322  prior_l = self._prior_now()
+      0.241ms   1317  self._amp_buf.index_fill_(0, self._amp_prev, 1.0)
+      0.231ms   1354  F["E"][:ne].copy_(e)
+      0.170ms   1310  self.hist_n += now.to(torch.int16) - self.hist[self.hist_i].to(torch.int16)
+      0.134ms   1309  now = (self._base > 0).to(torch.uint8)
+      0.117ms   1424  pins = (self.w, self.e_recv, self.e_src, self.e_inh, self.c_exc, self.k_start, self.elig, self.
+      0.086ms   1382  for k_, v in vin.items():
+      0.085ms   1350  self.A[k] = self.A[k - 1] + (self.third * (1.0 - self.elig_decay)).double().reshape(-1).expand(
+      0.081ms   1383  if v is None:
+      0.077ms   1452  return rep * self.gate, err * self.gate_err, S["perr"].clone()
+      0.077ms   1386  if k_ in ("scale", "scale_up"):            # グラフが中身を書き換える ⇒ 網の置き場所を直に
+      0.072ms   1373  vin = dict(base_on=self._base_on, prior_l=prior_l, x_all=x_all, scale=self._own("scale"),
+      0.070ms   1336  torch.rand(self.n_ch_all, device=self.dev, generator=self.gen, out=F["spont1"])
+      0.067ms   1392  if k_ in AL:
+      0.059ms   1311  self.hist[self.hist_i] = now
+      0.051ms   1337  for i in range(self.recur - 1):
+
+  _fast_body：1歩あたり 合わせて 23.28ms（行の多い順・上位 25）
+     12.590ms   1565  self._gp_body1(key)
+      3.410ms   1519  _p1_learn_k[(1024,)](F["E"], F["ne"], self.e_recv, self.e_src, self.e_inh, self.is_inh_r, err_s
+      3.247ms   1494  _p1_flush_k[(1024,)](F["E"], F["ne"], self.k_start, self.elig, self.A, F["a_now1"], self.recv_g
+      0.592ms   1551  self.nucnet.after(S, rep, err)
+      0.373ms   1554  S[k_].copy_(v)
+      0.280ms   1547  (d_inh, rep, err, inh_spk, lf0, lf1, lf2, a0, a1, a2) = _run(
+      0.262ms   1504  exc, ihn, exc_mod, p, pr, drive, rep = _run(
+      0.244ms   1524  cnt, bb, mb = c2.sum(0).to(torch.float32), b2.sum(0), m2.sum(0)
+      0.216ms   1534  r_, d_ = _run(_homeo_core, cnt, exc, self.recv_ema, self.drive, a_)
+      0.213ms   1561  lens, csum = _run(_new_core, wi, X["base_on"], self._gW, self.start)
+      0.199ms   1541  X["scale_up"].copy_(_run(_scale_up_core, self.rate_long, self.target_recv, self.scale_skip, X["
+      0.165ms   1511  X["tgt"].copy_(torch.where(self.is_inh_r, self._area_mean(x_t)[self.area_of], x_t[self.x_index]
+      0.132ms   1498  both0, mod0 = b0.sum(0), m0.sum(0)
+      0.092ms   1492  b0 = torch.zeros(K, self.n_recv_all * 2, device=self.dev)
+      0.074ms   1509  x_t = torch.where(self.tgt_by_fire, (X["x_all"] * X["x_gain"] > X["fire_th"]).float(), X["x_all
+      0.064ms   1516  b2 = torch.zeros(K, self.n_recv_all * 2, device=self.dev)
+      0.062ms   1555  S["perr"].copy_(p[self.err_i])
+      0.058ms   1552  for k_, v in (("lf0", lf0), ("lf1", lf1), ("lf2", lf2), ("any0", a0), ("any1", a1), ("any2", a2
+      0.054ms   1518  c2 = torch.zeros(K, self.n_recv_all, device=self.dev, dtype=torch.int32)
+      0.053ms   1493  m0 = torch.zeros(K, self.n_recv_all, device=self.dev)
+      0.051ms   1557  wi.zero_()
+      0.051ms   1517  m2 = torch.zeros(K, self.n_recv_all, device=self.dev)
+      0.050ms   1558  wi[self.within_index] = rep
+      0.049ms   1548  _out_core, err_sig * self.fire_sgn, exc, exc_mod, ihn, self.err_i, self.inh_i, opt("v_carry_inh
+      0.048ms   1546  S["pc"].add_(1)
+
+  _advance_tail：1歩あたり 合わせて 2.47ms（行の多い順・上位 25）
+      0.775ms   1905  or [tuple(b.shape) for b in self.bufs] != [(n, d) for _, n, d in self._buf_shapes]:
+      0.631ms   1911  self.bufs = [new[o:o + n * d].view(n, d) for o, n, d in self._buf_shapes]
+      0.305ms   1908  self.ch.step(src)
+      0.129ms   1900  self.tb = self.tb * self.decay + now.unsqueeze(1) * (1 - self.decay)
+      0.101ms   1907  src = torch.cat([rep.float(), ext_all.float(), inh_spk.float()])[self._src_idx]
+      0.089ms   1910  new = torch.cat([src, self._buf_flat_get()])[self._buf_idx]
+      0.078ms   1891  self.v_carry = self.v_decay * self._drive_last * (1.0 - rep)
+      0.068ms   1897  now[self.err_i] = rep[self.x_index[self.err_i]]
+      0.065ms   1898  now[self.rep_i] = rep[self.x_index[self.rep_i]]
+      0.054ms   1892  self.v_carry_inh = self.v_decay_inh * self._dinh_last * (1.0 - inh_spk)
+      0.045ms   1896  now = torch.zeros(self.n_recv_all, device=self.dev)
+      0.042ms   1899  now[self.inh_i] = inh_spk
+      0.026ms   1912  self._buf_flat, self._buf_refs = new, tuple(self.bufs)
+      0.012ms   1903  nn = (len(rep), len(ext_all), len(inh_spk))
+      0.007ms   1901  self._prior_l = None      # 版54
+      0.006ms   1904  if getattr(self, "_src_idx", None) is None or self._tail_n != nn \
+      0.005ms   1890  if getattr(self, "v_carry", None) is not None:   # 版72：撃たなかった体だけ残りを次の歩へ（撃ったら 0）
+      0.005ms   1915  self._base = None        # 時間細胞と buf が進んだので作り直す
+      0.005ms   1913  self.t += 1
+      0.005ms   1889  rep, err, inh_spk = self._any     # 版59：最後の周ではなく、この歩のどこかで撃ったか
+      0.005ms   1917  return rep, err
+      0.005ms   1914  self._e_cache = None
+      0.005ms   1916  self._within = None      # 歩をまたいだら、周回の中の発火は消える
+USDT:2026-11-22 22:23:02 281728:281728 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-22 22:23:02 281728:281728 SyncActivityProfilerHandler.cpp:46] profiler_stop
+
+P 5 歩：GPU の時間を出した命令 1歩 2,352 回・21.96ms（呼び出し元が網のファイルに無いもの 0 回）
+  関数 ← 呼んだ関数（回数の多い順・1歩あたり。行の数字は関数の頭）
+      693.0回   2.946ms  torch_group2.py(2205): after  ←  torch_group2.py(1826): _gp_body
+      389.0回   2.212ms  torch_brain.py(2315): step  ←  life.py(251): step
+      216.0回   0.864ms  torch_group2.py(1826): _gp_body  ←  torch_group2.py(1792): _gp_body1
+      213.0回   0.752ms  torch_brain.py(2250): _s103  ←  torch_brain.py(2315): step
+      114.0回   0.884ms  torch_group2.py(170): _tc_core  ←  torch_group2.py(58): _run
+       77.0回   0.266ms  torch_group2.py(2205): after  ←  torch_group2.py(1484): _fast_body
+       60.0回   0.212ms  torch_group2.py(207): spikes  ←  torch_group2.py(994): _fired_edges
+       59.0回   1.574ms  torch_brain.py(1158): _drive_compact  ←  torch_brain.py(1119): drive
+       45.0回   1.255ms  torch_group2.py(1301): _fast_step  ←  torch_group2.py(1239): step
+       45.0回   0.431ms  torch_group2.py(1484): _fast_body  ←  torch_group2.py(1454): _fast_run
+       36.0回   0.816ms  torch_group2.py(1799): _pass_edges  ←  torch_group2.py(1826): _gp_body
+       30.0回   0.190ms  torch_group2.py(146): _out_core  ←  torch_group2.py(58): _run
+       28.0回   0.141ms  torch_brain.py(2282): _pf_learn  ←  torch_brain.py(2315): step
+       26.0回   0.096ms  brainstem.py(202): observe  ←  torch_brain.py(2315): step
+       24.0回   0.176ms  torch_group2.py(2226): learn  ←  torch_brain.py(2315): step
+       22.0回   0.195ms  torch_group2.py(1887): _advance_tail  ←  torch_group2.py(1301): _fast_step
+       20.0回   0.147ms  torch_brain.py(1047): _segsum  ←  torch_brain.py(1119): drive
+       20.0回   0.397ms  torch_group2.py(117): _drive_core  ←  torch_group2.py(58): _run
+       20.0回   0.167ms  torch_group2.py(253): _new_core  ←  torch_group2.py(58): _run
+       15.0回   0.075ms  torch_brain.py(1119): drive  ←  torch_brain.py(2315): step
+       13.0回   0.045ms  torch_brain.py(2193): _rr_learn  ←  torch_brain.py(2315): step
+       12.0回   1.023ms  torch_brain.py(2213): _bcm107  ←  torch_brain.py(2315): step
+       12.0回   0.584ms  torch_brain.py(586): _bcm_shift  ←  torch_brain.py(2213): _bcm107
+       12.0回   0.060ms  torch_brain.py(954): see  ←  torch_brain.py(2315): step
+       11.0回   0.038ms  life.py(163): step  ←  life.py(313): _mouth
+       10.0回   0.116ms  torch_brain.py(1047): _segsum  ←  torch_brain.py(1158): _drive_compact
+       10.0回   0.196ms  torch_group2.py(225): step  ←  torch_group2.py(1887): _advance_tail
+        9.0回   0.045ms  torch_group2.py(902): _area_mean  ←  torch_group2.py(1484): _fast_body
+        9.0回   0.033ms  torch_group2.py(1792): _gp_body1  ←  torch_group2.py(1484): _fast_body
+        8.0回   0.029ms  torch_brain.py(2276): _pm_in  ←  torch_brain.py(2315): step
+
+  ［VRAM］GPU 全体の山（1秒ごと）12.77GB・PyTorch の取り置きの山 12.00GB
+
+（終わり）
+［VRAM］この回の GPU 全体の山は少なくとも 12.77GB（PyTorch の取り置きの山 12.00 ＋ 外の一番小さい値 0.25）・1秒ごとに見た山 12.77GB（始めから 141秒）・網を組む前 0.25GB・全体 15.92GB）⇒ logs/vram_peak.log
