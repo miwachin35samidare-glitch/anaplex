@@ -1,0 +1,78 @@
+cd ~/anaplex && set -o pipefail && python3 measure_speed114b.py 6000 1000 30 2>&1 | grep --line-buffered -v "prior_v2_" | tee speed114b.txt
+［ノブ］nuc_vinf {'外節': 5.666588440805726, '内節': 6.180058821168147, '網様部': 5.628803545301893, '視床下核': 1.3837854677670378, '境': 1.0265489909888927, '外側手綱核': 0.32091527886203364, '吻内側被蓋核': 0.058040760842317636, 'PPN': 2.814362964615959, 'VTA': 9.808425038009783, '黒質': 9.808425038009783}・sn_inh 2.7636856020258316・vta_inh 1.0・xcx 1.4428762017237706
+版 114 ／ 温め 6000 歩・記録 1000 歩・見る 30 歩 ／ 網の中の辺 102,409,894・体 110,657
+［守り］VRAM 12GB まで・1歩 0.5秒 で止める・2秒 進まなければ別のプロセスが落とす（GPU の働き：読める）
+  温め 1000 歩（130.4ms/歩）
+  温め 2000 歩（100.4ms/歩）
+  温め 3000 歩（82.3ms/歩）
+  温め 4000 歩（69.9ms/歩）
+  温め 5000 歩（62.4ms/歩）
+  温め 6000 歩（57.8ms/歩）
+
+R 歩ごと（1000 歩・刈り込みの歩 1 を除く 999 歩）：撃った辺 平均 9,024,725・幅 5,227,237〜13,447,320（5〜95%）・グラフで回った歩 998
+  部分                 平均ms     固定ms    傾き ms/100万本     辺の分ms    合い方R²
+  暮らしの1歩            37.27    25.05          1.353     12.21     0.35
+  1歩ぜんぶ             34.82    23.24          1.283     11.58     0.35
+  網の領野              22.72    11.62          1.229     11.09     0.56
+  撃った辺を作る            2.58     2.14          0.049      0.44     0.63
+  見込み（焼いた網）          0.16     0.17         -0.000     -0.00     0.00
+  放出                 2.98     0.25          0.303      2.74     1.00
+  グラフの再生            14.67     7.89          0.751      6.78     0.60
+  周回（グラフでない歩）        0.07    -0.27          0.038      0.34     0.00
+  周回の続き（グラフ）         0.03    -0.13          0.018      0.17     0.00
+  下からの線（足す）          2.17     2.33         -0.017     -0.15     0.00
+  下からの線（学ぶ）          0.77     0.77         -0.000     -0.00     0.00
+  （刈り込みの歩：刈り込み 352ms・暮らしの1歩 412ms）
+  網の領野のうち上の部分の外：2.22ms ／ 1歩ぜんぶのうち 網の領野・下からの線の外：9.16ms ／ 暮らしの1歩のうち 1歩ぜんぶの外：2.44ms
+  撃った辺の少ない 1割の歩：辺 5,132,666・暮らしの1歩 31.4ms ／ 多い 1割：辺 13,887,763・44.0ms
+USDT:2026-11-22 09:19:43 43538:43538 SyncActivityProfilerHandler.cpp:39] profiler_start
+USDT:2026-11-22 09:19:44 43538:43538 SyncActivityProfilerHandler.cpp:46] profiler_stop
+
+P 見る歩（30 歩・torch.profiler。見ているあいだは遅い）：GPU の核 1歩 4,664 回・核の時間の和 1歩 40.72ms
+  GPU の核の時間の多い順（1歩あたり）
+      4.043ms      1.0回  _p1_learn_k.kd
+      4.019ms      1.0回  _p1_flush_k.kd
+      1.961ms    184.3回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_inde
+      1.625ms     67.8回  aten::index
+      1.131ms     40.5回  void at::native::index_elementwise_kernel<128, 4, at::native::gpu_inde
+      1.080ms     22.5回  aten::_index_put_impl_
+      1.044ms      2.4回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub
+      1.044ms      2.4回  triton_poi_fused__to_copy_add_clamp_index_mul_ones_like_pow_round_rsub
+      1.015ms      9.0回  _pass_edges_k.kd
+      0.969ms    322.0回  aten::add
+      0.837ms    249.8回  __amd_rocclr_copyBuffer.kd
+      0.764ms    197.4回  void at::native::vectorized_elementwise_kernel<4, at::native::CUDAFunc
+      0.748ms     82.4回  aten::copy_
+      0.718ms    162.5回  void at::native::vectorized_elementwise_kernel<4, at::native::BinaryFu
+      0.602ms     86.4回  aten::mul
+      0.594ms     22.0回  void at::native::reduce_kernel<128, 4, at::native::ReduceOp<float, at:
+      0.536ms      4.4回  aten::index_fill_
+      0.536ms      4.4回  void at::native::index_elementwise_kernel<128, 4, at::native::index_fi
+      0.521ms    145.9回  void at::native::vectorized_elementwise_kernel<4, at::native::FillFunc
+      0.514ms     15.1回  aten::where
+  CPU の手間の多い順（1歩あたり。呼び出しの数（入れ子込み） 合わせて 6,639 回）
+     20.613ms      3.1回  hipStreamSynchronize
+      4.681ms   1028.8回  hipLaunchKernel
+      1.675ms    322.0回  aten::add
+      1.615ms      1.0回  ## Call CompiledFxGraph fndisfpzdeo7vp4f7d3rcw6uilax7hct4is7w73nxe54zq
+      0.832ms    145.6回  hipModuleLaunchKernel
+      0.657ms     67.8回  aten::index
+      0.596ms      3.6回  hipMemcpyWithStream
+      0.575ms     86.4回  aten::mul
+      0.562ms     20.2回  TorchDynamo Cache Lookup
+      0.554ms     75.1回  aten::cat
+      0.542ms      1.0回  hipGraphLaunch
+      0.526ms    173.2回  aten::uniform_
+      0.460ms    399.6回  aten::slice
+      0.449ms     97.9回  aten::fill_
+      0.440ms     82.4回  aten::copy_
+      0.388ms    311.4回  aten::empty
+      0.315ms     20.2回  Pregraph bytecode
+      0.313ms     44.9回  aten::sub
+      0.292ms     50.2回  hipMemcpyAsync
+      0.253ms    956.8回  aten::as_strided
+
+  ［VRAM］GPU 全体の山（1秒ごと）12.58GB・PyTorch の取り置きの山 11.98GB
+
+（終わり）
+［VRAM］この回の GPU 全体の山は少なくとも 12.58GB（PyTorch の取り置きの山 11.98 ＋ 外の一番小さい値 0.25）・1秒ごとに見た山 12.58GB（始めから 53秒）・網を組む前 0.25GB・全体 15.92GB）⇒ logs/vram_peak.log
