@@ -23,8 +23,8 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION != 114:
-    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版114 で回す")
+if B.VERSION not in (114, 115):                 # 11-23：版115・115b（ANAPLEX_PPNCL_FAST）でも回す
+    raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版114・115 で回す")
 torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)
 b.bs.set_state(BS.WAKE)
@@ -82,6 +82,7 @@ def window(t):
     L.beat()
 
 
+print(f"PPN → CL の速い分 f {TB.PPNCL_FAST if hasattr(TB, 'PPNCL_FAST') else 1}・g {TB.PPNCL_G if hasattr(TB, 'PPNCL_G') else 1}", flush=True)
 print(f"版 {B.VERSION}（ANAPLEX_RR={'1' if TB.RR_ON else '0'}・上限 {'107z' if G.WCAP_107Z else '6mV ÷ 接触'}）／ {NS} 歩 ／ 皮質20 の表現の体 {nL:,}", flush=True)
 marks = {m for m in (1000, 3000, 6000, 10000) if m < NS} | {NS}
 for i in range(1, NS + 1):
