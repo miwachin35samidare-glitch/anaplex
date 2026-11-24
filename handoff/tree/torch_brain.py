@@ -522,6 +522,16 @@ RR_ON = os.environ.get("ANAPLEX_RR", "1") != "0"
 # 版115：駆動 x の組み立てを番号の表1回で（版84 と同じ型）。ANAPLEX_V115=0 で版114 の手で足す組み立て
 #   ANAPLEX_V115_CHECK=1 で毎歩 両方を作って差の最大を self._x115_diff に（確かめ用・遅い）
 V115 = os.environ.get("ANAPLEX_V115", "1") != "0"
+# 版116：切片の外の錐体と抑制の細胞の代わりを、対で人の数に（組み表_版116_案 §17〜§20【み】11-24 23:13「じゃあアしかないじゃん」・11-25 00:38「いいよ」）
+#   A 皮質20領野の時間細胞のうち遅れの体（自分の行・外の行）を撃たせる側へ（傾きの体は調整の側のまま【C】、くじで 14Hz・ニューロンでない）
+#   B 遅れの体 → 表現 の辺：初めの重さ ＝ 人の1本の幅（_ln_w）× 散らばった入力の効き 0.35 ÷ 接触（rr と同じ学び：組の窓 × VTA の門 × 滑る境目・誤差の跡に足さない）
+#     0.35 ＝ 14.3 ÷ (134 ÷ 3.3)【計算】【ヒト】近い対 約14本（Hunt 2023）・散らばった入力 134 ± 28 シナプス（Eyal 2018、人の細胞の模型）
+#   C 抑制の体の時間細胞（遅れの体）→ 表現：受け手1体 1,456本（9,100 × 16%【ヒト】）・1本の効き 接触 4 × W_INH（【ヒト】Campagnola 2022）・学ばない
+#     毎歩、その歩の遅れの体の撃ちの和を ext_ihn（割り算の分母）へ。切片の中の抑制（版109）はそのまま
+#   ANAPLEX_V116=0 で版115b と同じ
+V116 = os.environ.get("ANAPLEX_V116", "1") != "0"
+TC_W_DIST = 14.3 / (134.0 / 3.3)
+N_TC_INH = int(round(9100 * 0.16))
 V115_CHECK = os.environ.get("ANAPLEX_V115_CHECK", "0") == "1"
 # 版115b：PPN → CL を「速い分 ＋ ゆっくりの分（ニコチン・ムスカリン）」に分ける（測る用のスイッチ。既定は版115 のまま）
 #   組み表_版116_案 §2・§8。【み】11-23 16:55「いいよ、進めて」・17:27「まぁノブでいいよ」
@@ -1346,6 +1356,8 @@ class Brain:
             vram_peak.start()
         self._init107(*a_, **k_)
         self._knobs107_apply()                                   # 版107e：合わせたノブ（knobs.json）
+        if V116:
+            self._v116_setup()
 
     def _init107(self, prior, n_ear=40, n_cmd=None, n_eye=40, n_assoc=112, n_high=123,   # 版103b：204・224 × 0.55 ／ 版102：240・263 × 0.85
                  hippo_scale=4.0, n_partner=9100, n_cell=128, eta=0.3,
@@ -1890,6 +1902,15 @@ class Brain:
                 if per:
                     lo = int(self.g.off_send[i])
                     self.g.mod_send[lo:lo + (a.n_ch + a.n_ext) * per] = True   # 興奮の行（自分・ext）だけ。抑制の行はそのまま
+        if V116:                                            # 版116 A：皮質20領野の遅れの体（自分・外の行）を撃たせる側へ
+            assert _CX_TC_ENV == "", "版116 は ANAPLEX_CX_TC を付けずに（遅れの体だけ撃たせる側にする）"
+            for nm in CX_TC:
+                a, i = self.areas[nm], NAMES.index(nm)
+                per, nc_ = a.ch.n_cell + a.ch.n_ramp, a.ch.n_cell
+                lo = int(self.g.off_send[i])
+                rows_ = torch.arange(a.n_ch + a.n_ext, device=self.g.mod_send.device)
+                cells_ = (lo + rows_.unsqueeze(1) * per + torch.arange(nc_, device=rows_.device)).reshape(-1)
+                self.g.mod_send[cells_] = False
         # 恒常性の目標を受け手の種類ごとに（版39b）【み】09-27「普段の率を目標とみなす」「Bで様子見」
         #   皮質  表現・誤差 0.45%（【ヒト】Peyrache 2012 RS 0.5Hz 未満。誤差は表現と同じ【C 当てはめ】）／ 抑制 2Hz（FS）
         #   視床  表現 18.8Hz（【ヒト】運動視床 Vim。MGB は人・霊長類とも数値なし）。誤差・抑制は値なし ⇒ 下げない
@@ -1949,6 +1970,93 @@ class Brain:
             gg.scale_skip[lo:lo + 2 * nc] = False
         gg.rate_ema = gg.target_recv.clone()     # 0から組むときは目標から始める（state.pt を読めば上書きされる）
         gg.rate_long = gg.target_recv.clone()    # 版53
+
+    @torch.no_grad()
+    def _v116_setup(self):
+        """版116 B・C の印・初めの重さ・抑制の相手（組み表_版116_案 §17・§20）"""
+        assert RR_ON and self._rr_n, "版116 は rr（版113）の学びの状態を使う"
+        g, dev = self.g, self.g.w.device
+        L_row = g.rr_L_row.long()
+        nL = int(L_row.numel())
+        self._tc_rowmap = torch.full((g.n_recv_all,), -1, dtype=torch.int32, device=dev)
+        self._tc_rowmap[L_row] = torch.arange(nL, dtype=torch.int32, device=dev)
+        send = torch.zeros(g.n_send_all, dtype=torch.bool, device=dev)
+        gen = torch.Generator(device=dev); gen.manual_seed(116116)
+        tci = torch.empty((nL, N_TC_INH), dtype=torch.long, device=dev)
+        for nm in CX_TC:
+            a, i = self.areas[nm], NAMES.index(nm)
+            per, nc_ = a.ch.n_cell + a.ch.n_ramp, a.ch.n_cell
+            lo = int(g.off_send[i])
+            k_ = torch.arange(nc_, device=dev)
+            ex_ = (lo + torch.arange(a.n_ch + a.n_ext, device=dev).unsqueeze(1) * per + k_).reshape(-1)
+            send[ex_] = True                                 # B の送り手（興奮の行の遅れの体）
+            ih_ = (lo + torch.arange(a.n_ch + a.n_ext, a.n_src, device=dev).unsqueeze(1) * per + k_).reshape(-1)   # C の送り手（抑制の行の遅れの体）
+            o_ = int(self.off_ch[i])
+            pos = self._tc_rowmap[g.rep_i[o_:o_ + a.n_ch].long()].long()
+            assert bool((pos >= 0).all()), f"版116：{nm} の表現の行が rr の並びに無い"
+            tci[pos] = ih_[torch.randint(0, len(ih_), (a.n_ch, N_TC_INH), device=dev, generator=gen)]
+        self._tc_send = send
+        self._tc_inh_idx = tci
+        self._tc_inh_rows = L_row
+        g.rr_send |= send                                    # 表現の行へ入る分は誤差の跡に足さない（rr と同じ印）
+        self._tc_rebuild()
+        e_ = self._tc_idx.long()
+        w_ = _ln_w(len(e_), dev, gen) * TC_W_DIST / g.c_exc[g.e_recv[e_].long()]
+        g.w.index_put_((e_,), w_.to(g.w.dtype))
+        self._tc_w0_n = len(e_)
+        self._tc_prev = None
+        if getattr(g, "ext_ihn", None) is None:
+            g.ext_ihn = torch.zeros(g.n_recv_all, device=dev)
+        self._tc_zero_ihn = not getattr(self, "bu_inh", None)
+
+    @torch.no_grad()
+    def _tc_rebuild(self):
+        """版116：遅れの体 → 皮質20 の表現 の辺の番号（刈り込みで辺が並び直ったら作り直す。1<<22 ずつ）"""
+        g = self.g
+        out = []
+        n = int(g.e_src.numel())
+        for s0 in range(0, n, 1 << 22):
+            s1 = min(n, s0 + (1 << 22))
+            m = self._tc_send[g.e_src[s0:s1].long()] & ~g.e_inh[s0:s1] & (self._tc_rowmap[g.e_recv[s0:s1].long()] >= 0)
+            out.append((torch.nonzero(m).squeeze(1) + s0).to(torch.int32))
+        self._tc_idx = torch.cat(out)
+        self._tc_src = g.e_src
+
+    @torch.no_grad()
+    def _v116_pre(self):
+        """版116 C：その歩の抑制の体の遅れの体の撃ちを、皮質20 の表現の行の割り算の分母へ（学ばない）"""
+        g = self.g
+        spk = g.ch.spikes()
+        self._tc_now = spk
+        if self._tc_zero_ihn:
+            g.ext_ihn.zero_()
+        add = spk[self._tc_inh_idx].sum(1) * W_INH_BU
+        g.ext_ihn.index_add_(0, self._tc_inh_rows, add.to(g.ext_ihn.dtype))
+
+    @torch.no_grad()
+    def _tc_learn(self):
+        """版116 B：遅れの体 → 表現 の学び（_rr_learn と同じ式・同じ値。送り手の撃ち ＝ その歩・前の歩の遅れの体）"""
+        import torch_group2 as _G
+        g = self.g
+        if self._tc_src is not g.e_src:
+            self._tc_rebuild()
+        if self._rr_use is None:
+            self._rr_use = (~g.scale_skip[g.rr_L_row]) & self._bcm_ok_rows()[g.rr_L_row]
+        now = self._tc_now
+        prev = self._tc_prev if self._tc_prev is not None else torch.zeros_like(now)
+        aL = g._any[0][g.rr_L_ch]
+        d = (g.third.reshape(-1)[-1] / 2.0).clamp(0.0, 1.0)
+        q = g.rate_ema[g.rr_L_row] / g.target_recv[g.rr_L_row].clamp(min=1e-9)
+        sh = torch.where(self._rr_use, _bcm_shift(q), torch.zeros_like(q)).to(g.w.dtype)
+        idx_all = self._tc_idx
+        n = int(idx_all.numel())
+        for s0 in range(0, n, 1 << 22):
+            idx = idx_all[s0:s0 + (1 << 22)].long()
+            sp = g.e_src[idx].long()
+            rp = self._tc_rowmap[g.e_recv[idx].long()].long()
+            fac, _ = _G._run(_rr_learn_core, aL, now, prev, sp, rp, self._rr_age, self._rr_tab, d, sh)
+            g.w.index_put_((idx,), g.w[idx] * fac)
+        self._tc_prev = now
 
     def _knobs107_apply(self, kn=None):
         """版107e：合わせたノブを網に当てる（組んだ直後に1回。fit107 は元の値から何度でも当て直す）"""
@@ -2637,6 +2745,8 @@ class Brain:
         self.th_mod = 1.0 - MOD_DEPOL * (self.w5 * m_["5HT"] + self.wach4 * m_["Ch4"] + self.wsep * m_["中隔"]
                                          + self.wcn * m_["CN"] + self.wpu * m_["PUT"])
         self.g.th_gain = getattr(self.g, "th_base", 1.0) * self.th_mod
+        if V116:
+            self._v116_pre()                                  # 版116 C
         outs = self.g.step(x, e, learn)
         self.inh_prev = self.g._any[2].clone()   # 版107c：抑制の体の発火（1歩前として 海馬 → 中隔 に使う）
         if self.cl_on and learn:                                   # 版67：CL → 皮質 の学び（三つの因子）
@@ -2668,6 +2778,8 @@ class Brain:
                 self.g.nucnet.learn(torch.cat([self.g._any[0], self.g._any[1][self.g.err_pos_ch]]),
                                     (th2_[gn_] / 2.0).clamp(0.0, 1.0))   # 版101：誤差の体の所だけ
             self._pf_learn()                                      # 版98：平行線維 → プルキンエ（登上線維の学び）
+        if V116 and learn:                                         # 版116 B（rr の学びの前：_rr_age を進める前の値を使う）
+            self._tc_learn()
         if learn and self._rr_n:                                   # 版113：皮質の 表現 → 表現 の学び（下からの線と同じ式）
             self._rr_learn()
         rep, err = outs[0], outs[1]

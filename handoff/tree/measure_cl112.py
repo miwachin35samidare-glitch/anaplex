@@ -56,7 +56,7 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION not in (111, 112, 113, 114, 115):            # 11-19：版112 は CL 256・別々の体からが網に入った ⇒ 差し替えなしで同じ列を出す
+if B.VERSION not in (111, 112, 113, 114, 115, 116):            # 11-19：版112 は CL 256・別々の体からが網に入った ⇒ 差し替えなしで同じ列を出す
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版111・112 の上で回す")
 if B.VERSION >= 112:          # 版113・114 も CL 256（版112 から変えていない）
     assert TB.N_CL == NCL, f"版112 の CL は {TB.N_CL} 体（差し替えはしない）⇒ {TB.N_CL} を渡す"

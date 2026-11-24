@@ -25,7 +25,7 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION not in (114, 115):                 # 11-23：版115・115b（ANAPLEX_PPNCL_FAST）でも回す
+if B.VERSION not in (114, 115, 116):                 # 11-23：版115・115b（ANAPLEX_PPNCL_FAST）でも回す
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版114・115 で回す")
 torch.manual_seed(0)
 b = Brain(T.Prior.load("prior_v1.npz", dev=dev), n_partner=(200 if TEST else 9100), hippo_scale=20.0, n_ear=B.N_EAR, dev=dev)

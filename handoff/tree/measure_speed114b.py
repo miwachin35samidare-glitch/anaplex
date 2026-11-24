@@ -14,7 +14,7 @@ import sys, time, collections, numpy as np, torch
 import babble as B, brainstem as BS, torch_area as T, torch_brain as TB, life as L
 from torch_brain import Brain, NAMES
 
-if B.VERSION not in (114, 115):
+if B.VERSION not in (114, 115, 116):
     sys.exit(f"⚠️ 版 {B.VERSION}：この道具は版114 の網のため")
 TEST = "--test" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]

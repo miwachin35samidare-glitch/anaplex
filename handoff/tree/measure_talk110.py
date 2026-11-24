@@ -28,7 +28,7 @@ TEST = "--test" in sys.argv
 if TEST:
     B.DEV = "cpu"
 dev = B.DEV
-if B.VERSION not in (110, 111, 112, 113, 114, 115):
+if B.VERSION not in (110, 111, 112, 113, 114, 115, 116):
     raise SystemExit(f"⚠️ 版 {B.VERSION}：この道具は版110 で確かめた（版110 で回す）")
 
 ST = ("声", "準備・指令", "準備・合図", "返し手", "録音", "間")
