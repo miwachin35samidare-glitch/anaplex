@@ -1,4 +1,4 @@
-"""版114：皮質（運動の外 20領野）の表現の体が撃った歩に、押しがどこから来たか（arkhe の ~/anaplex で。網は変えない・保存しない）
+"""版114（11-24 時間細胞の辺の重さを足した）：皮質（運動の外 20領野）の表現の体が撃った歩に、押しがどこから来たか（arkhe の ~/anaplex で。網は変えない・保存しない）
   python3 measure_push114.py [歩=15000]
   ANAPLEX_RR=0 python3 measure_push114.py 15000   ← 表現 → 表現 なし（比べる元）
   何のため：版112〜114 のどれでも皮質の発火の 7割余りは「皮質の 20% 以上が同じ歩に撃つ歩」（組み表_版114_案 §8）。
@@ -9,7 +9,9 @@
     下から   x_all × x_gain（下からの線の和）
     rr       表現 → 表現 の辺：Σ 接触 × w × 送り手が前の歩に撃ったか（⚠️ 短期の減りを入れない ⇒ 上の側。誤差の行の分は入れない）
     持越     v_carry（歩に入るときの値）÷閾値
-    ⚠️ 網の中の辺のうち rr 以外（外から入る遅れの列）は入れない（§12 の測りで w 和 0〜1.3）。時間細胞は調整の側で撃たせない
+    ⚠️ 網の中の辺のうち rr 以外（外から入る遅れの列）は入れない（§12 の測りで w 和 0〜1.3）。時間細胞は既定では調整の側で撃たせない
+  11-24 足した：時間細胞・傾きの細胞 → 皮質20 の表現 の辺の重さ（初めは 0、学びで育つ）を区間ごとに。
+    1体あたりの和 Σ 接触 × w ÷ 閾値 ＝ その体の時間細胞が全部撃ったときの押しの上限。ANAPLEX_CX_TC=drive のとき撃たせる側
   毎歩に足す仕事：3,256体の小さい足し算と、rr の辺 約11.6万本の index_add（受け手 3,256 の箱）。読むのは区間の終わりだけ
 """
 import sys, time, numpy as np, torch
@@ -41,6 +43,16 @@ OH = torch.zeros(nL, len(CX), device=g.w.device)
 OH[torch.arange(nL, device=g.w.device), L_area] = 1.0             # 領野ごとの和は 1 つの行列の掛け算で（箱への足し込みなし）
 C_EXC = float(g.c_exc[int(g.rr_L_row[0])]) if TB.RR_ON else 3.3
 COMP = ("CL", "下から", "rr", "持越")
+_tcm = torch.zeros(g.n_send_all, dtype=torch.bool, device=g.w.device)
+for _nm in CX:
+    _a, _i = b.areas[_nm], NAMES.index(_nm); _per = _a.ch.n_cell + _a.ch.n_ramp
+    if _per:
+        _lo = int(g.off_send[_i]); _tcm[_lo:_lo + (_a.n_ch + _a.n_ext) * _per] = True
+_rowmap = torch.full((g.n_recv_all,), -1, dtype=torch.long, device=g.w.device)
+_rowmap[g.rep_i[Lc].long()] = torch.arange(nL, device=g.w.device)
+TC_E = torch.nonzero(_tcm[g.e_src.long()] & ~g.e_inh & (_rowmap[g.e_recv.long()] >= 0)).squeeze(1)
+TC_R = _rowmap[g.e_recv.long()[TC_E]]
+print(f"時間細胞 → 皮質20 の表現 の辺 {TC_E.numel():,} 本（1体あたり {TC_E.numel() / nL:.0f}）", flush=True)
 cap = {}
 _step0 = G.Group2.step
 
@@ -76,12 +88,19 @@ def window(t):
         nf = n_[0, j] + n_[1, j]
         v = [(s_[c, 0, j] + s_[c, 1, j]) / max(nf, 1) for c in range(len(COMP))]
         print(f"    {nm:<8s}{nf:8.0f}{n_[0, j] / max(nf, 1):8.0%} ｜ " + " " * 18 + "".join(f"{x:8.3f}" for x in v), flush=True)
+    th_ = (g.fire_th * g.th_gain)
+    th_ = th_[Lc] if torch.is_tensor(th_) and th_.dim() > 0 and th_.numel() > 1 else torch.as_tensor(th_, device=Lc.device).expand(nL)
+    wt = g.w[TC_E]
+    ps = torch.zeros(nL, device=Lc.device, dtype=wt.dtype).index_add_(0, TC_R, C_EXC * wt) / th_
+    print(f"  時間細胞 → 表現 の辺：w 平均 {float(wt.mean()):.4f}・0 より大きい {float((wt > 0).float().mean()):.1%}・"
+          f"1体あたり Σ接触×w÷閾値 中央 {float(ps.median()):.3f}・90% {float(ps.quantile(0.9)):.3f}", flush=True)
     S.zero_(); N.zero_(); NSY.zero_(); last["t"] = t
     if str(dev).startswith("cuda"):
         torch.cuda.synchronize()
     L.beat()
 
 
+print(f"皮質の時間細胞：{'撃たせる側（ANAPLEX_CX_TC=' + TB._CX_TC_ENV + '）' if TB._CX_TC_ENV else '調整の側（既定）'}", flush=True)
 print(f"PPN → CL の速い分 f {TB.PPNCL_FAST if hasattr(TB, 'PPNCL_FAST') else 1}・g {TB.PPNCL_G if hasattr(TB, 'PPNCL_G') else 1}", flush=True)
 print(f"版 {B.VERSION}（ANAPLEX_RR={'1' if TB.RR_ON else '0'}・上限 {'107z' if G.WCAP_107Z else '6mV ÷ 接触'}）／ {NS} 歩 ／ 皮質20 の表現の体 {nL:,}", flush=True)
 marks = {m for m in (1000, 3000, 6000, 10000) if m < NS} | {NS}
