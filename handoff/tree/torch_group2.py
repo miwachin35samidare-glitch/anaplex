@@ -115,9 +115,11 @@ def _learn_core(e, e_recv, e_src, e_inh, is_inh_r, err_sig, g, pw, elig, hist_n,
 
 
 def _drive_core(both, exc_mod, scale, scale_up, exc_gain, prior_l, rep_i, x_all, x_gain, cl_drive, v_carry,
-                fire_th, th_gain, complete, pred_boost, spont_u, spont_p_pass, ext_ihn, nuc_x, nuc_ihn, n_recv: int):
+                fire_th, th_gain, complete, pred_boost, spont_u, spont_p_pass, ext_ihn, ext_exc, nuc_x, nuc_ihn, n_recv: int):
     """版78：周回の中の『届いた入力 → 見込み → 表現が撃つか』（式は版77 の _pass と同じ。くじ spont_u は外で引く）"""
     exc, ihn = both[:n_recv], both[n_recv:]
+    if ext_exc is not None:                  # 版116b：網の外の表から来る興奮（皮質の抑制の体へ、切片の外の錐体の代わり）。網の辺と同じく恒常性の倍率がかかる
+        exc = exc + ext_exc
     exc = exc * (scale * scale_up); ihn = ihn * scale
     if ext_ihn is not None:                  # 版94：外からの抑制の線（中脳の核へ）。学ばない
         ihn = ihn + ext_ihn
@@ -1372,7 +1374,7 @@ class Group2:
         vc = getattr(self, "v_carry", None)
         vin = dict(base_on=self._base_on, prior_l=prior_l, x_all=x_all, scale=self._own("scale"),
                    scale_up=self._own("scale_up"), exc_gain=getattr(self, "exc_gain", None),
-                   cl_drive=getattr(self, "cl_drive", None), v_carry=vc, ext_ihn=getattr(self, "ext_ihn", None),
+                   cl_drive=getattr(self, "cl_drive", None), v_carry=vc, ext_ihn=getattr(self, "ext_ihn", None), ext_exc=getattr(self, "ext_exc", None),
                    v_carry_inh=(self.v_carry_inh if vc is not None else None), th_gain=self.th_gain,
                    x_gain=self.x_gain, fire_th=self.fire_th, complete=(self.complete if self._complete_any else None),
                    pred_boost=self.pred_boost, spont_p_pass=self.spont_p_pass, send_gain=self.send_gain)
@@ -1504,7 +1506,7 @@ class Group2:
         exc, ihn, exc_mod, p, pr, drive, rep = _run(
             _drive_core, both0, mod0, X["scale"], X["scale_up"], opt("exc_gain"), X["prior_l"], self.rep_i,
             X["x_all"], X["x_gain"], opt("cl_drive"), opt("v_carry"), X["fire_th"], X["th_gain"], opt("complete"),
-            X["pred_boost"], F["spont1"], X["spont_p_pass"], opt("ext_ihn"), *self._nuc_in(), self.n_recv_all)
+            X["pred_boost"], F["spont1"], X["spont_p_pass"], opt("ext_ihn"), opt("ext_exc"), *self._nuc_in(), self.n_recv_all)
         # 的（_pass の1周目と同じ）
         x_t = torch.where(self.tgt_by_fire, (X["x_all"] * X["x_gain"] > X["fire_th"]).float(), X["x_all"])
         F["xt"].copy_(x_t)
@@ -1660,7 +1662,7 @@ class Group2:
         vc = getattr(self, "v_carry", None)
         vin = dict(both_base=both_base, mod_base=mod_base, base_on=self._base_on, prior_l=self._prior_l, x_all=x_all,
                    scale=self.scale, scale_up=self.scale_up, exc_gain=getattr(self, "exc_gain", None),
-                   cl_drive=getattr(self, "cl_drive", None), v_carry=vc, ext_ihn=getattr(self, "ext_ihn", None),
+                   cl_drive=getattr(self, "cl_drive", None), v_carry=vc, ext_ihn=getattr(self, "ext_ihn", None), ext_exc=getattr(self, "ext_exc", None),
                    v_carry_inh=(self.v_carry_inh if vc is not None else None), th_gain=self.th_gain, tgt=self._tgt,
                    x_gain=self.x_gain, fire_th=self.fire_th, complete=(self.complete if self._complete_any else None),
                    pred_boost=self.pred_boost, spont_p_pass=self.spont_p_pass, send_gain=self.send_gain)
@@ -1848,7 +1850,7 @@ class Group2:
         exc, ihn, exc_mod, p, pr, drive, rep = _run(
             _drive_core, both, exc_mod, X["scale"], X["scale_up"], opt("exc_gain"), X["prior_l"], self.rep_i,
             X["x_all"], X["x_gain"], opt("cl_drive"), opt("v_carry"), X["fire_th"], X["th_gain"], opt("complete"),
-            X["pred_boost"], S["spont"], X["spont_p_pass"], opt("ext_ihn"), *self._nuc_in(), self.n_recv_all)
+            X["pred_boost"], S["spont"], X["spont_p_pass"], opt("ext_ihn"), opt("ext_exc"), *self._nuc_in(), self.n_recv_all)
         err_sig = X["tgt"] - p
         S["pc"].add_(1)
         (d_inh, rep, err, inh_spk, lf0, lf1, lf2, a0, a1, a2) = _run(
@@ -1988,7 +1990,7 @@ class Group2:
             _drive_core, both, exc_mod, self.scale, self.scale_up, getattr(self, "exc_gain", None), self._prior_l,
             self.rep_i, x_all, self.x_gain, getattr(self, "cl_drive", None), getattr(self, "v_carry", None),
             self.fire_th, self.th_gain, self.complete if self._complete_any else None, self.pred_boost,
-            spont_u, self.spont_p_pass, getattr(self, "ext_ihn", None), *self._nuc_in(), self.n_recv_all)
+            spont_u, self.spont_p_pass, getattr(self, "ext_ihn", None), getattr(self, "ext_exc", None), *self._nuc_in(), self.n_recv_all)
 
         # 表現の発火は学びの前に出す（版36。的に使うため）。学びはこの周の exc・ihn を変えないので値は同じ
         # 表現のニューロンも、シナプスの合計が閾値を越えたら撃つ

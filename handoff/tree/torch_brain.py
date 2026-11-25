@@ -532,6 +532,19 @@ V115 = os.environ.get("ANAPLEX_V115", "1") != "0"
 V116 = os.environ.get("ANAPLEX_V116", "1") != "0"
 TC_W_DIST = 14.3 / (134.0 / 3.3)
 N_TC_INH = int(round(9100 * 0.16))
+# 版116b：切片の外の錐体の代わり（遅れの体）を、皮質20領野の抑制の体へも（組み表_版116_案 §25〜§26【み】11-26 02:17「すすめて」）
+#   人では切片の外の錐体は抑制の細胞も駆動する。局所で 興奮 → 抑制 20〜23%・興奮 → 興奮 8〜10%【ヒト】Allen synphys（組み表_版112 §17）
+#   本数：受け手1体 round(9,100 × 84% × R) − 切片の中の 180（INH_N_EXC）。R ＝ 2.0（範囲 2.0〜2.9 の下、10 §1：範囲の値で置き率で合わせる）【C の当てはめ】
+#     ⚠️ 局所の割合の比を切片の外にも当てた見込み。人の抑制の細胞1つの興奮の相手の総数は見つからない（組み表_版112 §16）
+#   1本：錐体 → 抑制の体 の人の幅（対数正規 1.65 ± 1.59mV【ヒト】Wilbers 2023 ＝ 網の INH_W と同じ）× 散らばった入力の効き F
+#     F ＝ 0.35（錐体の 14.3 ÷ (134 ÷ 3.3) を当てた【C】。人の速く撃つ抑制の細胞の散らばった入力の値は見つからない）
+#   学ばない（網の 錐体 → 抑制の体 の辺も跡を足さない）・短期の増減なし（⚠️ 人の 錐体 → PVALB は減る、Chartrand 2023 ⇒ 上の側）
+#   網の辺ではなく表（受け手 × 本数の送り手の番号と重さ）で毎歩足す ⇒ VRAM は 約75MB
+#   ANAPLEX_V116B=0 で版116 と同じ・ANAPLEX_V116B_R・_F で R・F
+V116B = os.environ.get("ANAPLEX_V116B", "1") != "0"
+TC_EI_R = float(os.environ.get("ANAPLEX_V116B_R", "2.0"))
+TC_EI_F = float(os.environ.get("ANAPLEX_V116B_F", str(TC_W_DIST)))
+N_TC_EI = int(round(9100 * 0.84 * TC_EI_R)) - INH_N_EXC
 V115_CHECK = os.environ.get("ANAPLEX_V115_CHECK", "0") == "1"
 # 版115b：PPN → CL を「速い分 ＋ ゆっくりの分（ニコチン・ムスカリン）」に分ける（測る用のスイッチ。既定は版115 のまま）
 #   組み表_版116_案 §2・§8。【み】11-23 16:55「いいよ、進めて」・17:27「まぁノブでいいよ」
@@ -1983,6 +1996,8 @@ class Brain:
         send = torch.zeros(g.n_send_all, dtype=torch.bool, device=dev)
         gen = torch.Generator(device=dev); gen.manual_seed(116116)
         tci = torch.empty((nL, N_TC_INH), dtype=torch.long, device=dev)
+        ei_r, ei_i = [], []
+        gen_ei = torch.Generator(device=dev); gen_ei.manual_seed(116126)   # 版116b：ほかのくじの順を変えない
         for nm in CX_TC:
             a, i = self.areas[nm], NAMES.index(nm)
             per, nc_ = a.ch.n_cell + a.ch.n_ramp, a.ch.n_cell
@@ -1995,8 +2010,22 @@ class Brain:
             pos = self._tc_rowmap[g.rep_i[o_:o_ + a.n_ch].long()].long()
             assert bool((pos >= 0).all()), f"版116：{nm} の表現の行が rr の並びに無い"
             tci[pos] = ih_[torch.randint(0, len(ih_), (a.n_ch, N_TC_INH), device=dev, generator=gen)]
+            if V116B:                                        # 版116b：この領野の抑制の体の行 ← 興奮の行の遅れの体
+                ir_ = torch.nonzero((g.area_of == i) & g.is_inh_r).squeeze(1)
+                assert len(ir_) == a.n_inh, f"版116b：{nm} の抑制の体の行 {len(ir_)} ≠ {a.n_inh}"
+                ei_r.append(ir_)
+                ei_i.append(ex_[torch.randint(0, len(ex_), (len(ir_), N_TC_EI), device=dev, generator=gen_ei)].to(torch.int32))
         self._tc_send = send
         self._tc_inh_idx = tci
+        self._ei_on = bool(V116B)
+        if V116B:
+            from torch_area import INH_W_MU as _MU, INH_W_SIG as _SIG, INH_W_MEAN as _MEAN
+            self._ei_rows = torch.cat(ei_r)
+            self._ei_idx = torch.cat(ei_i)
+            z_ = torch.randn(self._ei_idx.shape, device=dev, generator=gen_ei)
+            self._ei_w = torch.exp(_MU + _SIG * z_) * (_MEAN * TC_EI_F)
+            del z_
+            g.ext_exc = torch.zeros(g.n_recv_all, device=dev)
         self._tc_inh_rows = L_row
         g.rr_send |= send                                    # 表現の行へ入る分は誤差の跡に足さない（rr と同じ印）
         self._tc_rebuild()
@@ -2030,6 +2059,11 @@ class Brain:
         self._tc_now = spk
         if self._tc_zero_ihn:
             g.ext_ihn.zero_()
+        if getattr(self, "_ei_on", False):                   # 版116b：抑制の体へ 切片の外の錐体の代わり
+            for r0 in range(0, len(self._ei_rows), 64):
+                r1 = min(len(self._ei_rows), r0 + 64)
+                v_ = (spk[self._ei_idx[r0:r1].long()] * self._ei_w[r0:r1]).sum(1)
+                g.ext_exc.index_copy_(0, self._ei_rows[r0:r1], v_.to(g.ext_exc.dtype))
         add = spk[self._tc_inh_idx].sum(1) * W_INH_BU
         g.ext_ihn.index_add_(0, self._tc_inh_rows, add.to(g.ext_ihn.dtype))
 
