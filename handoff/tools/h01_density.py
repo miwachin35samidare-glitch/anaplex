@@ -145,11 +145,49 @@ def fetch_cell(seg, si, ki, ai):
         syn = (g[:, :3] * s8, g[:, 3:6] * s8, ps["type"].astype(int))
     return (v.astype(float), e.astype(np.int64)), (sp, sc), syn
 
+import warnings
+warnings.filterwarnings("ignore")
+
+def diag_print(seg, skel, sub, syn):
+    v, e = skel; sp, sc = sub; pa, pb, ty = syn
+    print("  -- 番号", seg)
+    print("    骨格 点 %d・辺 %d・辺の和 %.0fµm・範囲(µm) %s〜%s" % (len(v), len(e), P.cable_um(v, e),
+          np.round(v.min(0) / 1000).tolist(), np.round(v.max(0) / 1000).tolist()))
+    if len(sp) == 0:
+        print("    区画の点 0"); return
+    u, c = np.unique(sc, return_counts=True)
+    print("    区画の点 %d・範囲(µm) %s〜%s" % (len(sp), np.round(sp.min(0) / 1000).tolist(), np.round(sp.max(0) / 1000).tolist()))
+    print("    区画の点の札と数", {CLS.get(int(a), str(int(a))): int(b) for a, b in zip(u, c)})
+    j, d = nearest(v, sp); _, d2 = nearest(sp, v)
+    print("    骨格の点 → 一番近い区画の点 中央 %.0fnm・90%% %.0fnm ／ 区画の点 → 骨格 中央 %.0fnm・90%% %.0fnm" % (
+          np.median(d), np.percentile(d, 90), np.median(d2), np.percentile(d2, 90)))
+    u, c = np.unique(sc[j], return_counts=True)
+    print("    骨格の点に付いた札と数", {CLS.get(int(a), str(int(a))): int(b) for a, b in zip(u, c)})
+    same = len(sp) == len(v) and np.allclose(np.sort(sp, 0), np.sort(v, 0), atol=1)
+    print("    区画の点は骨格の点と同じか", bool(same))
+    if len(ty):
+        _, da = nearest(pa, v); _, db = nearest(pb, v)
+        print("    入るシナプス %d（興奮 %d・抑制 %d）・骨格まで 中央 %.0fnm" % (len(ty), int((ty == 2).sum()), int((ty == 1).sum()),
+              np.median(np.minimum(da, db))))
+
+def diag(ids):
+    si = json.loads(P.get(P.SYN + "/info")); ki = json.loads(P.get(P.SKEL + "/info"))
+    ai = json.loads(P.maybe_gunzip(P.get(SUBC_ANN + "/info")))
+    for seg in ids:
+        d = fetch_cell(seg, si, ki, ai)
+        if d is None:
+            print("  -- 番号", seg, "：骨格か区画の索引に無い"); continue
+        diag_print(seg, *d)
+    print("== 落とした量 %.1f MB" % (P._got[0] / 1e6))
+
 def summarize(rows):
     ok = [r for r in rows if "skip" not in r]
     print("== ③ まとめ（使えた %d 体 ／ 引いた %d 体）" % (len(ok), len(rows)))
     if not ok: return
-    def q(x): x = np.array(x, float); return "中央 %.3g（%.3g〜%.3g、%d体）" % (np.median(x), np.percentile(x, 25), np.percentile(x, 75), len(x))
+    def q(x):
+        x = np.array(x, float)
+        if len(x) == 0: return "（0体）"
+        return "中央 %.3g（%.3g〜%.3g、%d体）" % (np.median(x), np.percentile(x, 25), np.percentile(x, 75), len(x))
     den = [r for r in ok if r["dend_um"] > 100]
     dE = [r["cnt"]["樹状突起"]["E"] / r["dend_um"] for r in den]
     dI = [r["cnt"]["樹状突起"]["I"] / r["dend_um"] for r in den]
@@ -260,9 +298,15 @@ def selftest():
     cells, nall = pick_cells(inl, names, tv, 2)
     assert nall == 3 and len(cells) == 2 and all(c[0] in (1, 2, 3) for c in cells)
     print("✓ 札から L2・L3 の抑制の細胞だけを選べた")
+    diag_print(7, (v, e), (sp, cls), (np.array(pa), np.array(pb), np.array(ty)))
+    summarize([{"seg": 1, "skip": "x"}])
+    print("✓ 確かめの表示と、使える細胞が 0 体のまとめが落ちない")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "selftest":
         selftest()
+    elif len(sys.argv) > 1 and sys.argv[1] == "diag":
+        # 下見で通った L2 の例 3体 ＋ 11-26 22:3x の回で「細胞体の点が無い」だった先頭 3体 ＋ 細胞体だけだった 2体
+        diag(P.L2_IN + [40670855127, 6139546370, 1204043735, 28916800359, 42402355619])
     else:
         main(int(sys.argv[1]) if len(sys.argv) > 1 else 40)

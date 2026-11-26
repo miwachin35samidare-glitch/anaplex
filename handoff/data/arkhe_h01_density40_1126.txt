@@ -1,0 +1,88 @@
+$ cd ~/anaplex && python3 h01_density.py 40 2>&1 | tee h01_density.txt
+== ① 札の NSe・NSi（全部の細胞。何の版のシナプスで数えたかは札に書いていない）
+  型              層         体    NSe中央    NSi中央      E割合中央     E割合(和)
+  interneuron    L1      522       64      184       0.25       0.28
+  interneuron    L2     1558      188      340       0.38       0.42
+  interneuron    L3      942      382      446       0.46       0.51
+  interneuron    L4      675      332      323       0.50       0.54
+  interneuron    L5      477      353      303       0.52       0.55
+  interneuron    L6      117      280      258       0.48       0.51
+  pyramidal      L2     2619      840      851       0.50       0.51
+  pyramidal      L3     1552     2546     1756       0.59       0.59
+  pyramidal      L4     2150      610      478       0.56       0.58
+  pyramidal      L5     1156      627      523       0.55       0.58
+  pyramidal      L6      588     1526     1095       0.59       0.60
+== 区画の点の info： {"@type": "neuroglancer_annotations_v1", "annotation_type": "POINT", "by_id": {"key": "by_id", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 14, "minishard_index_encoding": "gzip", "preshift_bits": 10, "shard_bits": 8}}, "dimensions": {"x": [1, "nm"], "y": [1, "nm"], "z": [1, "nm"]}, "lower_bound": [517248, 314944, 2145], "properties": [{"id": "class_label", "type": "int32", "enum_values": [0, 1, 2, 3, 4, 5, 1000, 1001, 1002, 1003], "enum_labels": ["axon", "dendrite", "astrocyte", "soma", "cilium", "AIS", "myelinated axon", "myelinated axon", "myelinated fragment", "myelinated fragment"]}], "relationships": [{"id": "skeleton_id", "key": "skeleton_id", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 13, "minishard_index_encoding": "gzip", "preshift_bits": 10, "shard_bits": 7}}], "upper_bound": [3880065, 2372257, 172525]}
+== ② L2・L3 の抑制の細胞 2500 体のうち 40 体を引く
+   0 L2 40670855127：細胞体の点が無い（板の外か、別の番号）
+   1 L3 6139546370：細胞体の点が無い（板の外か、別の番号）
+   2 L2 1204043735：細胞体の点が無い（板の外か、別の番号）
+   3 L2 3650879015：細胞体の点が無い（板の外か、別の番号）
+   4 L3 37828666294：細胞体の点が無い（板の外か、別の番号）
+   5 L2 38820862936：細胞体の点が無い（板の外か、別の番号）
+   6 L3 47581214561：細胞体の点が無い（板の外か、別の番号）
+   7 L3 59914357693：細胞体の点が無い（板の外か、別の番号）
+   8 L2 5019606303：細胞体の点が無い（板の外か、別の番号）
+   9 L3 39837675924：細胞体の点が無い（板の外か、別の番号）
+  10 L2 37640853452：細胞体の点が無い（板の外か、別の番号）
+  11 L2 1101427972：細胞体の点が無い（板の外か、別の番号）
+  12 L3 31584023486：細胞体の点が無い（板の外か、別の番号）
+  13 L3 30624168888：細胞体の点が無い（板の外か、別の番号）
+  14 L2 5514710097：細胞体の点が無い（板の外か、別の番号）
+  15 L2 445565866：細胞体の点が無い（板の外か、別の番号）
+  16 L3 55206178630：細胞体の点が無い（板の外か、別の番号）
+  17 L3 3343498390：細胞体の点が無い（板の外か、別の番号）
+  18 L3 68867560740：細胞体の点が無い（板の外か、別の番号）
+  19 L3 39197977927：細胞体の点が無い（板の外か、別の番号）
+  20 L2 5718307032：細胞体の点が無い（板の外か、別の番号）
+  21 L3 39241911972：細胞体の点が無い（板の外か、別の番号）
+  22 L2 42112102018：細胞体の点が無い（板の外か、別の番号）
+  23 L3 41716576036：細胞体の点が無い（板の外か、別の番号）
+  24 L2 41310859882：細胞体の点が無い（板の外か、別の番号）
+  25 L2 49317098592：細胞体の点が無い（板の外か、別の番号）
+  26 L2 36168006789：細胞体の点が無い（板の外か、別の番号）
+  27 L2 968046567：細胞体の点が無い（板の外か、別の番号）
+  28 L3 28916800359：樹状突起 0µm 興奮 0 抑制 0（0.000/µm）・細胞体 興奮 61 抑制 87・軸索ほか 0・軸索 0µm・板の面まで 62µm・4.1s・計 2.4MB
+  29 L2 31455490233：細胞体の点が無い（板の外か、別の番号）
+  30 L3 5397917670：細胞体の点が無い（板の外か、別の番号）
+  31 L3 3574354353：細胞体の点が無い（板の外か、別の番号）
+  32 L3 28482055724：細胞体の点が無い（板の外か、別の番号）
+  33 L2 39898037617：細胞体の点が無い（板の外か、別の番号）
+  34 L2 30960196915：細胞体の点が無い（板の外か、別の番号）
+  35 L3 42139495116：細胞体の点が無い（板の外か、別の番号）
+  36 L3 42402355619：樹状突起 0µm 興奮 0 抑制 0（0.000/µm）・細胞体 興奮 7 抑制 23・軸索ほか 0・軸索 0µm・板の面まで 68µm・4.3s・計 2.9MB
+~/.local/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3862: RuntimeWarning: Mean of empty slice
+  return _methods._mean(a, axis=axis, dtype=dtype,
+~/.local/lib/python3.12/site-packages/numpy/_core/_methods.py:142: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+  37 L2 49637765370：細胞体の点が無い（板の外か、別の番号）
+  38 L2 38936109019：細胞体の点が無い（板の外か、別の番号）
+  39 L3 51077204908：細胞体の点が無い（板の外か、別の番号）
+== ③ まとめ（使えた 2 体 ／ 引いた 40 体）
+Traceback (most recent call last):
+  File "~/anaplex/h01_density.py", line 268, in <module>
+    main(int(sys.argv[1]) if len(sys.argv) > 1 else 40)
+  File "~/anaplex/h01_density.py", line 202, in main
+    summarize(rows)
+  File "~/anaplex/h01_density.py", line 157, in summarize
+    print("  樹状突起 1µm あたり 興奮", q(dE)); print("  樹状突起 1µm あたり 抑制", q(dI))
+                                        ^^^^^
+  File "~/anaplex/h01_density.py", line 152, in q
+    def q(x): x = np.array(x, float); return "中央 %.3g（%.3g〜%.3g、%d体）" % (np.median(x), np.percentile(x, 25), np.percentile(x, 75), len(x))
+                                                                                              ^^^^^^^^^^^^^^^^^^^^
+  File "~/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4258, in percentile
+    return _quantile_unchecked(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "~/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4522, in _quantile_unchecked
+    return _ureduce(a,
+           ^^^^^^^^^^^
+  File "~/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 3892, in _ureduce
+    r = func(a, **kwargs)
+        ^^^^^^^^^^^^^^^^^
+  File "~/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4681, in _quantile_ureduce_func
+    result = _quantile(arr,
+             ^^^^^^^^^^^^^^
+  File "~/.local/lib/python3.12/site-packages/numpy/lib/_function_base_impl.py", line 4805, in _quantile
+    slices_having_nans = np.isnan(arr[-1, ...])
+                                  ~~~^^^^^^^^^
+IndexError: index -1 is out of bounds for axis 0 with size 0
