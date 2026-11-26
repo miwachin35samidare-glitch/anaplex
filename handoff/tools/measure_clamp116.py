@@ -1,5 +1,6 @@
 """版116c（11-27）：時間細胞の写しの輪を開いて、錐体が人の率の写しを受けたときに何Hz で撃つかを測る（網は変えない・保存しない）
-  python3 measure_clamp116.py [歩=3000] [--exc=3.3] [--inh=4.7]
+  python3 measure_clamp116.py [歩=3000] [--exc=3.3] [--inh=4.7] [--noclamp]
+  11-27 07:5x：見本の受け手の興奮を送り手の種類（時間細胞 自分・外／表現→表現 rr／ほか）で分けて出す行を足した。--noclamp で差し替えない（比べる元）
   何のため（組み表_版116_案 §37）：毎歩撃つ形の根が「写しの輪」（写す元が撃つほど写しも撃つ）か、
     「写しの重さ・足し方」（イ・ウ）かを分ける
     皮質20 の時間細胞の元の行（自分の行・外の行・抑制の行）の撃ちを、網の撃ちではなく人の率のくじに差し替える（測るためだけ）
@@ -62,8 +63,13 @@ REAL = {"f": None}
 _ch_step0 = type(g.ch).step
 
 
+NOCLAMP = "--noclamp" in sys.argv
+
+
 def _ch_step_clamp(self, fired_all):
-    if self is g.ch:
+    if self is g.ch and NOCLAMP:
+        REAL["f"] = (fired_all > 0).float()
+    if self is g.ch and not NOCLAMP:
         REAL["f"] = (fired_all > 0).float()
         lot = (torch.rand(fired_all.shape, device=fired_all.device, generator=gen_c) < P_ROW).to(fired_all.dtype)
         fired_all = torch.where(CL_MASK, lot, fired_all)
@@ -71,7 +77,7 @@ def _ch_step_clamp(self, fired_all):
 
 
 type(g.ch).step = _ch_step_clamp
-print(f"［測るための差し替え］皮質20 の時間細胞の元の行の撃ち ⇒ くじ：自分・外の行 {EXC_HZ}Hz・抑制の行 {INH_HZ}Hz（網の撃ちは変えない）", flush=True)
+print(("［差し替えなし（--noclamp）：比べる元］" if NOCLAMP else "") + f"［測るための差し替え{'：しない' if NOCLAMP else ''}］皮質20 の時間細胞の元の行の撃ち ⇒ くじ：自分・外の行 {EXC_HZ}Hz・抑制の行 {INH_HZ}Hz（網の撃ちは変えない）", flush=True)
 n_s = [int((cat_s == k).sum()) for k in (1, 2, 3)]
 n_r = [int((cat_r == k).sum()) for k in (1, 2, 3)]
 
@@ -82,6 +88,53 @@ nS = int(SM.numel())
 smap = torch.full((g.n_recv_all,), -1, dtype=torch.long, device=W)
 smap[Lrow[SM]] = torch.arange(nS, device=W)
 samp = {"src": None}
+
+
+DEC = {"e": None, "acc": torch.zeros(6, device=W, dtype=torch.float64), "n": 0}
+DEC_NAMES = ("時間細胞 自分", "時間細胞 外", "表現→表現（rr）", "ほかの網の辺", "調整の側（駆動に入らない）")
+nTc = int(g.ch.spikes().numel())
+
+
+def dec_rebuild():
+    # 見本の受け手（表現の体 256）に入る興奮の辺を全部（刈り込みのあと作り直す）
+    out = []
+    for s0 in range(0, len(g.w), 1 << 22):
+        r = g.e_recv[s0:s0 + (1 << 22)].long()
+        k = (smap[r] >= 0) & ~g.e_inh[s0:s0 + (1 << 22)]
+        out.append(torch.nonzero(k).squeeze(1) + s0)
+    e = torch.cat(out); sp = g.e_src[e].long()
+    cat = torch.full_like(sp, 3)
+    cat[sp < nTc] = torch.where(cat_s[sp[sp < nTc]] == 2, 1, 0)
+    cat[(sp >= nTc) & g.rr_send[sp]] = 2
+    cat[g.mod_send[sp]] = 4
+    DEC.update(e=e, sp=sp, rv=g.e_recv[e].long(), cat=cat, n_e=int(e.numel()))
+
+
+def dec_step(act):
+    # この歩の送り手の撃ち act（時間細胞の写し ＋ 遅れの列）で、見本の受け手の興奮を種類ごとに（÷閾値・恒常性の倍率込み）
+    e, sp, rv, cat = DEC["e"], DEC["sp"], DEC["rv"], DEC["cat"]
+    amp = g.c_exc[rv] * g.w[e] * g.send_gain[sp] * act[sp]
+    if g._amp_buf is not None and len(g._amp_buf) == len(g.w):
+        amp = amp * g._amp_buf[e]
+    sc = g.scale[rv] * g.scale_up[rv]
+    if g.exc_gain is not None:
+        sc = sc * g.exc_gain[rv]
+    th = (g.fire_th * g.th_gain)
+    th = th[g.rr_L_ch[SM]] if torch.is_tensor(th) and th.numel() > 1 else torch.as_tensor(th, device=W)
+    box = torch.zeros(5 * nS, device=W, dtype=amp.dtype).index_add_(0, cat * nS + smap[rv], amp * sc).reshape(5, nS)
+    DEC["acc"][:5] += (box / th).mean(1).double()
+    DEC["n"] += 1
+
+
+def dec_print():
+    if DEC["n"] == 0:
+        return
+    v = (DEC["acc"][:5] / DEC["n"]).cpu().numpy()
+    tot = v[:4].sum()
+    chk = float(DEC["acc"][5] / DEC["n"])
+    print("  興奮を送り手の種類で（見本の受け手 %d・辺 %s 本・÷閾値・割る前・歩の頭の送り手）：" % (nS, f"{DEC['n_e']:,}") +
+          "・".join(f"{a} {x:.2f}" for a, x in zip(DEC_NAMES, v)) + f"・駆動に入る分の和 {tot:.2f}（同じ見本の網の値 {chk:.2f}。容器では 0.7〜0.9倍しか合わない：周の中の学びの足し分ほかは数えていない ⇒ 種類の割合で読む）", flush=True)
+    DEC["acc"].zero_(); DEC["n"] = 0
 
 
 def samp_rebuild():
@@ -120,6 +173,7 @@ _step0 = G.Group2.step
 
 def _step_spy(self, x_all, ext_all, learn=True):
     cap["x"] = x_all
+    cap["buf"] = self._buf_flat_get().clone()
     return _step0(self, x_all, ext_all, learn)
 
 
@@ -147,6 +201,7 @@ def window(t):
     print(f"  1＋抑制 {d['1+抑制']:.2f}（代わりの抑制 {d['代わり']:.2f}・切片の中ほか {d['1+抑制'] - 1 - d['代わり']:.2f}）", flush=True)
     print(f"  割ったあと：駆動 ÷閾値 {d['駆動']:.2f}・うち時間細胞 {d['時割']:.2f}（見本）", flush=True)
     print(f"  上限：時間細胞が全部撃ったとき ÷閾値 {d['上興']:.1f}（見本の中央の平均）・代わりの抑制が全部撃ったとき 1＋抑制 {1 + d['上抑']:.1f} ⇒ 比 {d['上興'] / max(d['上抑'], 1e-9):.2f}", flush=True)
+    dec_print()
     SUMT.zero_(); last["t"] = t
     L.beat()
 
@@ -163,6 +218,9 @@ for i in range(1, NS + 1):
     life.step(learn=True)
     if samp["src"] is not b._tc_src:
         samp_rebuild()
+    if DEC["e"] is None or DEC.get("w_len") != len(g.w) or DEC.get("src") is not b._tc_src:
+        dec_rebuild(); DEC["w_len"] = len(g.w); DEC["src"] = b._tc_src
+    dec_step(torch.cat([b._tc_now.float(), cap["buf"].float()]))
     th = (g.fire_th * g.th_gain)
     th = th[Lc] if torch.is_tensor(th) and th.dim() > 0 and th.numel() > 1 else torch.as_tensor(th, device=W).expand(nL)
     np_ = CNT.clamp(min=1.0)
@@ -174,6 +232,7 @@ for i in range(1, NS + 1):
     box = torch.zeros(nS * 2, device=W, dtype=val.dtype).index_add_(0, s["bx"], val).reshape(nS, 2)
     top = torch.zeros(nS * 2, device=W, dtype=val.dtype).index_add_(0, s["bx"], s["c"] * g.w[s["e"]]).reshape(nS, 2).sum(1)
     ths = th[SM]
+    DEC["acc"][5] += (exc[SM] / ths).mean().double()
     row = torch.stack([
         g._any[0][Lc].float().mean(),
         fr[r1].mean(), fr[r2].mean(), fr[r3].mean(),
