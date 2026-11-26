@@ -1,0 +1,37 @@
+$ cd ~/anaplex && python3 h01_probe.py 2>&1 | tee h01_probe.txt
+== ① 細胞の札（segment_properties）
+  @type neuroglancer_segment_properties ・番号の数 46579
+  性質 id=tags type=tags 値の数 46579
+    札と数 [["glial", 30082], ["oligodendrocyte", 18831], ["neuron", 15458], ["WM", 12821], ["pyramidal", 8518], ["L4", 6640], ["L5", 6621], ["L2", 6522], ["L3", 6181], ["microglia/opc", 6154], ["astrocyte", 5097], ["interneuron", 4485], ["L6", 3853], ["L1", 3334], ["atypical-tree", 1171], ["unclassified-neuron", 1102], ["unknown-cell", 643], ["layer-unclassified", 607], ["blood-vessel-cell", 252], ["spiny-stellate", 182], ["c-shaped-cell", 144]]
+  性質 id=NSe type=number 値の数 46579
+    初めの値 [30, 50, 44, 19, 43]
+  性質 id=NSi type=number 値の数 46579
+    初めの値 [96, 97, 118, 95, 82]
+  初めの番号 ['258279044', '272206514', '272264889', '272367447', '272500389']
+  L2 の抑制の細胞の例のうち札にある数 3 / 3
+    1100054524 {"tags": ["L2", "neuron", "interneuron"], "NSe": 1195, "NSi": 871}
+    1115430292 {"tags": ["L2", "neuron", "interneuron"], "NSe": 894, "NSi": 747}
+    12237931142 {"tags": ["L2", "neuron", "interneuron"], "NSe": 2428, "NSi": 3255}
+== ② シナプスの注釈の info
+   {"@type": "neuroglancer_annotations_v1", "annotation_type": "LINE", "dimensions": {"x": [8e-09, "m"], "y": [8e-09, "m"], "z": [3.3e-08, "m"]}, "lower_bound": [64667.0, 39426.0, 63.0], "upper_bound": [483997.0, 296180.0, 5231.0], "by_id": {"key": "by_id", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 14, "minishard_index_encoding": "gzip", "preshift_bits": 10, "shard_bits": 4}}, "relationships": [{"key": "pre_synaptic_cell", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 13, "minishard_index_encoding": "gzip", "preshift_bits": 10, "shard_bits": 4}, "id": "pre_synaptic_cell"}, {"key": "post_synaptic_cell", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 12, "minishard_index_encoding": "gzip", "preshift_bits": 10, "shard_bits": 4}, "id": "post_synaptic_cell"}], "properties": [{"id": "type", "type": "uint32"}]}
+  関係の索引 ['pre_synaptic_cell', 'post_synaptic_cell']
+== ③ 骨格の info
+   {"@type": "neuroglancer_skeletons", "sharding": {"@type": "neuroglancer_uint64_sharded_v1", "data_encoding": "gzip", "hash": "murmurhash3_x86_128", "minishard_bits": 11, "minishard_index_encoding": "gzip", "preshift_bits": 6, "shard_bits": 7}, "transform": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0], "vertex_attributes": [{"data_type": "float32", "id": "radius", "num_components": 1}]}
+== 区画の info：取れない UnicodeDecodeError
+== ④ 細胞ごと（L2 の抑制の細胞の例 3つ）
+  -- 番号 1100054524
+    入るシナプス 2020 個・座標の範囲（注釈の単位） [287895.0, 53826.0, 64.0, 287884.0, 53834.0, 64.0] 〜 [317881.0, 110867.0, 1722.0, 317869.0, 110856.0, 1722.0]
+    性質 type の値と数 {1: 699, 2: 1321}
+    骨格 点 5587・辺 5582・座標の範囲 [2295264.0, 429344.0, 165.0] 〜 [2542720.0, 887072.0, 56958.0]
+    辺の長さの和（座標を nm とすると）1781 µm ・半径の中央 261.9618225097656
+  -- 番号 1115430292
+    入るシナプス 1613 個・座標の範囲（注釈の単位） [317926.0, 59029.0, 76.0, 317925.0, 59034.0, 76.0] 〜 [330194.0, 78852.0, 1586.0, 330183.0, 78835.0, 1586.0]
+    性質 type の値と数 {1: 638, 2: 975}
+    骨格 点 2922・辺 2921・座標の範囲 [2514880.0, 470912.0, 132.0] 〜 [2641408.0, 635776.0, 52338.0]
+    辺の長さの和（座標を nm とすると）952 µm ・半径の中央 252.09719848632812
+  -- 番号 12237931142
+    入るシナプス 5593 個・座標の範囲（注釈の単位） [342846.0, 83593.0, 700.0, 342857.0, 83598.0, 700.0] 〜 [386291.0, 135279.0, 4968.0, 386284.0, 135268.0, 4968.0]
+    性質 type の値と数 {1: 3033, 2: 2560}
+    骨格 点 15104・辺 15099・座標の範囲 [2743200.0, 668608.0, 23232.0] 〜 [3090656.0, 1110400.0, 170379.0]
+    辺の長さの和（座標を nm とすると）4766 µm ・半径の中央 210.53265380859375
+== 落とした量 2.07 MB（保存したのは ~/data/h01/segment_properties.json だけ）
