@@ -132,12 +132,12 @@ def fetch_cell(seg, si, ki, ai):
             b = None
     if b is None: return None
     xyz, pr, _ = P.decode_multi(b, ai)
-    scale = np.array([ai["dimensions"][k][0] for k in ("x", "y", "z")]) * 1e9
+    scale = to_nm(ai)
     ck = "class_label" if "class_label" in pr else [k for k in pr if "class" in k][0]
     sp = xyz[:, :3] * scale; sc = pr[ck].astype(np.int64)
     rs = {x["id"]: x for x in si["relationships"]}["post_synaptic_cell"]
     bs = P.sharded_get(P.SYN + "/" + rs["key"], seg, rs["sharding"])
-    s8 = np.array([si["dimensions"][k][0] for k in ("x", "y", "z")]) * 1e9
+    s8 = to_nm(si)
     if bs is None:
         syn = (np.zeros((0, 3)), np.zeros((0, 3)), np.zeros(0, int))
     else:
@@ -147,6 +147,13 @@ def fetch_cell(seg, si, ki, ai):
 
 import warnings
 warnings.filterwarnings("ignore")
+
+UNIT_NM = {"m": 1e9, "mm": 1e6, "um": 1e3, "µm": 1e3, "nm": 1.0}
+
+def to_nm(info):
+    # info の dimensions（[値, 単位]）から nm への倍率。⟲ 11-26 22:3x までは単位を見ずに m とみなしていた
+    #   （シナプスは m、区画の点は nm ⇒ 区画の点が 10^9 倍にずれ、骨格の点に細胞体の札が付かなかった）
+    return np.array([info["dimensions"][k][0] * UNIT_NM[info["dimensions"][k][1]] for k in ("x", "y", "z")])
 
 def diag_print(seg, skel, sub, syn):
     v, e = skel; sp, sc = sub; pa, pb, ty = syn
@@ -286,9 +293,13 @@ def selftest():
     d = tempfile.mkdtemp(); w.write(d); info = json.load(open(os.path.join(d, "info")))
     b = open(os.path.join(d, info["relationships"][0]["key"], "7"), "rb").read()
     xyz, pr, _ = P.decode_multi(b, info)
-    scale = np.array([info["dimensions"][k][0] for k in ("x", "y", "z")]) * 1e9
+    scale = to_nm(info)
     assert np.allclose(xyz[:, :3] * scale, sp, atol=1) and (pr["class_label"] == cls).all()
     print("✓ neuroglancer が書いた区画の点（点・class_label・skeleton_id の索引）を nm に直して読めた")
+    real_sub = {"dimensions": {"x": [1, "nm"], "y": [1, "nm"], "z": [1, "nm"]}}
+    real_syn = {"dimensions": {"x": [8e-09, "m"], "y": [8e-09, "m"], "z": [3.3e-08, "m"]}}
+    assert np.allclose(to_nm(real_sub), [1, 1, 1]) and np.allclose(to_nm(real_syn), [8, 8, 33])
+    print("✓ arkhe の info の単位（区画の点 nm・シナプス m）で倍率が 1・1・1 と 8・8・33")
     props = {"inline": {"ids": ["1", "2", "3", "4", "5", "6"], "properties": [
         {"id": "tags", "type": "tags", "tags": ["neuron", "interneuron", "pyramidal", "L2", "L3"],
          "values": [[0, 1, 3]] * 3 + [[0, 2, 3]] * 3},
