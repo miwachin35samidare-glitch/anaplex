@@ -541,10 +541,20 @@ N_TC_INH = int(round(9100 * 0.16))
 #   学ばない（網の 錐体 → 抑制の体 の辺も跡を足さない）・短期の増減なし（⚠️ 人の 錐体 → PVALB は減る、Chartrand 2023 ⇒ 上の側）
 #   網の辺ではなく表（受け手 × 本数の送り手の番号と重さ）で毎歩足す ⇒ VRAM は 約75MB
 #   ANAPLEX_V116B=0 で版116 と同じ・ANAPLEX_V116B_R・_F で R・F
+#   ⟲ 版116c（組み表_版116_案 §27・§33）：15,108本は誤り（局所の割合の比は相手の総数を決めない）
+#     総数を人で数えた：【ヒト】H01（Shapson-Coe 2024、側頭葉・1人・電顕）の L2・L3 の抑制の細胞（型を混ぜた）35体で
+#       樹状突起の興奮のシナプス 中央 0.322／µm・長さで重ねた和 0.471／µm ÷ 0.89（数え落とし 11%）
+#       × 全長 3.5mm（【ヒト】Wilbers 2023、切片で直しなし ⇒ 下限の側）÷ 接触 3.3（【ヒト】Molnár 2016）⇒ 約380〜560体【計算】
+#     本数 ＝ 総数 TOT − 切片の中の 180（INH_N_EXC）。TOT ＝ 470（範囲 380〜560 の中ほど。10 §1：範囲の値で置き率で合わせる）【C の当てはめ】
+#     ⚠️ 型を混ぜた値（籠細胞に分けていない）・細胞体のシナプスは数え落とし（総数の数%）
+#     ANAPLEX_V116C=0 で版116b の本数（R）・ANAPLEX_V116C_TOT で総数【み】11-26 23:25「いいよ」
 V116B = os.environ.get("ANAPLEX_V116B", "1") != "0"
 TC_EI_R = float(os.environ.get("ANAPLEX_V116B_R", "2.0"))
 TC_EI_F = float(os.environ.get("ANAPLEX_V116B_F", str(TC_W_DIST)))
-N_TC_EI = int(round(9100 * 0.84 * TC_EI_R)) - INH_N_EXC
+V116C = os.environ.get("ANAPLEX_V116C", "1") != "0"
+TC_EI_TOT = int(os.environ.get("ANAPLEX_V116C_TOT", "470"))
+N_TC_EI = (TC_EI_TOT - INH_N_EXC) if V116C else (int(round(9100 * 0.84 * TC_EI_R)) - INH_N_EXC)
+assert N_TC_EI > 0, f"ANAPLEX_V116C_TOT={TC_EI_TOT} は切片の中の {INH_N_EXC} 本より多くする"
 V115_CHECK = os.environ.get("ANAPLEX_V115_CHECK", "0") == "1"
 # 版115b：PPN → CL を「速い分 ＋ ゆっくりの分（ニコチン・ムスカリン）」に分ける（測る用のスイッチ。既定は版115 のまま）
 #   組み表_版116_案 §2・§8。【み】11-23 16:55「いいよ、進めて」・17:27「まぁノブでいいよ」

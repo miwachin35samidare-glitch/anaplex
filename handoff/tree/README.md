@@ -1,6 +1,7 @@
 # handoff/tree — 容器の版の木の写し（いま渡した最後の形）
 
-- 版：**116b**（11-26 02:4x に渡し、07:2x の出力で当たったと確かめた）
+- 版：**116c**（11-26 23:3x に渡した。当たったかは出力で確かめる）← 116b（11-26 02:4x に渡し、07:2x の出力で当たったと確かめた）
+  - torch_brain：apply_v116c（版116b の木で apply_v116c_back.py を当てると 116b）
   - torch_brain・torch_group2：apply_v116b ／ babble・測る道具の門：apply_v116 ／ life：apply_guard109d
   - 11-26 に足した道具：measure_tc116（版116・116b で回る）・check_v116b
 - 新しいスレッドの木の作り方：リポジトリ直下の .py 以外（prior_v*.npz・synapse_model_human.json ほか）を写し、その上にこのフォルダの .py を写す
