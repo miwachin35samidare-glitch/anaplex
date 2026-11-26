@@ -194,7 +194,7 @@ def summarize(rows):
     def q(x):
         x = np.array(x, float)
         if len(x) == 0: return "（0体）"
-        return "中央 %.3g（%.3g〜%.3g、%d体）" % (np.median(x), np.percentile(x, 25), np.percentile(x, 75), len(x))
+        return "中央 %.3g（%.3g〜%.3g、%d体）" % (np.nanmedian(x), np.nanpercentile(x, 25), np.nanpercentile(x, 75), int(np.isfinite(x).sum()))
     den = [r for r in ok if r["dend_um"] > 100]
     dE = [r["cnt"]["樹状突起"]["E"] / r["dend_um"] for r in den]
     dI = [r["cnt"]["樹状突起"]["I"] / r["dend_um"] for r in den]
